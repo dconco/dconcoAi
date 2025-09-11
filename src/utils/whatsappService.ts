@@ -1,12 +1,22 @@
-class WhatsAppService {
+import {
+	WhatsAppApiResponse,
+	Button,
+	ListSection
+} from '../types/index';
+
+export default class WhatsAppService {
+	private token: string;
+	private phoneNumberId: string;
+	private baseUrl: string;
+
 	constructor() {
-		this.token = process.env.WHATSAPP_TOKEN
-		this.phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID
-		this.baseUrl = `https://graph.facebook.com/v23.0/${this.phoneNumberId}/messages`
+		this.token = process.env.WHATSAPP_TOKEN || '';
+		this.phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID || '';
+		this.baseUrl = `https://graph.facebook.com/v23.0/${this.phoneNumberId}/messages`;
 	}
 
 	// Send a text message
-	async sendTextMessage(to, message) {
+	async sendTextMessage(to: string, message: string): Promise<WhatsAppApiResponse> {
 		try {
 			const response = await fetch(this.baseUrl, {
 				method: 'POST',
@@ -22,26 +32,26 @@ class WhatsAppService {
 						body: message,
 					},
 				}),
-			})
+			});
 
 			if (!response.ok) {
-				const errorData = await response.json()
+				const errorData = await response.json();
 				throw new Error(
 					`HTTP ${response.status}: ${JSON.stringify(errorData)}`
-				)
+				);
 			}
 
-			const data = await response.json()
-			console.log('Message sent successfully:', data)
-			return data
+			const data = await response.json() as WhatsAppApiResponse;
+			console.log('Message sent successfully:', data);
+			return data;
 		} catch (error) {
-			console.error('Error sending message:', error.message)
-			throw error
+			console.error('Error sending message:', (error as Error).message);
+			throw error;
 		}
 	}
 
 	// Send a message with buttons
-	async sendButtonMessage(to, bodyText, buttons) {
+	async sendButtonMessage(to: string, bodyText: string, buttons: Button[]): Promise<WhatsAppApiResponse> {
 		try {
 			const response = await fetch(this.baseUrl, {
 				method: 'POST',
@@ -69,26 +79,26 @@ class WhatsAppService {
 						},
 					},
 				}),
-			})
+			});
 
 			if (!response.ok) {
-				const errorData = await response.json()
+				const errorData = await response.json();
 				throw new Error(
 					`HTTP ${response.status}: ${JSON.stringify(errorData)}`
-				)
+				);
 			}
 
-			const data = await response.json()
-			console.log('Button message sent successfully:', data)
-			return data
+			const data = await response.json() as WhatsAppApiResponse;
+			console.log('Button message sent successfully:', data);
+			return data;
 		} catch (error) {
-			console.error('Error sending button message:', error.message)
-			throw error
+			console.error('Error sending button message:', (error as Error).message);
+			throw error;
 		}
 	}
 
 	// Send a list message
-	async sendListMessage(to, bodyText, buttonText, sections) {
+	async sendListMessage(to: string, bodyText: string, buttonText: string, sections: ListSection[]): Promise<WhatsAppApiResponse> {
 		try {
 			const response = await fetch(this.baseUrl, {
 				method: 'POST',
@@ -111,30 +121,30 @@ class WhatsAppService {
 						},
 					},
 				}),
-			})
+			});
 
 			if (!response.ok) {
-				const errorData = await response.json()
+				const errorData = await response.json();
 				throw new Error(
 					`HTTP ${response.status}: ${JSON.stringify(errorData)}`
-				)
+				);
 			}
 
-			const data = await response.json()
-			console.log('List message sent successfully:', data)
-			return data
+			const data = await response.json() as WhatsAppApiResponse;
+			console.log('List message sent successfully:', data);
+			return data;
 		} catch (error) {
-			console.error('Error sending list message:', error.message)
-			throw error
+			console.error('Error sending list message:', (error as Error).message);
+			throw error;
 		}
 	}
 
 	// Send media message (image, document, etc.)
-	async sendMediaMessage(to, mediaType, mediaId, caption = '') {
+	async sendMediaMessage(to: string, mediaType: string, mediaId: string, caption: string = ''): Promise<WhatsAppApiResponse> {
 		try {
-			const mediaObject = {
+			const mediaObject: Record<string, any> = {
 				id: mediaId,
-			}
+			};
 
 			if (
 				caption &&
@@ -142,7 +152,7 @@ class WhatsAppService {
 					mediaType === 'video' ||
 					mediaType === 'document')
 			) {
-				mediaObject.caption = caption
+				mediaObject.caption = caption;
 			}
 
 			const response = await fetch(this.baseUrl, {
@@ -157,31 +167,31 @@ class WhatsAppService {
 					type: mediaType,
 					[mediaType]: mediaObject,
 				}),
-			})
+			});
 
 			if (!response.ok) {
-				const errorData = await response.json()
+				const errorData = await response.json();
 				throw new Error(
 					`HTTP ${response.status}: ${JSON.stringify(errorData)}`
-				)
+				);
 			}
 
-			const data = await response.json()
-			console.log('Media message sent successfully:', data)
-			return data
+			const data = await response.json() as WhatsAppApiResponse;
+			console.log('Media message sent successfully:', data);
+			return data;
 		} catch (error) {
-			console.error('Error sending media message:', error.message)
-			throw error
+			console.error('Error sending media message:', (error as Error).message);
+			throw error;
 		}
 	}
 
 	// Send template message
 	async sendTemplateMessage(
-		to,
-		templateName,
-		languageCode = 'en_US',
-		parameters = []
-	) {
+		to: string,
+		templateName: string,
+		languageCode: string = 'en_US',
+		parameters: string[] = []
+	): Promise<WhatsAppApiResponse> {
 		try {
 			const response = await fetch(this.baseUrl, {
 				method: 'POST',
@@ -212,26 +222,26 @@ class WhatsAppService {
 								: undefined,
 					},
 				}),
-			})
+			});
 
 			if (!response.ok) {
-				const errorData = await response.json()
+				const errorData = await response.json();
 				throw new Error(
 					`HTTP ${response.status}: ${JSON.stringify(errorData)}`
-				)
+				);
 			}
 
-			const data = await response.json()
-			console.log('Template message sent successfully:', data)
-			return data
+			const data = await response.json() as WhatsAppApiResponse;
+			console.log('Template message sent successfully:', data);
+			return data;
 		} catch (error) {
-			console.error('Error sending template message:', error.message)
-			throw error
+			console.error('Error sending template message:', (error as Error).message);
+			throw error;
 		}
 	}
 
 	// Mark message as read
-	async markAsRead(messageId) {
+	async markAsRead(messageId: string): Promise<WhatsAppApiResponse> {
 		try {
 			const response = await fetch(this.baseUrl, {
 				method: 'POST',
@@ -244,23 +254,21 @@ class WhatsAppService {
 					status: 'read',
 					message_id: messageId,
 				}),
-			})
+			});
 
 			if (!response.ok) {
-				const errorData = await response.json()
+				const errorData = await response.json();
 				throw new Error(
 					`HTTP ${response.status}: ${JSON.stringify(errorData)}`
-				)
+				);
 			}
 
-			const data = await response.json()
-			console.log('Message marked as read:', data)
-			return data
+			const data = await response.json() as WhatsAppApiResponse;
+			console.log('Message marked as read:', data);
+			return data;
 		} catch (error) {
-			console.error('Error marking message as read:', error.message)
-			throw error
+			console.error('Error marking message as read:', (error as Error).message);
+			throw error;
 		}
 	}
 }
-
-export default WhatsAppService

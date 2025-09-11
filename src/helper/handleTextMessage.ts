@@ -1,20 +1,20 @@
-import WhatsappService from '../utils/whatsappService.js'
+import WhatsappService from '../utils/whatsappService';
 
-export default async function handleTextMessage(from, text, name) {
-	const whatsapp = new WhatsappService()
-	const lowerText = text.toLowerCase()
+export default async function handleTextMessage(from: string, text: string, name: string): Promise<void> {
+	const whatsapp = new WhatsappService();
+	const lowerText = text.toLowerCase();
 
 	if (lowerText.includes('hello') || lowerText.includes('hi')) {
 		await whatsapp.sendTextMessage(
 			from,
 			`Whatsup ${name}! 👋 How can I help you today?`
-		)
+		);
 	} else if (lowerText.includes('menu') || lowerText.includes('options')) {
 		await whatsapp.sendButtonMessage(from, 'Here are some options:', [
 			{ id: 'option1', title: 'Get Info' },
 			{ id: 'option2', title: 'Contact Us' },
 			{ id: 'option3', title: 'Help' },
-		])
+		]);
 	} else if (lowerText.includes('list') || lowerText.includes('services')) {
 		await whatsapp.sendListMessage(
 			from,
@@ -42,11 +42,11 @@ export default async function handleTextMessage(from, text, name) {
 					],
 				},
 			]
-		)
+		);
 	} else {
 		await whatsapp.sendTextMessage(
 			from,
 			`Thanks for your message: "${text}". How can I help you?`
-		)
+		);
 	}
 }
