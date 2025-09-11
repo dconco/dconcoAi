@@ -42,7 +42,7 @@ export default class WhatsAppService {
 			}
 
 			const data = await response.json() as WhatsAppApiResponse;
-			console.log('Message sent successfully:', data);
+			console.log('Message sent successfully');
 			return data;
 		} catch (error) {
 			console.error('Error sending message:', (error as Error).message);
@@ -89,7 +89,7 @@ export default class WhatsAppService {
 			}
 
 			const data = await response.json() as WhatsAppApiResponse;
-			console.log('Button message sent successfully:', data);
+			console.log('Button message sent successfully');
 			return data;
 		} catch (error) {
 			console.error('Error sending button message:', (error as Error).message);
@@ -131,7 +131,7 @@ export default class WhatsAppService {
 			}
 
 			const data = await response.json() as WhatsAppApiResponse;
-			console.log('List message sent successfully:', data);
+			console.log('List message sent successfully');
 			return data;
 		} catch (error) {
 			console.error('Error sending list message:', (error as Error).message);
@@ -177,7 +177,7 @@ export default class WhatsAppService {
 			}
 
 			const data = await response.json() as WhatsAppApiResponse;
-			console.log('Media message sent successfully:', data);
+			console.log('Media message sent successfully');
 			return data;
 		} catch (error) {
 			console.error('Error sending media message:', (error as Error).message);
@@ -232,7 +232,7 @@ export default class WhatsAppService {
 			}
 
 			const data = await response.json() as WhatsAppApiResponse;
-			console.log('Template message sent successfully:', data);
+			console.log('Template message sent successfully');
 			return data;
 		} catch (error) {
 			console.error('Error sending template message:', (error as Error).message);
@@ -264,7 +264,7 @@ export default class WhatsAppService {
 			}
 
 			const data = await response.json() as WhatsAppApiResponse;
-			console.log('Message marked as read:', data);
+			console.log('Message marked as read');
 			return data;
 		} catch (error) {
 			console.error('Error marking message as read:', (error as Error).message);
