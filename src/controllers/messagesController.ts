@@ -2,7 +2,8 @@ import { Request, Response } from 'express';
 import WhatsappService from '../utils/whatsappService';
 import handleTextMessage from '../helper/handleTextMessage';
 import handleInteractiveMessage from '../helper/handleInteractiveMessage';
-import { WhatsAppWebhook } from '../types/index';
+import { WhatsAppMessage, WhatsAppWebhook } from '../types/index';
+import { cacheMessage, checkQuota } from '@/utils/quotaChecker';
 
 export default async function MessagesController(req: Request, res: Response): Promise<void> {
 	const whatsapp: WhatsappService = new WhatsappService();
@@ -16,11 +17,11 @@ export default async function MessagesController(req: Request, res: Response): P
 						const messages = change.value.messages;
 						const contacts = change.value.contacts;
 
-						messages?.forEach(async message => {
+						messages?.forEach(async (message: WhatsAppMessage) => {
 							const from = message.from;
 							const messageId = message.id;
 							const contact = contacts?.find(c => c.wa_id === from);
-							const name = contact?.profile?.name || 'Unknown';
+							const name = contact?.profile?.name;
 
 							console.log(
 								`Message from ${name} (${from}): ${
@@ -28,8 +29,7 @@ export default async function MessagesController(req: Request, res: Response): P
 								}`
 							);
 
-							// Mark message as read
-							await whatsapp.markAsRead(messageId);
+							checkQuota(message, name);
 
 							// Handle different message types
 							if (message.type === 'text' && message.text) {

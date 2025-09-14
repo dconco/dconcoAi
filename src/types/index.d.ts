@@ -1,5 +1,5 @@
 // WhatsApp API Types
-export interface WhatsAppMessage {
+export declare interface WhatsAppMessage {
 	from: string;
 	id: string;
 	timestamp: string;
@@ -10,7 +10,7 @@ export interface WhatsAppMessage {
 	interactive?: InteractiveMessage;
 }
 
-export interface InteractiveMessage {
+export declare interface InteractiveMessage {
 	type: 'button_reply' | 'list_reply';
 	button_reply?: {
 		id: string;
@@ -23,24 +23,24 @@ export interface InteractiveMessage {
 	};
 }
 
-export interface WhatsAppContact {
+export declare interface WhatsAppContact {
 	profile: {
 		name: string;
 	};
 	wa_id: string;
 }
 
-export interface WhatsAppWebhook {
+export declare interface WhatsAppWebhook {
 	object: string;
 	entry: WhatsAppEntry[];
 }
 
-export interface WhatsAppEntry {
+export declare interface WhatsAppEntry {
 	id: string;
 	changes: WhatsAppChange[];
 }
 
-export interface WhatsAppChange {
+export declare interface WhatsAppChange {
 	value: {
 		messaging_product: string;
 		metadata: {
@@ -54,24 +54,24 @@ export interface WhatsAppChange {
 }
 
 // Button and List Types
-export interface Button {
+export declare interface Button {
 	id: string;
 	title: string;
 }
 
-export interface ListRow {
+export declare interface ListRow {
 	id: string;
 	title: string;
 	description?: string;
 }
 
-export interface ListSection {
+export declare interface ListSection {
 	title: string;
 	rows: ListRow[];
 }
 
 // API Response Types
-export interface WhatsAppApiResponse {
+export declare interface WhatsAppApiResponse {
 	messaging_product: string;
 	contacts: Array<{
 		input: string;
@@ -83,7 +83,7 @@ export interface WhatsAppApiResponse {
 }
 
 // Request Types
-export interface SendMessageRequest {
+export declare interface SendMessageRequest {
 	to: string;
 	message: string;
 }

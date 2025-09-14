@@ -5,7 +5,7 @@ import { InteractiveMessage } from '../types/index';
 export default async function handleInteractiveMessage(
 	from: string,
 	interactive: InteractiveMessage,
-	_name: string
+	_name: string|undefined
 ): Promise<void> {
 	const whatsapp = new WhatsappService();
 

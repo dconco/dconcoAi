@@ -3,6 +3,7 @@ import {
 	Button,
 	ListSection
 } from '../types/index';
+import { cacheMessage, saveQuota } from './quotaChecker';
 
 export default class WhatsAppService {
 	private token: string;
@@ -17,6 +18,8 @@ export default class WhatsAppService {
 
 	// Send a text message
 	async sendTextMessage(to: string, message: string): Promise<WhatsAppApiResponse> {
+		saveQuota(to);
+
 		try {
 			const response = await fetch(this.baseUrl, {
 				method: 'POST',
@@ -42,7 +45,6 @@ export default class WhatsAppService {
 			}
 
 			const data = await response.json() as WhatsAppApiResponse;
-			console.log('Message sent successfully');
 			return data;
 		} catch (error) {
 			console.error('Error sending message:', (error as Error).message);
@@ -52,6 +54,8 @@ export default class WhatsAppService {
 
 	// Send a message with buttons
 	async sendButtonMessage(to: string, bodyText: string, buttons: Button[]): Promise<WhatsAppApiResponse> {
+		saveQuota(to);
+
 		try {
 			const response = await fetch(this.baseUrl, {
 				method: 'POST',
@@ -99,6 +103,8 @@ export default class WhatsAppService {
 
 	// Send a list message
 	async sendListMessage(to: string, bodyText: string, buttonText: string, sections: ListSection[]): Promise<WhatsAppApiResponse> {
+		saveQuota(to);
+
 		try {
 			const response = await fetch(this.baseUrl, {
 				method: 'POST',
@@ -141,6 +147,8 @@ export default class WhatsAppService {
 
 	// Send media message (image, document, etc.)
 	async sendMediaMessage(to: string, mediaType: string, mediaId: string, caption: string = ''): Promise<WhatsAppApiResponse> {
+		saveQuota(to);
+
 		try {
 			const mediaObject: Record<string, any> = {
 				id: mediaId,
@@ -192,6 +200,8 @@ export default class WhatsAppService {
 		languageCode: string = 'en_US',
 		parameters: string[] = []
 	): Promise<WhatsAppApiResponse> {
+		saveQuota(to);
+
 		try {
 			const response = await fetch(this.baseUrl, {
 				method: 'POST',
@@ -264,7 +274,6 @@ export default class WhatsAppService {
 			}
 
 			const data = await response.json() as WhatsAppApiResponse;
-			console.log('Message marked as read');
 			return data;
 		} catch (error) {
 			console.error('Error marking message as read:', (error as Error).message);
