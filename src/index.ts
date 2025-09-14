@@ -4,6 +4,7 @@ import WhatsappService from './utils/whatsappService';
 import WebhookController from './controllers/webhookController';
 import MessagesController from './controllers/messagesController';
 import { SendMessageRequest } from './types/index';
+import { checkQuota } from './utils/quotaChecker';
 
 dotenv.config();
 
@@ -31,7 +32,13 @@ app.post('/api/send-message', async (req: Request<{}, {}, SendMessageRequest>, r
 				.json({ error: 'Phone number and message are required' });
 		}
 
-		const result = await whatsapp.sendTextMessage(to, message);
+		if (!checkQuota(null, to)) {
+			return res
+				.status(403)
+				.json({ error: 'Quota exceeded for this user.' });
+		}
+
+		const result = await whatsapp.sendTextMessage(to, message, null);
 		return res.json({ success: true, data: result });
 	} catch (error) {
 		return res.status(500).json({ error: (error as Error).message });

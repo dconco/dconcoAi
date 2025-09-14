@@ -1,12 +1,10 @@
 import { Request, Response } from 'express';
-import WhatsappService from '../utils/whatsappService';
 import handleTextMessage from '../helper/handleTextMessage';
 import handleInteractiveMessage from '../helper/handleInteractiveMessage';
 import { WhatsAppMessage, WhatsAppWebhook } from '../types/index';
-import { cacheMessage, checkQuota } from '@/utils/quotaChecker';
+import { checkQuota } from '../utils/quotaChecker';
 
 export default async function MessagesController(req: Request, res: Response): Promise<void> {
-	const whatsapp: WhatsappService = new WhatsappService();
 	const body: WhatsAppWebhook = req.body;
 
 	try {
@@ -18,29 +16,10 @@ export default async function MessagesController(req: Request, res: Response): P
 						const contacts = change.value.contacts;
 
 						messages?.forEach(async (message: WhatsAppMessage) => {
-							const from = message.from;
-							const messageId = message.id;
-							const contact = contacts?.find(c => c.wa_id === from);
+							const contact = contacts?.find(c => c.wa_id === message.from);
 							const name = contact?.profile?.name;
 
-							console.log(
-								`Message from ${name} (${from}): ${
-									message.text?.body || 'Non-text message'
-								}`
-							);
-
-							checkQuota(message, name);
-
-							// Handle different message types
-							if (message.type === 'text' && message.text) {
-								await handleTextMessage(from, message.text.body, name);
-							} else if (message.type === 'interactive' && message.interactive) {
-								await handleInteractiveMessage(
-									from,
-									message.interactive,
-									name
-								);
-							}
+							await sendMessage(name, message);
 						});
 					}
 				});
@@ -51,5 +30,27 @@ export default async function MessagesController(req: Request, res: Response): P
 	} catch (error) {
 		console.error('Webhook error:', error);
 		res.status(500).send('Internal Server Error');
+	}
+}
+
+export const sendMessage = async (name: string | undefined, message: WhatsAppMessage): Promise<any> => {
+	console.log(
+		`Message from ${name} (${message.from}): ${
+			message.text?.body || 'Non-text message'
+		}`
+	);
+
+	if (!checkQuota(message, name)) return;
+
+	// Handle different message types
+	if (message.type === 'text' && message.text) {
+		await handleTextMessage(message.from, message.text.body, message.id, name);
+	} else if (message.type === 'interactive' && message.interactive) {
+		await handleInteractiveMessage(
+			message.from,
+			message.interactive,
+			message.id,
+			name
+		);
 	}
 }

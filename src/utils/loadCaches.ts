@@ -1,4 +1,4 @@
-import { CachedMessageData, QuotaData } from "@/types/cache";
+import { CachedMessageData, QuotaData, UnreadMessageData } from "@/types/cache";
 import { readFileSync } from "fs";
 import { join } from "path";
 
@@ -18,11 +18,11 @@ export const loadQuota = (): QuotaData => {
 
 export const loadUnreadMessages = () => {
    try {
-       const data = readFileSync(unreadMessagesFilePath, 'utf8');
-         return JSON.parse(data) as CachedMessageData;
+      const data = readFileSync(unreadMessagesFilePath, 'utf8');
+      return JSON.parse(data) as UnreadMessageData;
    } catch (error) {
-       console.log('Error reading unread messages file, initializing with empty data:', error);
-       return {} as CachedMessageData;
+      console.log('Error reading unread messages file, initializing with empty data:', error);
+      return {} as UnreadMessageData;
    }
 };
 

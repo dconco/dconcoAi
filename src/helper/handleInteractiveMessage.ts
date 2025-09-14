@@ -1,11 +1,13 @@
 import WhatsappService from '../utils/whatsappService';
+import { cacheMessage } from '../utils/quotaChecker';
 import { InteractiveMessage } from '../types/index';
 
 // Handle interactive messages (buttons, lists)
 export default async function handleInteractiveMessage(
 	from: string,
 	interactive: InteractiveMessage,
-	_name: string|undefined
+	messageId: string,
+	name: string|undefined
 ): Promise<void> {
 	const whatsapp = new WhatsappService();
 
@@ -16,34 +18,38 @@ export default async function handleInteractiveMessage(
 			case 'option1':
 				await whatsapp.sendTextMessage(
 					from,
-					'Here is some information about me...'
+					'Here is some information about me...',
+					messageId
 				);
 				break;
 			case 'option2':
 				await whatsapp.sendTextMessage(
 					from,
-					'You can contact me at: concodave@gmail.com or call +2349064772574'
+					'You can contact me at: concodave@gmail.com or call +2349064772574',
+					messageId
 				);
 				break;
 			case 'option3':
 				await whatsapp.sendTextMessage(
 					from,
-					'Type "menu" to see options or "list" to see our services.'
+					'Type "menu" to see options or "list" to see our services.',
+					messageId
 				);
 				break;
 			default:
 				await whatsapp.sendTextMessage(
 					from,
-					'Thanks for clicking the button!'
+					'Thanks for clicking the button!',
+					messageId
 				);
 		}
 	} else if (interactive.type === 'list_reply' && interactive.list_reply) {
 		const listId = interactive.list_reply.id;
 		const title = interactive.list_reply.title;
 
-		await whatsapp.sendTextMessage(
-			from,
-			`You selected: ${title}. We'll get back to you about ${title} soon!`
-		);
+		const response = `You selected: ${title}. We'll get back to you about ${title} soon!`;
+		cacheMessage({ contact: from, text: title, name: name || '', reply: response });
+
+		await whatsapp.sendTextMessage(from, response, messageId);
 	}
 }

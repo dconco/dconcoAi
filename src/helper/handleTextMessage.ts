@@ -1,7 +1,7 @@
-import { cacheMessage } from '@/utils/quotaChecker';
+import { cacheMessage } from '../utils/quotaChecker';
 import WhatsappService from '../utils/whatsappService';
 
-export default async function handleTextMessage(from: string, text: string, name: string|undefined): Promise<void> {
+export default async function handleTextMessage(from: string, text: string, messageId: string, name: string|undefined): Promise<void> {
 	const whatsapp = new WhatsappService();
 	const lowerText = text.toLowerCase();
 
@@ -9,7 +9,7 @@ export default async function handleTextMessage(from: string, text: string, name
 		const response = handleGreeting(text, name);
 		cacheMessage({ contact: from, text, name: name || '', reply: response });
 
-		await whatsapp.sendTextMessage(from, response);
+		await whatsapp.sendTextMessage(from, response, messageId);
 	}
 	
 	/**
@@ -67,7 +67,7 @@ export default async function handleTextMessage(from: string, text: string, name
 		const response = `Thanks for your message! I will get back to you soon.`;
 		cacheMessage({ contact: from, text: text, name: name || '', reply: response });
 
-		await whatsapp.sendTextMessage(from, response);
+		await whatsapp.sendTextMessage(from, response, messageId);
 	}
 }
 

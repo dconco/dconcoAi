@@ -1,27 +1,31 @@
-import { WhatsAppMessage } from "@/types";
-import { writeFile } from "fs";
+import { writeFileSync } from "fs";
+import { WhatsAppMessage } from "../types";
 import WhatsAppService from "./whatsappService";
-import { CachedMessageData, CachedMessageInterface, QuotaData, UnreadMessage } from "../types/cache";
+import { CachedMessageData, CachedMessageInterface, QuotaData, UnreadMessageData, UnreadMessageInterface } from "../types/cache";
 import { loadQuota, loadUnreadMessages, loadCachedMessages, quotaFilePath, unreadMessagesFilePath, cachedMessagesFilePath } from "./loadCaches";
 
 /**
  * ========================================
  * Check the quota for sending messages.
- * =======================================
+ * ========================================
  */
-export const checkQuota = (message: WhatsAppMessage, name: string | undefined) => {
+export const checkQuota = (message: WhatsAppMessage|null, name: string | undefined) => {
    const whatsapp: WhatsAppService = new WhatsAppService();
 
    const quotaLimit = 8;
    const quota: QuotaData = loadQuota();
 
    if (quota.contacts && quota.contacts.length >= quotaLimit) {
-      saveUnreadMessage({ contact: message.from, text: message.text?.body || '', name: name || '' });
-      throw new Error('Quota exceeded. Please try again later.');
+      if (!message) return false;
+
+      saveUnreadMessage({ message, name: name || '' });
+      console.log(`Quota exceeded. Message from ${name || message.from} ignored.`);
+      return false;
    }
 
-   whatsapp.markAsRead(message.id);
+   whatsapp.markAsRead(message?.id || '');
    console.log('Current quota:', quota.contacts ? quota.contacts.length : 0, 'Limit:', quotaLimit);
+   return true;
 }
 
 /**
@@ -30,17 +34,19 @@ export const checkQuota = (message: WhatsAppMessage, name: string | undefined) =
  * ========================================
  */
 export const saveQuota = (contact: string) => {
-   const quota: QuotaData = loadQuota();
+   try {
+      const quota: QuotaData = loadQuota();
 
-   if (!quota.contacts.includes(contact)) {
-     quota.contacts.push(contact);
+      if (!quota.contacts.includes(contact)) {
+        quota.contacts.push(contact);
+      }
+
+      // Use synchronous write to prevent race conditions
+      writeFileSync(quotaFilePath, JSON.stringify(quota, null, 2), 'utf8');
+      console.log(`Contact ${contact} added to quota. Total: ${quota.contacts.length}`);
+   } catch (error) {
+      console.error('Error writing quota file:', error);
    }
-
-   writeFile(quotaFilePath, JSON.stringify(quota, null, 2), (err) => {
-     if (err) {
-       console.error('Error writing quota file:', err);
-     }
-   });
 }
 
 /**
@@ -48,20 +54,21 @@ export const saveQuota = (contact: string) => {
  * Save unread message to the unread messages list.
  * ========================================
  */
-export const saveUnreadMessage = ({contact, text, name}: UnreadMessage) => {
-   const unreadMessages: CachedMessageData = loadUnreadMessages();
+export const saveUnreadMessage = ({ message, name }: UnreadMessageInterface) => {
+   try {
+      const unreadMessages: UnreadMessageData = loadUnreadMessages();
 
-   if (!unreadMessages[contact]) {
-      unreadMessages[contact] = { name, messages: [] };
-   }
-
-   unreadMessages[contact].messages.push({ text, timestamp: new Date().toISOString() });
-
-   writeFile(unreadMessagesFilePath, JSON.stringify(unreadMessages, null, 2), (err) => {
-      if (err) {
-        console.error('Error writing unread messages file:', err);
+      if (!unreadMessages[message.from]) {
+         unreadMessages[message.from] = { name, messages: [] };
       }
-   });
+
+      unreadMessages[message.from].messages.push(message);
+
+      // Use synchronous write to prevent race conditions
+      writeFileSync(unreadMessagesFilePath, JSON.stringify(unreadMessages, null, 2), 'utf8');
+   } catch (error) {
+      console.error('Error writing unread messages file:', error);
+   }
 }
 
 /**
@@ -70,17 +77,18 @@ export const saveUnreadMessage = ({contact, text, name}: UnreadMessage) => {
  * ========================================
  */
 export const cacheMessage = ({contact, text, name, reply}: CachedMessageInterface) => {
-   const cachedMessages: CachedMessageData = loadCachedMessages();
+   try {
+      const cachedMessages: CachedMessageData = loadCachedMessages();
 
-   if (!cachedMessages[contact]) {
-      cachedMessages[contact] = { name, messages: [] };
-   }
-
-   cachedMessages[contact].messages.push({ text, reply, timestamp: new Date().toISOString() });
-
-   writeFile(cachedMessagesFilePath, JSON.stringify(cachedMessages, null, 2), (err) => {
-      if (err) {
-        console.error('Error writing cached messages file:', err);
+      if (!cachedMessages[contact]) {
+         cachedMessages[contact] = { name, messages: [] };
       }
-   });
+
+      cachedMessages[contact].messages.push({ text, reply, timestamp: new Date().toISOString() });
+
+      // Use synchronous write to prevent race conditions
+      writeFileSync(cachedMessagesFilePath, JSON.stringify(cachedMessages, null, 2), 'utf8');
+   } catch (error) {
+      console.error('Error writing cached messages file:', error);
+   }
 }

@@ -3,7 +3,7 @@ import {
 	Button,
 	ListSection
 } from '../types/index';
-import { cacheMessage, saveQuota } from './quotaChecker';
+import { saveQuota } from './quotaChecker';
 
 export default class WhatsAppService {
 	private token: string;
@@ -14,10 +14,18 @@ export default class WhatsAppService {
 		this.token = process.env.WHATSAPP_TOKEN || '';
 		this.phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID || '';
 		this.baseUrl = `https://graph.facebook.com/v23.0/${this.phoneNumberId}/messages`;
+
+		// Validate required environment variables
+		if (!this.token || !this.phoneNumberId) {
+			console.error('⚠️  Missing required WhatsApp environment variables:');
+			if (!this.token) console.error('   - WHATSAPP_TOKEN is missing');
+			if (!this.phoneNumberId) console.error('   - WHATSAPP_PHONE_NUMBER_ID is missing');
+			console.error('   Please check your .env file');
+		}
 	}
 
 	// Send a text message
-	async sendTextMessage(to: string, message: string): Promise<WhatsAppApiResponse> {
+	async sendTextMessage(to: string, message: string, messageId: string|null): Promise<WhatsAppApiResponse> {
 		saveQuota(to);
 
 		try {
@@ -31,6 +39,9 @@ export default class WhatsAppService {
 					to,
 					messaging_product: 'whatsapp',
 					type: 'text',
+					context: {
+						message_id: messageId
+					},
 					text: {
 						body: message,
 					},
