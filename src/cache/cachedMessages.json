@@ -8,14 +8,24 @@
         "timestamp": "2025-09-14T15:30:00Z"
       },
       {
-        "text": "Hi",
-        "reply": "Hello dconco! 👋 How can I assist you today?",
-        "timestamp": "2025-09-14T16:36:59.851Z"
+        "text": "Thank you for your message. We're unavailable right now, but will respond as soon as possible.\n\nIf you want an immediate response you can chat me through 09064772574",
+        "reply": "Thanks for your message! I will get back to you soon.",
+        "timestamp": "2025-09-14T22:11:59.287Z"
       },
       {
-        "text": "Are you serious?",
+        "text": "okay",
         "reply": "Thanks for your message! I will get back to you soon.",
-        "timestamp": "2025-09-14T16:37:43.411Z"
+        "timestamp": "2025-09-14T22:12:10.792Z"
+      }
+    ]
+  },
+  "2348039921970": {
+    "name": "Sam Developer",
+    "messages": [
+      {
+        "text": "Hi",
+        "reply": "Hi Sam Developer! 👋 What can I do for you?",
+        "timestamp": "2025-09-14T21:54:46.241Z"
       }
     ]
   }

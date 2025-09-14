@@ -23,8 +23,7 @@ export const checkQuota = (message: WhatsAppMessage|null, name: string | undefin
       return false;
    }
 
-   whatsapp.markAsRead(message?.id || '');
-   console.log('Current quota:', quota.contacts ? quota.contacts.length : 0, 'Limit:', quotaLimit);
+   whatsapp.markAsRead(message?.from || '', message?.id || '');
    return true;
 }
 
@@ -39,11 +38,11 @@ export const saveQuota = (contact: string) => {
 
       if (!quota.contacts.includes(contact)) {
         quota.contacts.push(contact);
+        
+        // Use synchronous write to prevent race conditions
+        writeFileSync(quotaFilePath, JSON.stringify(quota, null, 2), 'utf8');
+        console.log(`Contact ${contact} added to quota. Total: ${quota.contacts.length}`);
       }
-
-      // Use synchronous write to prevent race conditions
-      writeFileSync(quotaFilePath, JSON.stringify(quota, null, 2), 'utf8');
-      console.log(`Contact ${contact} added to quota. Total: ${quota.contacts.length}`);
    } catch (error) {
       console.error('Error writing quota file:', error);
    }

@@ -1,3 +1,4 @@
+import { url } from 'inspector/promises';
 import {
 	WhatsAppApiResponse,
 	Button,
@@ -56,6 +57,7 @@ export default class WhatsAppService {
 			}
 
 			const data = await response.json() as WhatsAppApiResponse;
+
 			return data;
 		} catch (error) {
 			console.error('Error sending message:', (error as Error).message);
@@ -262,8 +264,9 @@ export default class WhatsAppService {
 	}
 
 	// Mark message as read
-	async markAsRead(messageId: string): Promise<WhatsAppApiResponse> {
+	async markAsRead(_to: string, messageId: string): Promise<WhatsAppApiResponse> {
 		try {
+			// Mark message as read (this is the important part)
 			const response = await fetch(this.baseUrl, {
 				method: 'POST',
 				headers: {

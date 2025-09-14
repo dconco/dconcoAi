@@ -10,8 +10,8 @@ config();
 
 const messages: UnreadMessageData = loadUnreadMessages();
 
-// Function to process only the first unread message
-const processFirstUnreadMessage = async () => {
+// Function to process all messages from the first contact with timeout
+const processFirstContactMessages = async () => {
    const contacts = Object.entries(messages);
    
    if (contacts.length === 0) {
@@ -19,37 +19,46 @@ const processFirstUnreadMessage = async () => {
       return;
    }
 
-   // Get first contact with messages
-   for (const [contact, { name, messages: contactMessages }] of contacts) {
-      if (contactMessages.length > 0) {
-         const firstMessage = contactMessages[0];
+   // Get the first contact with messages
+   const [contact, { name, messages: contactMessages }] = contacts[0];
+   
+   if (contactMessages.length === 0) {
+      console.log(`No messages for contact ${contact}`);
+      return;
+   }
+
+   console.log(`Processing ${contactMessages.length} messages from ${name} (${contact})`);
+
+   // Process all messages for this contact with 5s delay
+   for (let i = 0; i < contactMessages.length; i++) {
+      const message = contactMessages[i];
+      
+      try {
+         console.log(`Processing message ${i + 1}/${contactMessages.length} from ${name}`);
+         await sendMessage(name, message);
          
-         try {
-            console.log(`Processing message from ${name} (${contact})`);
-            await sendMessage(name, firstMessage);
-            
-            // Remove the processed message
-            contactMessages.shift(); // Remove first element
-            
-            // Update the file
-            writeFileSync(
-               join(__dirname, './unreadMessages.json'), 
-               JSON.stringify(messages, null, 2), 
-               'utf8'
-            );
-            
-            console.log(`Message processed successfully. Remaining for ${contact}: ${contactMessages.length}`);
-            return; // Exit after processing one message
-            
-         } catch (error) {
-            console.error('Error processing message:', error);
-            return;
+         console.log(`Message ${i + 1} processed successfully`);
+         
+         // Wait 5 seconds before processing next message (except for the last one)
+         if (i < contactMessages.length - 1) {
+            console.log('Waiting 5 seconds before next message...');
+            await new Promise(resolve => setTimeout(resolve, 5000));
          }
+         
+      } catch (error) {
+         console.error(`Error processing message ${i + 1}:`, error);
+         break; // Stop processing if there's an error
       }
    }
+
+   // Remove this contact from unread messages after processing all their messages
+   delete messages[contact];
    
-   console.log('No messages to process');
+   // Update the file
+   writeFileSync(join(__dirname, './unreadMessages.json'), JSON.stringify(messages, null, 2), 'utf8');
+   
+   console.log(`All messages from ${name} (${contact}) processed and removed from queue`);
 };
 
-// Process the first unread message
-processFirstUnreadMessage();
+// Process all messages from the first contact
+processFirstContactMessages();
