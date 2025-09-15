@@ -55,7 +55,7 @@ const processFirstContactMessages = async () => {
    delete messages[contact];
    
    // Update the file
-   writeFileSync(join(__dirname, './unreadMessages.json'), JSON.stringify(messages, null, 2), 'utf8');
+   writeFileSync(join(__dirname, './db/unreadMessages.json'), JSON.stringify(messages, null, 2), 'utf8');
    
    console.log(`All messages from ${name} (${contact}) processed and removed from queue`);
 };

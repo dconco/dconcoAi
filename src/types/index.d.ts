@@ -85,5 +85,6 @@ export declare interface WhatsAppApiResponse {
 // Request Types
 export declare interface SendMessageRequest {
 	to: string;
+	name?: string;
 	message: string;
 }

@@ -1,10 +1,9 @@
-import { url } from 'inspector/promises';
 import {
 	WhatsAppApiResponse,
 	Button,
 	ListSection
-} from '../types/index';
-import { saveQuota } from './quotaChecker';
+} from '@/types/index';
+import { saveQuota } from '@/utils/quotaChecker';
 
 export default class WhatsAppService {
 	private token: string;
@@ -29,6 +28,16 @@ export default class WhatsAppService {
 	async sendTextMessage(to: string, message: string, messageId: string|null): Promise<WhatsAppApiResponse> {
 		saveQuota(to);
 
+		const payload: any = {
+			to,
+			messaging_product: 'whatsapp',
+			type: 'text',
+			text: {
+				body: message,
+			},
+		};
+		if (messageId) payload.context = { message_id: messageId };
+
 		try {
 			const response = await fetch(this.baseUrl, {
 				method: 'POST',
@@ -36,17 +45,7 @@ export default class WhatsAppService {
 					Authorization: `Bearer ${this.token}`,
 					'Content-Type': 'application/json',
 				},
-				body: JSON.stringify({
-					to,
-					messaging_product: 'whatsapp',
-					type: 'text',
-					context: {
-						message_id: messageId
-					},
-					text: {
-						body: message,
-					},
-				}),
+				body: JSON.stringify(payload),
 			});
 
 			if (!response.ok) {
@@ -264,9 +263,8 @@ export default class WhatsAppService {
 	}
 
 	// Mark message as read
-	async markAsRead(_to: string, messageId: string): Promise<WhatsAppApiResponse> {
+	async markAsRead(messageId: string): Promise<WhatsAppApiResponse | null> {
 		try {
-			// Mark message as read (this is the important part)
 			const response = await fetch(this.baseUrl, {
 				method: 'POST',
 				headers: {
@@ -281,17 +279,17 @@ export default class WhatsAppService {
 			});
 
 			if (!response.ok) {
-				const errorData = await response.json();
-				throw new Error(
-					`HTTP ${response.status}: ${JSON.stringify(errorData)}`
-				);
+				// Read receipts might not be supported - make it non-critical
+				console.log('Read receipt not supported or failed (non-critical)');
+				return null;
 			}
 
 			const data = await response.json() as WhatsAppApiResponse;
 			return data;
 		} catch (error) {
-			console.error('Error marking message as read:', (error as Error).message);
-			throw error;
+			// Make read receipts non-critical - don't throw errors
+			console.log('Read receipt failed (non-critical):', (error as Error).message);
+			return null;
 		}
 	}
 }

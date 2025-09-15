@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import handleTextMessage from '../helper/handleTextMessage';
-import handleInteractiveMessage from '../helper/handleInteractiveMessage';
-import { WhatsAppMessage, WhatsAppWebhook } from '../types/index';
-import { checkQuota } from '../utils/quotaChecker';
+import handleTextMessage from '@/helper/handleTextMessage';
+import handleInteractiveMessage from '@/helper/handleInteractiveMessage';
+import { WhatsAppMessage, WhatsAppWebhook } from '@/types';
+import { checkQuota } from '@/utils/quotaChecker';
 
 export default async function MessagesController(req: Request, res: Response): Promise<void> {
 	const body: WhatsAppWebhook = req.body;

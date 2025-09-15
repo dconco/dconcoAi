@@ -1,29 +1,30 @@
+import WhatsAppService from "@/utils/whatsappService";
+import { WhatsAppMessage } from "@/types";
 import { writeFileSync } from "fs";
-import { WhatsAppMessage } from "../types";
-import WhatsAppService from "./whatsappService";
-import { CachedMessageData, CachedMessageInterface, QuotaData, UnreadMessageData, UnreadMessageInterface } from "../types/cache";
-import { loadQuota, loadUnreadMessages, loadCachedMessages, quotaFilePath, unreadMessagesFilePath, cachedMessagesFilePath } from "./loadCaches";
+import { CachedAPIMessageData, CachedAPIMessageInterface, CachedMessageData, CachedMessageInterface, QuotaData, UnreadMessageData, UnreadMessageInterface } from "../types/cache";
+import { loadQuota, loadUnreadMessages, loadCachedMessages, quotaFilePath, unreadMessagesFilePath, cachedMessagesFilePath, loadCachedAPIMessages } from "./loadCaches";
 
 /**
  * ========================================
  * Check the quota for sending messages.
  * ========================================
  */
-export const checkQuota = (message: WhatsAppMessage|null, name: string | undefined) => {
+export const checkQuota = (message: WhatsAppMessage|null|string, name: string | undefined) => {
    const whatsapp: WhatsAppService = new WhatsAppService();
 
    const quotaLimit = 8;
    const quota: QuotaData = loadQuota();
 
    if (quota.contacts && quota.contacts.length >= quotaLimit) {
-      if (!message) return false;
+      if (!message || typeof message === "string") return false;
 
       saveUnreadMessage({ message, name: name || '' });
       console.log(`Quota exceeded. Message from ${name || message.from} ignored.`);
       return false;
    }
 
-   whatsapp.markAsRead(message?.from || '', message?.id || '');
+   if (!message || typeof message === "string") return true;
+   whatsapp.markAsRead(message?.id || '');
    return true;
 }
 
@@ -84,6 +85,28 @@ export const cacheMessage = ({contact, text, name, reply}: CachedMessageInterfac
       }
 
       cachedMessages[contact].messages.push({ text, reply, timestamp: new Date().toISOString() });
+
+      // Use synchronous write to prevent race conditions
+      writeFileSync(cachedMessagesFilePath, JSON.stringify(cachedMessages, null, 2), 'utf8');
+   } catch (error) {
+      console.error('Error writing cached messages file:', error);
+   }
+}
+
+/**
+ * ========================================
+ * Cache message coming from API to local file.
+ * ========================================
+ */
+export const cacheAPIMessage = ({contact, message, name}: CachedAPIMessageInterface) => {
+   try {
+      const cachedMessages: CachedAPIMessageData = loadCachedAPIMessages();
+
+      if (!cachedMessages[contact]) {
+         cachedMessages[contact] = { name, messages: [] };
+      }
+
+      cachedMessages[contact].messages.push({ message, timestamp: new Date().toISOString() });
 
       // Use synchronous write to prevent race conditions
       writeFileSync(cachedMessagesFilePath, JSON.stringify(cachedMessages, null, 2), 'utf8');

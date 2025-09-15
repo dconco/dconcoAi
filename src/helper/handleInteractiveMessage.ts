@@ -48,8 +48,8 @@ export default async function handleInteractiveMessage(
 		const title = interactive.list_reply.title;
 
 		const response = `You selected: ${title}. We'll get back to you about ${title} soon!`;
-		cacheMessage({ contact: from, text: title, name: name || '', reply: response });
 
-		await whatsapp.sendTextMessage(from, response, messageId);
+		const result = await whatsapp.sendTextMessage(from, response, messageId);
+		if (result) cacheMessage({ contact: from, text: title, name: name || '', reply: response });
 	}
 }

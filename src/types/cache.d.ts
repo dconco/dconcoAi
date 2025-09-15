@@ -1,4 +1,4 @@
-import { WhatsAppMessage } from ".";
+import { WhatsAppMessage } from "@/types";
 
 export declare const quotaFilePath: string;
 export declare const unreadMessagesFilePath: string;
@@ -28,6 +28,13 @@ export declare interface CachedMessageData {
    };
 }
 
+export declare interface CachedAPIMessageData {
+   [contact: string]: {
+      name: string | undefined;
+      messages: { message: string; timestamp: string }[];
+   };
+}
+
 export declare interface UnreadMessageData {
    [contact: string]: {
       name: string;
@@ -38,4 +45,10 @@ export declare interface UnreadMessageData {
 export declare interface UnreadMessageInterface {
    message: WhatsAppMessage;
    name: string;
+}
+
+export declare interface CachedAPIMessageInterface {
+   contact: string;
+   message: string;
+   name: string | undefined;
 }
