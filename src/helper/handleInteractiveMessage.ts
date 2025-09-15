@@ -7,7 +7,7 @@ export default async function handleInteractiveMessage(
 	from: string,
 	interactive: InteractiveMessage,
 	messageId: string,
-	name: string|undefined
+	name: string | undefined
 ): Promise<void> {
 	const whatsapp = new WhatsappService();
 
@@ -50,6 +50,6 @@ export default async function handleInteractiveMessage(
 		const response = `You selected: ${title}. We'll get back to you about ${title} soon!`;
 
 		const result = await whatsapp.sendTextMessage(from, response, messageId);
-		if (result) cacheMessage({ contact: from, text: title, name: name || '', reply: response });
+		if (result) cacheMessage({ contact: from, text: title, name: name || '', reply: response, messageId });
 	}
 }

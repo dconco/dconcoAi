@@ -9,7 +9,7 @@ export default async function handleTextMessage(from: string, text: string, mess
 		const response = handleGreeting(text, name);
 
 		const result = await whatsapp.sendTextMessage(from, response, messageId);	
-		if (result) cacheMessage({ contact: from, text, name: name || '', reply: response });
+		if (result) cacheMessage({ contact: from, text, name: name || '', reply: response, messageId });
 	}
 	
 	/**
@@ -22,7 +22,7 @@ export default async function handleTextMessage(from: string, text: string, mess
 			{ id: 'option3', title: 'Help' },
 		]);
 
-		if (result) cacheMessage({ contact: from, text: 'Menu Options', name: name || '', reply: 'Menu Options: { option1: Get Info,\noption2: Contact Us,\noption3: Help }' });
+		if (result) cacheMessage({ contact: from, text: 'Menu Options', name: name || '', messageId, reply: 'Menu Options: { option1: Get Info,\noption2: Contact Us,\noption3: Help }' });
 	}
 	
 	/**
@@ -56,7 +56,7 @@ export default async function handleTextMessage(from: string, text: string, mess
 				},
 			]
 		);
-		if (result) cacheMessage({ contact: from, text: 'Services List', name: name || '', reply: 'Main Services: { service1: Web Development,\nservice2: Mobile Apps,\nservice3: Consulting }' });
+		if (result) cacheMessage({ contact: from, text: 'Services List', name: name || '', messageId, reply: 'Main Services: { service1: Web Development,\nservice2: Mobile Apps,\nservice3: Consulting }' });
 	}
 	
 	/**
@@ -66,7 +66,7 @@ export default async function handleTextMessage(from: string, text: string, mess
 		const response = `Thanks for your message! I will get back to you soon.`;
 
 		const result = await whatsapp.sendTextMessage(from, response, messageId);
-		if (result) cacheMessage({ contact: from, text, name: name || '', reply: response });
+		if (result) cacheMessage({ contact: from, text, name: name || '', messageId, reply: response });
 	}
 }
 

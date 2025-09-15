@@ -19,12 +19,13 @@ export declare interface CachedMessageInterface {
    text: string;
    name: string;
    reply: string;
+   messageId?: string;
 }
 
 export declare interface CachedMessageData {
    [contact: string]: {
       name: string;
-      messages: { text: string; reply?: string; timestamp: string }[];
+      messages: { text: string; reply?: string; timestamp: string; messageId?: string }[];
    };
 }
 

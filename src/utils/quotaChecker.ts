@@ -2,14 +2,14 @@ import WhatsAppService from "@/utils/whatsappService";
 import { WhatsAppMessage } from "@/types";
 import { writeFileSync } from "fs";
 import { CachedAPIMessageData, CachedAPIMessageInterface, CachedMessageData, CachedMessageInterface, QuotaData, UnreadMessageData, UnreadMessageInterface } from "../types/cache";
-import { loadQuota, loadUnreadMessages, loadCachedMessages, quotaFilePath, unreadMessagesFilePath, cachedMessagesFilePath, loadCachedAPIMessages } from "./loadCaches";
+import { loadQuota, loadUnreadMessages, loadCachedMessages, quotaFilePath, unreadMessagesFilePath, cachedMessagesFilePath, loadCachedAPIMessages, cachedAPIMessagesFilePath } from "./loadCaches";
 
 /**
  * ========================================
  * Check the quota for sending messages.
  * ========================================
  */
-export const checkQuota = (message: WhatsAppMessage|null|string, name: string | undefined) => {
+export const checkQuota = async (message: WhatsAppMessage|null|string, name: string | undefined): Promise<boolean> => {
    const whatsapp: WhatsAppService = new WhatsAppService();
 
    const quotaLimit = 8;
@@ -24,7 +24,7 @@ export const checkQuota = (message: WhatsAppMessage|null|string, name: string | 
    }
 
    if (!message || typeof message === "string") return true;
-   whatsapp.markAsRead(message?.id || '');
+   await whatsapp.markAsRead(message?.id || '');
    return true;
 }
 
@@ -33,7 +33,7 @@ export const checkQuota = (message: WhatsAppMessage|null|string, name: string | 
  * Save the contact to the quota list.
  * ========================================
  */
-export const saveQuota = (contact: string) => {
+export const saveQuota = (contact: string): void => {
    try {
       const quota: QuotaData = loadQuota();
 
@@ -54,7 +54,7 @@ export const saveQuota = (contact: string) => {
  * Save unread message to the unread messages list.
  * ========================================
  */
-export const saveUnreadMessage = ({ message, name }: UnreadMessageInterface) => {
+export const saveUnreadMessage = ({ message, name }: UnreadMessageInterface): void => {
    try {
       const unreadMessages: UnreadMessageData = loadUnreadMessages();
 
@@ -76,7 +76,7 @@ export const saveUnreadMessage = ({ message, name }: UnreadMessageInterface) => 
  * Cache message to local file.
  * ========================================
  */
-export const cacheMessage = ({contact, text, name, reply}: CachedMessageInterface) => {
+export const cacheMessage = ({contact, text, name, reply, messageId}: CachedMessageInterface): void => {
    try {
       const cachedMessages: CachedMessageData = loadCachedMessages();
 
@@ -84,7 +84,7 @@ export const cacheMessage = ({contact, text, name, reply}: CachedMessageInterfac
          cachedMessages[contact] = { name, messages: [] };
       }
 
-      cachedMessages[contact].messages.push({ text, reply, timestamp: new Date().toISOString() });
+      cachedMessages[contact].messages.push({ text, reply, messageId, timestamp: new Date().toISOString() });
 
       // Use synchronous write to prevent race conditions
       writeFileSync(cachedMessagesFilePath, JSON.stringify(cachedMessages, null, 2), 'utf8');
@@ -98,7 +98,7 @@ export const cacheMessage = ({contact, text, name, reply}: CachedMessageInterfac
  * Cache message coming from API to local file.
  * ========================================
  */
-export const cacheAPIMessage = ({contact, message, name}: CachedAPIMessageInterface) => {
+export const cacheAPIMessage = ({contact, message, name}: CachedAPIMessageInterface): void => {
    try {
       const cachedMessages: CachedAPIMessageData = loadCachedAPIMessages();
 
@@ -109,7 +109,7 @@ export const cacheAPIMessage = ({contact, message, name}: CachedAPIMessageInterf
       cachedMessages[contact].messages.push({ message, timestamp: new Date().toISOString() });
 
       // Use synchronous write to prevent race conditions
-      writeFileSync(cachedMessagesFilePath, JSON.stringify(cachedMessages, null, 2), 'utf8');
+      writeFileSync(cachedAPIMessagesFilePath, JSON.stringify(cachedMessages, null, 2), 'utf8');
    } catch (error) {
       console.error('Error writing cached messages file:', error);
    }

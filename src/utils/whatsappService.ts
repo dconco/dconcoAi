@@ -25,7 +25,7 @@ export default class WhatsAppService {
 	}
 
 	// Send a text message
-	async sendTextMessage(to: string, message: string, messageId: string|null): Promise<WhatsAppApiResponse> {
+	async sendTextMessage(to: string, message: string, messageId: string|null|undefined): Promise<WhatsAppApiResponse> {
 		saveQuota(to);
 
 		const payload: any = {
@@ -275,6 +275,9 @@ export default class WhatsAppService {
 					messaging_product: 'whatsapp',
 					status: 'read',
 					message_id: messageId,
+					typing_indicator: {
+						type: "text"
+					}
 				}),
 			});
 

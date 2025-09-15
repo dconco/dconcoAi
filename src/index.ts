@@ -38,7 +38,13 @@ app.post('/api/send-message', async (req: Request<{}, {}, SendMessageRequest>, r
 				.json({ error: 'Quota exceeded for this user.' });
 		}
 
-		const result = await whatsapp.sendTextMessage(to, message, null);
+		if (req.body?.messageId) {
+			await whatsapp.markAsRead(req.body.messageId);
+		}
+
+		await new Promise(resolve => setTimeout(resolve, 3000)); // wait 3s
+		const result = await whatsapp.sendTextMessage(to, message, req.body?.messageId);
+
 		if (result) {
 			cacheAPIMessage({message, contact: to, name: req.body?.name});
 		}

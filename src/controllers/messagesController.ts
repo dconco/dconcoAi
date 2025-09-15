@@ -41,7 +41,7 @@ export const sendMessage = async (name: string | undefined, message: WhatsAppMes
 	);
 
 	if (!checkQuota(message, name)) return;
-	await new Promise(resolve => setTimeout(resolve, 2000)); // wait 2s
+	await new Promise(resolve => setTimeout(resolve, 3000)); // wait 3s
 
 	// Handle different message types
 	if (message.type === 'text' && message.text) {

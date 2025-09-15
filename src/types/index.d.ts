@@ -87,4 +87,5 @@ export declare interface SendMessageRequest {
 	to: string;
 	name?: string;
 	message: string;
+	messageId?: string;
 }
