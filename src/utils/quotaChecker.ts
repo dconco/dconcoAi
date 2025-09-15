@@ -1,7 +1,8 @@
 import WhatsAppService from "@/utils/whatsappService";
+import { join } from "path";
 import { WhatsAppMessage } from "@/types";
-import { writeFileSync } from "fs";
-import { CachedAPIMessageData, CachedAPIMessageInterface, CachedMessageData, CachedMessageInterface, QuotaData, UnreadMessageData, UnreadMessageInterface } from "../types/cache";
+import { readFileSync, writeFileSync } from "fs";
+import { CachedAPIMessageData, CachedAPIMessageInterface, CachedMessageData, CachedMessageInterface, QuotaData, UnreadMessageData, UnreadMessageInterface, UsersInterface } from "../types/cache";
 import { loadQuota, loadUnreadMessages, loadCachedMessages, quotaFilePath, unreadMessagesFilePath, cachedMessagesFilePath, loadCachedAPIMessages, cachedAPIMessagesFilePath } from "./loadCaches";
 
 /**
@@ -112,5 +113,24 @@ export const cacheAPIMessage = ({contact, message, name}: CachedAPIMessageInterf
       writeFileSync(cachedAPIMessagesFilePath, JSON.stringify(cachedMessages, null, 2), 'utf8');
    } catch (error) {
       console.error('Error writing cached messages file:', error);
+   }
+}
+
+export const saveUsers = ({contact, name}: UsersInterface): void => {
+   try {
+      const users = JSON.parse(readFileSync(join(__dirname, '../cache/db/users.json'), 'utf8')) as UsersInterface[];
+      const existingUser = users.find(user => user.contact === contact);
+
+      if (existingUser) {
+         if (existingUser.name === name) {
+            return; // No update needed
+         }
+         existingUser.name = name;
+      } else {
+         users.push({ contact, name });
+      }
+      writeFileSync(join(__dirname, '../cache/db/users.json'), JSON.stringify(users, null, 2), 'utf8');
+   } catch (error) {
+      console.error('Error writing users file:', error);
    }
 }

@@ -53,3 +53,8 @@ export declare interface CachedAPIMessageInterface {
    message: string;
    name: string | undefined;
 }
+
+export declare interface UsersInterface {
+   contact: string;
+   name: string | undefined;
+}

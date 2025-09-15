@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import handleTextMessage from '@/helper/handleTextMessage';
 import handleInteractiveMessage from '@/helper/handleInteractiveMessage';
 import { WhatsAppMessage, WhatsAppWebhook } from '@/types';
-import { checkQuota } from '@/utils/quotaChecker';
+import { cacheMessage, checkQuota, saveUsers } from '@/utils/quotaChecker';
 
 export default async function MessagesController(req: Request, res: Response): Promise<void> {
 	const body: WhatsAppWebhook = req.body;
@@ -45,13 +45,24 @@ export const sendMessage = async (name: string | undefined, message: WhatsAppMes
 
 	// Handle different message types
 	if (message.type === 'text' && message.text) {
-		await handleTextMessage(message.from, message.text.body, message.id, name);
+		const reply = await handleTextMessage(message.from, message.text.body, message.id, name);
+
+		if (reply) {
+			cacheMessage({ contact: message.from, text: message.text.body, name: name || '', reply, messageId: message.id });
+			saveUsers({ contact: message.from, name });
+		}
 	} else if (message.type === 'interactive' && message.interactive) {
-		await handleInteractiveMessage(
+		const reply: any = await handleInteractiveMessage(
 			message.from,
 			message.interactive,
 			message.id,
 			name
 		);
+
+		if (reply) {
+			const text = 'Replied to option/id: ' + (reply.option || '') + ' on title: ' + (reply.title || '')
+			cacheMessage({ contact: message.from, text, reply: reply.message, name: name || '', messageId: message.id });
+			saveUsers({ contact: message.from, name });
+		}
 	}
 }

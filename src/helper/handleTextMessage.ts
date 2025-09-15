@@ -1,7 +1,7 @@
 import { cacheMessage } from '@/utils/quotaChecker';
 import WhatsappService from '@/utils/whatsappService';
 
-export default async function handleTextMessage(from: string, text: string, messageId: string, name: string|undefined): Promise<void> {
+export default async function handleTextMessage(from: string, text: string, messageId: string, name: string|undefined): Promise<string|void> {
 	const whatsapp = new WhatsappService();
 	const lowerText = text.toLowerCase();
 
@@ -9,7 +9,7 @@ export default async function handleTextMessage(from: string, text: string, mess
 		const response = handleGreeting(text, name);
 
 		const result = await whatsapp.sendTextMessage(from, response, messageId);	
-		if (result) cacheMessage({ contact: from, text, name: name || '', reply: response, messageId });
+		if (result) return response;
 	}
 	
 	/**
@@ -22,7 +22,7 @@ export default async function handleTextMessage(from: string, text: string, mess
 			{ id: 'option3', title: 'Help' },
 		]);
 
-		if (result) cacheMessage({ contact: from, text: 'Menu Options', name: name || '', messageId, reply: 'Menu Options: { option1: Get Info,\noption2: Contact Us,\noption3: Help }' });
+		if (result) return 'Menu Options: { option1: Get Info,\noption2: Contact Us,\noption3: Help }';
 	}
 	
 	/**
@@ -56,18 +56,16 @@ export default async function handleTextMessage(from: string, text: string, mess
 				},
 			]
 		);
-		if (result) cacheMessage({ contact: from, text: 'Services List', name: name || '', messageId, reply: 'Main Services: { service1: Web Development,\nservice2: Mobile Apps,\nservice3: Consulting }' });
+		if (result) return 'Main Services: { service1: Web Development,\nservice2: Mobile Apps,\nservice3: Consulting }';
 	}
 	
 	/**
 	 * Default response
 	 */
-	else {
-		const response = `Thanks for your message! I will get back to you soon.`;
+	const response = `Thanks for your message! I will get back to you soon.`;
 
-		const result = await whatsapp.sendTextMessage(from, response, messageId);
-		if (result) cacheMessage({ contact: from, text, name: name || '', messageId, reply: response });
-	}
+	const result = await whatsapp.sendTextMessage(from, response, messageId);
+	if (result) return response;
 }
 
 
