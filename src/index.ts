@@ -3,8 +3,8 @@ import express, { Express, Request, Response } from 'express';
 import WhatsappService from '@/utils/whatsappService';
 import WebhookController from '@/controllers/webhookController';
 import MessagesController from '@/controllers/messagesController';
-import { SendMessageRequest } from '@/types/index';
-import { cacheAPIMessage, checkQuota } from '@/utils/quotaChecker';
+import { cacheAPIMessage, checkQuota, saveUsers } from '@/utils/quotaChecker';
+import { SendMessageRequest } from '@/types';
 
 dotenv.config();
 
@@ -47,6 +47,7 @@ app.post('/api/send-message', async (req: Request<{}, {}, SendMessageRequest>, r
 
 		if (result) {
 			cacheAPIMessage({message, contact: to, name: req.body?.name});
+			saveUsers({contact: to, name: req.body?.name});
 		}
 
 		return res.json({ success: true, data: result });
