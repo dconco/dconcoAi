@@ -4,6 +4,7 @@ import { WhatsAppMessage } from "@/types";
 import { readFileSync, writeFileSync } from "fs";
 import { CachedAPIMessageData, CachedAPIMessageInterface, CachedMessageData, CachedMessageInterface, QuotaData, UnreadMessageData, UnreadMessageInterface, UsersInterface } from "../types/cache";
 import { loadQuota, loadUnreadMessages, loadCachedMessages, quotaFilePath, unreadMessagesFilePath, cachedMessagesFilePath, loadCachedAPIMessages, cachedAPIMessagesFilePath } from "./loadCaches";
+import ReplyUnreadMessages from "./gradualReply";
 
 /**
  * ========================================
@@ -21,6 +22,7 @@ export const cleanExpiredQuota = (): void => {
       if (filtered.length !== quota.length) {
          writeFileSync(quotaFilePath, JSON.stringify(filtered, null, 2), 'utf8');
          console.log(`Removed ${quota.length - filtered.length} expired quota entries`);
+         ReplyUnreadMessages();
       }
    } catch (error) {
       console.error('Error cleaning quota:', error);

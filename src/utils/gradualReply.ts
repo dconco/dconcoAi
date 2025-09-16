@@ -1,17 +1,12 @@
-import { config } from 'dotenv';
-import { sendMessage } from "../controllers/messagesController";
-import { loadUnreadMessages } from "../utils/loadCaches";
-import { UnreadMessageData } from "../types/cache";
+import { sendMessage } from "@/controllers/messagesController";
+import { loadUnreadMessages } from "@/utils/loadCaches";
+import { UnreadMessageData } from "@/types/cache";
 import { writeFileSync } from "fs";
 import { join } from "path";
 
-// Load environment variables
-config();
-
-const messages: UnreadMessageData = loadUnreadMessages();
-
 // Function to process all messages from the first contact with timeout
-const processFirstContactMessages = async () => {
+export default async function ReplyUnreadMessages() {
+   const messages: UnreadMessageData = loadUnreadMessages();
    const contacts = Object.entries(messages);
    
    if (contacts.length === 0) {
@@ -59,6 +54,3 @@ const processFirstContactMessages = async () => {
    
    console.log(`All messages from ${name} (${contact}) processed and removed from queue`);
 };
-
-// Process all messages from the first contact
-processFirstContactMessages();

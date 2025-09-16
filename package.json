@@ -7,8 +7,6 @@
 		"build:check": "npx tsc --noEmit",
 		"start": "node dist/index.js",
 		"dev": "ts-node-dev --respawn --transpile-only false -r tsconfig-paths/register src/index.ts",
-		"manuel:gradualReply": "ts-node-dev -r tsconfig-paths/register src/cache/gradualReply.ts",
-		"manuel:clearQuota": "ts-node-dev -r tsconfig-paths/register src/cache/clearQuota.ts",
 		"type-check": "tsc --noEmit",
 		"clean": "rm -rf dist"
 	},
