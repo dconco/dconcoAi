@@ -50,7 +50,7 @@ export default async function ReplyUnreadMessages() {
    delete messages[contact];
    
    // Update the file
-   writeFileSync(join(__dirname, './db/unreadMessages.json'), JSON.stringify(messages, null, 2), 'utf8');
+   writeFileSync(join(__dirname, '../cache/db/unreadMessages.json'), JSON.stringify(messages, null, 3), 'utf8');
    
    console.log(`All messages from ${name} (${contact}) processed and removed from queue`);
 };

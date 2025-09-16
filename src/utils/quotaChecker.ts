@@ -15,14 +15,18 @@ export const cleanExpiredQuota = (): void => {
    try {
       const quota: QuotaData[] = loadQuota();
       const now = Date.now();
-      const filtered = quota.filter(({ timestamp }) => 
-         now - new Date(timestamp).getTime() < 24 * 60 * 60 * 1000
-      );
+      
+      const filtered = quota.filter(({ timestamp }) => {
+         const age = now - new Date(timestamp).getTime();
+         return age < 24 * 60 * 60 * 1000; // Keep if less than 24 hours old
+      });
       
       if (filtered.length !== quota.length) {
-         writeFileSync(quotaFilePath, JSON.stringify(filtered, null, 2), 'utf8');
+         writeFileSync(quotaFilePath, JSON.stringify(filtered, null, 3), 'utf8');
          console.log(`Removed ${quota.length - filtered.length} expired quota entries`);
          ReplyUnreadMessages();
+      } else {
+         console.log('No expired entries found');
       }
    } catch (error) {
       console.error('Error cleaning quota:', error);
@@ -77,7 +81,7 @@ export const saveQuota = (contact: string): void => {
         quota.push({ contact, timestamp: new Date().toISOString() });
         
         // Use synchronous write to prevent race conditions
-        writeFileSync(quotaFilePath, JSON.stringify(quota, null, 2), 'utf8');
+        writeFileSync(quotaFilePath, JSON.stringify(quota, null, 3), 'utf8');
         console.log(`Contact ${contact} added to quota. Total: ${quota.length}`);
       }
    } catch (error) {
@@ -101,7 +105,7 @@ export const saveUnreadMessage = ({ message, name }: UnreadMessageInterface): vo
       unreadMessages[message.from].messages.push(message);
 
       // Use synchronous write to prevent race conditions
-      writeFileSync(unreadMessagesFilePath, JSON.stringify(unreadMessages, null, 2), 'utf8');
+      writeFileSync(unreadMessagesFilePath, JSON.stringify(unreadMessages, null, 3), 'utf8');
    } catch (error) {
       console.error('Error writing unread messages file:', error);
    }
@@ -123,7 +127,7 @@ export const cacheMessage = ({contact, text, name, reply, messageId}: CachedMess
       cachedMessages[contact].messages.push({ text, reply, messageId, timestamp: new Date().toISOString() });
 
       // Use synchronous write to prevent race conditions
-      writeFileSync(cachedMessagesFilePath, JSON.stringify(cachedMessages, null, 2), 'utf8');
+      writeFileSync(cachedMessagesFilePath, JSON.stringify(cachedMessages, null, 3), 'utf8');
    } catch (error) {
       console.error('Error writing cached messages file:', error);
    }
@@ -145,7 +149,7 @@ export const cacheAPIMessage = ({contact, message, name}: CachedAPIMessageInterf
       cachedMessages[contact].messages.push({ message, timestamp: new Date().toISOString() });
 
       // Use synchronous write to prevent race conditions
-      writeFileSync(cachedAPIMessagesFilePath, JSON.stringify(cachedMessages, null, 2), 'utf8');
+      writeFileSync(cachedAPIMessagesFilePath, JSON.stringify(cachedMessages, null, 3), 'utf8');
    } catch (error) {
       console.error('Error writing cached messages file:', error);
    }
@@ -164,7 +168,7 @@ export const saveUsers = ({contact, name}: UsersInterface): void => {
       } else {
          users.push({ contact, name });
       }
-      writeFileSync(join(__dirname, '../cache/db/users.json'), JSON.stringify(users, null, 2), 'utf8');
+      writeFileSync(join(__dirname, '../cache/db/users.json'), JSON.stringify(users, null, 3), 'utf8');
    } catch (error) {
       console.error('Error writing users file:', error);
    }
