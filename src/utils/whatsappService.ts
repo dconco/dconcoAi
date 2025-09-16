@@ -295,4 +295,54 @@ export default class WhatsAppService {
 			return null;
 		}
 	}
+
+	// Get media URL from media ID
+	async getMediaUrl(mediaId: string): Promise<string | null> {
+		try {
+			const response = await fetch(`https://graph.facebook.com/v23.0/${mediaId}`, {
+				headers: {
+					Authorization: `Bearer ${this.token}`,
+				},
+			});
+
+			if (!response.ok) {
+				throw new Error(`Failed to get media URL: ${response.statusText}`);
+			}
+
+			const data = await response.json() as { url: string };
+			return data.url;
+		} catch (error) {
+			console.error('Error getting media URL:', error);
+			return null;
+		}
+	}
+
+	// Download media file
+	async downloadMedia(mediaUrl: string): Promise<Buffer | null> {
+		try {
+			const response = await fetch(mediaUrl, {
+				headers: {
+					Authorization: `Bearer ${this.token}`,
+				},
+			});
+
+			if (!response.ok) {
+				throw new Error(`Failed to download media: ${response.statusText}`);
+			}
+
+			const buffer = await response.arrayBuffer();
+			return Buffer.from(buffer);
+		} catch (error) {
+			console.error('Error downloading media:', error);
+			return null;
+		}
+	}
+
+	// Complete media download process
+	async getMediaBuffer(mediaId: string): Promise<Buffer | null> {
+		const mediaUrl = await this.getMediaUrl(mediaId);
+		if (!mediaUrl) return null;
+		
+		return await this.downloadMedia(mediaUrl);
+	}
 }

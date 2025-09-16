@@ -3,11 +3,23 @@ export declare interface WhatsAppMessage {
 	from: string;
 	id: string;
 	timestamp: string;
-	type: 'text' | 'interactive' | 'image' | 'document' | 'audio' | 'video';
+	type: 'text' | 'interactive' | 'image' | 'document' | 'audio' | 'video' | 'sticker';
 	text?: {
 		body: string;
 	};
 	interactive?: InteractiveMessage;
+	image?: {
+		id: string;
+		mime_type: string;
+		sha256: string;
+		caption?: string;
+	};
+	sticker?: {
+		id: string;
+		mime_type: string;
+		sha256: string;
+		animated: boolean;
+	};
 }
 
 export declare interface InteractiveMessage {

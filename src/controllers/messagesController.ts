@@ -1,10 +1,12 @@
 import { Request, Response } from 'express';
 import handleTextMessage from '@/helper/handleTextMessage';
 import handleInteractiveMessage from '@/helper/handleInteractiveMessage';
+import handleStickerMessage from '@/helper/handleStickerMessage';
+import handleImageMessage from '@/helper/handleImageMessage';
 import { WhatsAppMessage, WhatsAppWebhook } from '@/types';
 import { cacheMessage, checkQuota, saveUsers } from '@/utils/quotaChecker';
-import chatWithUser from '@/bot';
 import WhatsAppService from '@/utils/whatsappService';
+import chatWithUser from '@/bot';
 
 export default async function MessagesController(req: Request, res: Response): Promise<void> {
 	const body: WhatsAppWebhook = req.body;
@@ -42,7 +44,7 @@ export const sendMessage = async (name: string | undefined, message: WhatsAppMes
 		}`
 	);
 
-	if (!(await checkQuota(message, name))) return;
+	// if (!(await checkQuota(message, name))) return;
 	await new Promise(resolve => setTimeout(resolve, 3000)); // wait 3s
 
 	// Handle different message types
@@ -65,6 +67,24 @@ export const sendMessage = async (name: string | undefined, message: WhatsAppMes
 			const text = 'Replied to option/id: ' + (reply.option || '') + ' on title: ' + (reply.title || '')
 			
 			cacheMessage({ contact: message.from, text, reply: reply.message, name: name || '', messageId: message.id });
+			saveUsers({ contact: message.from, name });
+		}
+	} else if (message.type === 'sticker' && message.sticker) {
+		const reply = await handleStickerMessage(message.from, message.sticker, message.id, name);
+
+		if (reply) {
+			const whatsapp = new WhatsAppService();
+			await whatsapp.sendTextMessage(message.from, reply, message.id);
+			cacheMessage({ contact: message.from, text: JSON.stringify(message), reply, name: name || '', messageId: message.id });
+			saveUsers({ contact: message.from, name });
+		}
+	} else if (message.type === 'image' && message.image) {
+		const reply = await handleImageMessage(message.from, message.image, message.id, name);
+
+		if (reply) {
+			const whatsapp = new WhatsAppService();
+			await whatsapp.sendTextMessage(message.from, reply, message.id);
+			cacheMessage({ contact: message.from, text: JSON.stringify(message), reply, name: name || '', messageId: message.id });
 			saveUsers({ contact: message.from, name });
 		}
 	} else {

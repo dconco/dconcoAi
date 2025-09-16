@@ -32,11 +32,11 @@ app.post('/api/send-message', async (req: Request<{}, {}, SendMessageRequest>, r
 				.json({ error: 'Phone number and message are required' });
 		}
 
-		if (!(await checkQuota(to, ''))) {
-			return res
-				.status(403)
-				.json({ error: 'Quota exceeded for this user.' });
-		}
+		// if (!(await checkQuota(to, ''))) {
+		// 	return res
+		// 		.status(403)
+		// 		.json({ error: 'Quota exceeded for this user.' });
+		// }
 
 		if (req.body?.messageId) {
 			await whatsapp.markAsRead(req.body.messageId);

@@ -23,7 +23,12 @@ function loadMessages(number: string) {
    return data[number]?.messages || [];
 }
 
-export default async function chatWithUser(name: string|undefined, number: string, userMessage: string): Promise<string> {
+export default async function chatWithUser(
+   name: string|undefined, 
+   number: string, 
+   userMessage: string, 
+   media?: { type: 'image' | 'sticker', mimeType: string, data: string }
+): Promise<string> {
    const oldMessages = loadMessages(number);
    if (name) instructions.push(`The user's name is ${name}. Respond in a friendly and professional manner.`);
 
@@ -39,6 +44,19 @@ export default async function chatWithUser(name: string|undefined, number: strin
 
    const chat = model.startChat({ history });
 
-  const result = await chat.sendMessage(userMessage);
-  return result.response.text();
+   // Prepare message parts
+   const parts: Part[] = [{ text: userMessage }];
+   
+   // Add media if provided
+   if (media) {
+      parts.push({
+         inlineData: {
+            mimeType: media.mimeType,
+            data: media.data
+         }
+      });
+   }
+
+   const result = await chat.sendMessage(parts);
+   return result.response.text();
 }
