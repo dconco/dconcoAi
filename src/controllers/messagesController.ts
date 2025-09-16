@@ -3,6 +3,7 @@ import handleTextMessage from '@/helper/handleTextMessage';
 import handleInteractiveMessage from '@/helper/handleInteractiveMessage';
 import handleStickerMessage from '@/helper/handleStickerMessage';
 import handleImageMessage from '@/helper/handleImageMessage';
+import handleVoiceMessage from '@/helper/handleVoiceMessage';
 import { WhatsAppMessage, WhatsAppWebhook } from '@/types';
 import { cacheMessage, saveUsers } from '@/utils/quotaChecker';
 import WhatsAppService from '@/utils/whatsappService';
@@ -38,14 +39,11 @@ export default async function MessagesController(req: Request, res: Response): P
 }
 
 export const sendMessage = async (name: string | undefined, message: WhatsAppMessage): Promise<any> => {
-	console.log(
-		`Message from ${name} (${message.from}): ${
-			message.text?.body || 'Non-text message'
-		}`
-	);
+	const whatsapp: WhatsAppService = new WhatsAppService();
 
 	// if (!(await checkQuota(message, name))) return;
-	await new Promise(resolve => setTimeout(resolve, 3000)); // wait 3s
+	// await new Promise(resolve => setTimeout(resolve, 3000)); // wait 3s
+   await whatsapp.markAsRead(message.id);
 
 	// Handle different message types
 	if (message.type === 'text' && message.text) {
@@ -73,7 +71,6 @@ export const sendMessage = async (name: string | undefined, message: WhatsAppMes
 		const reply = await handleStickerMessage(message.from, message.sticker, message.id, name);
 
 		if (reply) {
-			const whatsapp = new WhatsAppService();
 			await whatsapp.sendTextMessage(message.from, reply, message.id);
 			cacheMessage({ contact: message.from, text: JSON.stringify(message), reply, name: name || '', messageId: message.id });
 			saveUsers({ contact: message.from, name });
@@ -82,13 +79,19 @@ export const sendMessage = async (name: string | undefined, message: WhatsAppMes
 		const reply = await handleImageMessage(message.from, message.image, message.id, name);
 
 		if (reply) {
-			const whatsapp = new WhatsAppService();
+			await whatsapp.sendTextMessage(message.from, reply, message.id);
+			cacheMessage({ contact: message.from, text: JSON.stringify(message), reply, name: name || '', messageId: message.id });
+			saveUsers({ contact: message.from, name });
+		}
+	} else if (message.type === 'audio' && message.audio) {
+		const reply = await handleVoiceMessage(message.from, message.audio, message.id, name);
+
+		if (reply) {
 			await whatsapp.sendTextMessage(message.from, reply, message.id);
 			cacheMessage({ contact: message.from, text: JSON.stringify(message), reply, name: name || '', messageId: message.id });
 			saveUsers({ contact: message.from, name });
 		}
 	} else {
-		const whatsapp: WhatsAppService = new WhatsAppService();
 		const reply = await chatWithUser(name, message.from, JSON.stringify(message));
 		const response = await whatsapp.sendTextMessage(message.from, reply, message.id);
 

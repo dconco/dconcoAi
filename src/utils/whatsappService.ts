@@ -104,7 +104,6 @@ export default class WhatsAppService {
 			}
 
 			const data = await response.json() as WhatsAppApiResponse;
-			console.log('Button message sent successfully');
 			return data;
 		} catch (error) {
 			console.error('Error sending button message:', (error as Error).message);
@@ -148,7 +147,6 @@ export default class WhatsAppService {
 			}
 
 			const data = await response.json() as WhatsAppApiResponse;
-			console.log('List message sent successfully');
 			return data;
 		} catch (error) {
 			console.error('Error sending list message:', (error as Error).message);
@@ -196,7 +194,6 @@ export default class WhatsAppService {
 			}
 
 			const data = await response.json() as WhatsAppApiResponse;
-			console.log('Media message sent successfully');
 			return data;
 		} catch (error) {
 			console.error('Error sending media message:', (error as Error).message);
@@ -253,7 +250,6 @@ export default class WhatsAppService {
 			}
 
 			const data = await response.json() as WhatsAppApiResponse;
-			console.log('Template message sent successfully');
 			return data;
 		} catch (error) {
 			console.error('Error sending template message:', (error as Error).message);

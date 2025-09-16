@@ -20,6 +20,11 @@ export declare interface WhatsAppMessage {
 		sha256: string;
 		animated: boolean;
 	};
+	audio?: {
+		id: string;
+		mime_type: string;
+		sha256: string;
+	};
 }
 
 export declare interface InteractiveMessage {
