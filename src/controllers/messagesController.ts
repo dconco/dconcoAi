@@ -3,6 +3,8 @@ import handleTextMessage from '@/helper/handleTextMessage';
 import handleInteractiveMessage from '@/helper/handleInteractiveMessage';
 import { WhatsAppMessage, WhatsAppWebhook } from '@/types';
 import { cacheMessage, checkQuota, saveUsers } from '@/utils/quotaChecker';
+import chatWithUser from '@/bot';
+import WhatsAppService from '@/utils/whatsappService';
 
 export default async function MessagesController(req: Request, res: Response): Promise<void> {
 	const body: WhatsAppWebhook = req.body;
@@ -61,7 +63,17 @@ export const sendMessage = async (name: string | undefined, message: WhatsAppMes
 
 		if (reply) {
 			const text = 'Replied to option/id: ' + (reply.option || '') + ' on title: ' + (reply.title || '')
+			
 			cacheMessage({ contact: message.from, text, reply: reply.message, name: name || '', messageId: message.id });
+			saveUsers({ contact: message.from, name });
+		}
+	} else {
+		const whatsapp: WhatsAppService = new WhatsAppService();
+		const reply = await chatWithUser(name, message.from, JSON.stringify(message));
+		const response = await whatsapp.sendTextMessage(message.from, reply, message.id);
+
+		if (response) {
+			cacheMessage({ contact: message.from, text: JSON.stringify(message), reply, name: name || '', messageId: message.id });
 			saveUsers({ contact: message.from, name });
 		}
 	}

@@ -1,101 +1,233 @@
 {
-  "2348025983267": {
-    "name": "dconco",
-    "messages": [ ]
-  },
-  "2348039921970": {
-    "name": "Sam Developer",
-    "messages": [
-      {
-        "text": "Hi",
-        "reply": "Hi Sam Developer! 👋 What can I do for you?",
-        "timestamp": "2025-09-14T21:54:46.241Z"
-      },
-      {
-        "text": "You change your account?",
-        "reply": "Thanks for your message! I will get back to you soon.",
-        "messageId": "wamid.HBgNMjM0ODAzOTkyMTk3MBUCABIYIEFDMkQwMDkzMkQyRDk2MjdEMzcxQzg0RkY3QzU3RDM5AA==",
-        "timestamp": "2025-09-16T08:33:05.196Z"
-      }
-    ]
-  },
-  "2348144561262": {
-    "name": "Abraham",
-    "messages": [
-      {
-        "text": "Yo",
-        "reply": "Thanks for your message! I will get back to you soon.",
-        "timestamp": "2025-09-15T20:57:49.188Z"
-      },
-      {
-        "text": "That project wey I snd Ur github for don reply",
-        "reply": "Thanks for your message! I will get back to you soon.",
-        "timestamp": "2025-09-15T20:58:07.687Z"
-      },
-      {
-        "text": "I go snd U their response rn if U fit run am",
-        "reply": "Thanks for your message! I will get back to you soon.",
-        "timestamp": "2025-09-15T20:58:19.946Z"
-      },
-      {
-        "text": "I no no say they banned am oo",
-        "reply": "Thanks for your message! I will get back to you soon.",
-        "timestamp": "2025-09-15T22:15:26.927Z"
-      }
-    ]
-  },
-  "2349044237009": {
-    "name": "Miracle Ugbana",
-    "messages": [
-      {
-        "text": "say something",
-        "reply": "Hey Miracle Ugbana! 👋 How may I help you?",
-        "timestamp": "2025-09-15T21:20:56.030Z"
-      },
-      {
-        "text": "Who is Dave conco",
-        "reply": "Thanks for your message! I will get back to you soon.",
-        "timestamp": "2025-09-15T21:21:21.972Z"
-      },
-      {
-        "text": "the guy in the pic looked mad...the  u told me to calm down..now you are telling me you can't view non-text message",
-        "reply": "Thanks for your message! I will get back to you soon.",
-        "timestamp": "2025-09-15T21:40:26.283Z"
-      },
-      {
-        "text": "hy",
-        "reply": "Thanks for your message! I will get back to you soon.",
-        "messageId": "wamid.HBgNMjM0OTA0NDIzNzAwORUCABIYIDU3MEU2MTU5MUFGMTVDMkJDMDUwNzUzMTI1QTg3NDYyAA==",
-        "timestamp": "2025-09-16T07:23:13.572Z"
-      }
-    ]
-  },
-  "2348086976247": {
-    "name": "Olateju Olamide Emmanuel",
-    "messages": [
-      {
-        "text": "hey Dave",
-        "reply": "Thanks for your message! I will get back to you soon.",
-        "messageId": "wamid.HBgNMjM0ODA4Njk3NjI0NxUCABIYFjNFQjBEQzkyMTQ0QjcxNEI4NjI2M0YA",
-        "timestamp": "2025-09-16T07:13:24.410Z"
-      }
-    ]
-  },
-  "2349114768221": {
-    "name": "°°__KOREXI__°°",
-    "messages": [
-      {
-        "text": "Hii",
-        "reply": "Hey °°__KOREXI__°°! 👋 How may I help you?",
-        "messageId": "wamid.HBgNMjM0OTExNDc2ODIyMRUCABIYIEFDMkU1MjI5QTA3RTlGRUI3MjZBMkIyODZGMUNDQjlBAA==",
-        "timestamp": "2025-09-16T07:30:21.793Z"
-      },
-      {
-        "text": "Do you solve math",
-        "reply": "Thanks for your message! I will get back to you soon.",
-        "messageId": "wamid.HBgNMjM0OTExNDc2ODIyMRUCABIYIEFDODE2NjE3N0Q5MDk2MDM5M0FDQ0ZBQTgxQzc5ODBEAA==",
-        "timestamp": "2025-09-16T07:49:18.265Z"
-      }
-    ]
-  }
+   "2348039921970": {
+      "name": "Sam Developer",
+      "messages": [
+         {
+            "text": "Hi",
+            "reply": "Hi Sam Developer! 👋 What can I do for you?",
+            "timestamp": "2025-09-14T21:54:46.241Z"
+         },
+         {
+            "text": "You change your account?",
+            "reply": "Thanks for your message! I will get back to you soon.",
+            "messageId": "wamid.HBgNMjM0ODAzOTkyMTk3MBUCABIYIEFDMkQwMDkzMkQyRDk2MjdEMzcxQzg0RkY3QzU3RDM5AA==",
+            "timestamp": "2025-09-16T08:33:05.196Z"
+         },
+         {
+            "text": "How far boss man",
+            "reply": "Thanks for your message! I will get back to you soon.",
+            "messageId": "wamid.HBgNMjM0ODAzOTkyMTk3MBUCABIYIEFDNjFGMTk1MDlDMkJFNTdCMzFEMjVFMTUxRTU3RjUzAA==",
+            "timestamp": "2025-09-16T14:34:40.245Z"
+         }
+      ]
+   },
+   "2348144561262": {
+      "name": "Abraham",
+      "messages": [
+         {
+            "text": "Yo",
+            "reply": "Thanks for your message! I will get back to you soon.",
+            "timestamp": "2025-09-15T20:57:49.188Z"
+         },
+         {
+            "text": "That project wey I snd Ur github for don reply",
+            "reply": "Thanks for your message! I will get back to you soon.",
+            "timestamp": "2025-09-15T20:58:07.687Z"
+         },
+         {
+            "text": "I go snd U their response rn if U fit run am",
+            "reply": "Thanks for your message! I will get back to you soon.",
+            "timestamp": "2025-09-15T20:58:19.946Z"
+         },
+         {
+            "text": "I no no say they banned am oo",
+            "reply": "Thanks for your message! I will get back to you soon.",
+            "timestamp": "2025-09-15T22:15:26.927Z"
+         },
+         {
+            "text": "Yo",
+            "reply": "Hey Abraham! 👋 Wassup? 🚀\n",
+            "messageId": "wamid.HBgNMjM0ODE0NDU2MTI2MhUCABIYIEE1MTk4NkU3MjY1RkU1MEMxNzIwQzRBMkRFNjQ4MEE4AA==",
+            "timestamp": "2025-09-16T16:41:10.302Z"
+         },
+         {
+            "text": "I'm based",
+            "reply": "Based where? 🤔 Just curious! 😅\n",
+            "messageId": "wamid.HBgNMjM0ODE0NDU2MTI2MhUCABIYIEE1NkE3QUU1ODJFNzFEMzAzNDYyQUNBQ0QxMTUxRDNEAA==",
+            "timestamp": "2025-09-16T16:41:22.857Z"
+         },
+         {
+            "text": "{\"from\":\"2348144561262\",\"id\":\"wamid.HBgNMjM0ODE0NDU2MTI2MhUCABIYIEE1NDA3MDA0RDI5NkMzRUY2RERGNDg5RTVDRkZERTYxAA==\",\"timestamp\":\"1758040937\",\"type\":\"sticker\",\"sticker\":{\"mime_type\":\"image/webp\",\"sha256\":\"FQN/CpRfxP6eaVKO2sMOBZecDXOIpIi/64F2zqzYKSo=\",\"id\":\"1325413589087148\",\"animated\":false}}",
+            "reply": "I see you sent a sticker! ✨ But I don't currently have the ability to interact with them. 😅 Text is my thing for now. 🚀\n",
+            "messageId": "wamid.HBgNMjM0ODE0NDU2MTI2MhUCABIYIEE1NDA3MDA0RDI5NkMzRUY2RERGNDg5RTVDRkZERTYxAA==",
+            "timestamp": "2025-09-16T16:42:24.127Z"
+         }
+      ]
+   },
+   "2349044237009": {
+      "name": "Miracle Ugbana",
+      "messages": [
+         {
+            "text": "say something",
+            "reply": "Hey Miracle Ugbana! 👋 How may I help you?",
+            "timestamp": "2025-09-15T21:20:56.030Z"
+         },
+         {
+            "text": "Who is Dave conco",
+            "reply": "Thanks for your message! I will get back to you soon.",
+            "timestamp": "2025-09-15T21:21:21.972Z"
+         },
+         {
+            "text": "the guy in the pic looked mad...the  u told me to calm down..now you are telling me you can't view non-text message",
+            "reply": "Thanks for your message! I will get back to you soon.",
+            "timestamp": "2025-09-15T21:40:26.283Z"
+         },
+         {
+            "text": "hy",
+            "reply": "Thanks for your message! I will get back to you soon.",
+            "messageId": "wamid.HBgNMjM0OTA0NDIzNzAwORUCABIYIDU3MEU2MTU5MUFGMTVDMkJDMDUwNzUzMTI1QTg3NDYyAA==",
+            "timestamp": "2025-09-16T07:23:13.572Z"
+         }
+      ]
+   },
+   "2348086976247": {
+      "name": "Olateju Olamide Emmanuel",
+      "messages": [
+         {
+            "text": "hey Dave",
+            "reply": "Thanks for your message! I will get back to you soon.",
+            "messageId": "wamid.HBgNMjM0ODA4Njk3NjI0NxUCABIYFjNFQjBEQzkyMTQ0QjcxNEI4NjI2M0YA",
+            "timestamp": "2025-09-16T07:13:24.410Z"
+         }
+      ]
+   },
+   "2349114768221": {
+      "name": "°°__KOREXI__°°",
+      "messages": [
+         {
+            "text": "Hii",
+            "reply": "Hey °°__KOREXI__°°! 👋 How may I help you?",
+            "messageId": "wamid.HBgNMjM0OTExNDc2ODIyMRUCABIYIEFDMkU1MjI5QTA3RTlGRUI3MjZBMkIyODZGMUNDQjlBAA==",
+            "timestamp": "2025-09-16T07:30:21.793Z"
+         },
+         {
+            "text": "Do you solve math",
+            "reply": "Thanks for your message! I will get back to you soon.",
+            "messageId": "wamid.HBgNMjM0OTExNDc2ODIyMRUCABIYIEFDODE2NjE3N0Q5MDk2MDM5M0FDQ0ZBQTgxQzc5ODBEAA==",
+            "timestamp": "2025-09-16T07:49:18.265Z"
+         },
+         {
+            "text": "Hello",
+            "reply": "Hey °°__KOREXI__°°! 👋\n\nWell, I'm dconco, and I don't \"solve\" math problems like a calculator 😅. But I can help with the logic behind it or point you to some cool resources! What kinda math are we talking about? 🤔 Maybe I can write a script to do the solving for you. ⚡\n\nBTW, you should follow me on github.com/dconco 😉\n",
+            "messageId": "wamid.HBgNMjM0OTExNDc2ODIyMRUCABIYIEFDRkM5NDE5MjMzNDAyRDNGMTE2QkVEMDdBQTNFRjdCAA==",
+            "timestamp": "2025-09-16T16:05:35.699Z"
+         },
+         {
+            "text": "Ok",
+            "reply": "So... what's up? Got a project in mind? 🚀 Or just curious about what I do? 🤔\n",
+            "messageId": "wamid.HBgNMjM0OTExNDc2ODIyMRUCABIYIEFDNTZCMjdBQkZFNjY0M0U2QkQ4NzJBMjg4NjM4Q0VFAA==",
+            "timestamp": "2025-09-16T16:06:05.097Z"
+         },
+         {
+            "text": "What is 2+2",
+            "reply": "Okay, okay, I can do basic math ➕! 2 + 2 = 4. 😉\n\nAnything more challenging? 😎\n",
+            "messageId": "wamid.HBgNMjM0OTExNDc2ODIyMRUCABIYIEFDMTA3NTU5OENBNjEyNTE2RUYwOUMwMzBEQUMxMEU4AA==",
+            "timestamp": "2025-09-16T16:06:12.064Z"
+         },
+         {
+            "text": "Approximate 2.0098490488948 to it nearest time",
+            "reply": "Nearest *time*? 🤔 As in, like, hours and minutes?\n\nOkay, so 2.0098490488948 hours... that's roughly 2 hours and... let me see... about 35 seconds? 😅\n\nIs that what you meant?\n",
+            "messageId": "wamid.HBgNMjM0OTExNDc2ODIyMRUCABIYIEFDQjQ3MzZEN0IwMTg3Njc0QjUyODAyQkE1NkFFNTYzAA==",
+            "timestamp": "2025-09-16T16:07:01.831Z"
+         },
+         {
+            "text": "Approximate it to the nearest term",
+            "reply": "Hmm, nearest *term* 🤔? I'm not quite sure what you mean. Can you clarify? 😅\n",
+            "messageId": "wamid.HBgNMjM0OTExNDc2ODIyMRUCABIYIEFDQjU0MDRCMkU2NUZEQzJEOTZFNTJGQTRCNjQ5ODc5AA==",
+            "timestamp": "2025-09-16T16:21:30.264Z"
+         }
+      ]
+   },
+   "2348167169744": {
+      "name": "Akachukwu",
+      "messages": [
+         {
+            "text": "Hey",
+            "reply": "Hey Akachukwu! 👋 How may I help you?",
+            "messageId": "wamid.HBgNMjM0ODE2NzE2OTc0NBUCABIYIEY1RDM2NjUyNDk5QzExQjkxMjJEREEzNDYxNDM1ODIxAA==",
+            "timestamp": "2025-09-16T13:37:52.684Z"
+         },
+         {
+            "text": "What's your name",
+            "reply": "Thanks for your message! I will get back to you soon.",
+            "messageId": "wamid.HBgNMjM0ODE2NzE2OTc0NBUCABIYIEM3NjZDNTkzRDQ2MkI0MTg0RjU0NzAyODI0MzJGQkY3AA==",
+            "timestamp": "2025-09-16T14:38:12.179Z"
+         },
+         {
+            "text": "Okay",
+            "reply": "Thanks for your message! I will get back to you soon.",
+            "messageId": "wamid.HBgNMjM0ODE2NzE2OTc0NBUCABIYIEVBOUY5MkY3Q0IyMzkxMzFDRDEzODg3NUI0NzQ1QkFEAA==",
+            "timestamp": "2025-09-16T14:38:24.030Z"
+         },
+         {
+            "text": "What's up",
+            "reply": "Chilling, building the future of the web! 🚀 What's up with you, Akachukwu? 😎\n",
+            "messageId": "wamid.HBgNMjM0ODE2NzE2OTc0NBUCABIYIDA4NUEzRTlBRkZFN0NDQTIyRkQzOTgzQjM5QkZEMzNDAA==",
+            "timestamp": "2025-09-16T15:44:18.754Z"
+         },
+         {
+            "text": "Okay that's nice",
+            "reply": "Glad to hear that, Akachukwu! 😎 Anything I can help you with today? Maybe a website, app, or just some cool tech talk? 😅\n",
+            "messageId": "wamid.HBgNMjM0ODE2NzE2OTc0NBUCABIYIDJGOEIyRTE2QUI0QzkxQTYxQUE1RjM4QjE4RkE0QTNEAA==",
+            "timestamp": "2025-09-16T15:44:42.718Z"
+         },
+         {
+            "text": "Oh I see\nYou've got any website in mind?",
+            "reply": "Oh yeah! I've built a few. You can check out my portfolio at dconco.github.io. 😉 I'm also a big fan of building web apps with React and Node.js. What kind of website are you interested in? 🤔\n",
+            "messageId": "wamid.HBgNMjM0ODE2NzE2OTc0NBUCABIYIEUyMjIyMjg3QzQxNEE4MDc4NjA4QjhCMTQ1RTkyMUM5AA==",
+            "timestamp": "2025-09-16T15:45:17.844Z"
+         },
+         {
+            "text": "Hi",
+            "reply": "Hey Akachukwu! 👋 What's up?\n",
+            "messageId": "wamid.HBgNMjM0ODE2NzE2OTc0NBUCABIYIDA3QzRDQjI3RTQ3MEY4RjM5RUZDMjUwODVDN0UzOTBGAA==",
+            "timestamp": "2025-09-16T15:46:40.519Z"
+         },
+         {
+            "text": "What do you build?\nAnd what are you good at. Let me get a list and explanation of each",
+            "reply": "Alright Akachukwu, buckle up! 🚀\n\nI build web apps, mobile apps, and all sorts of cloud solutions. I'm particularly good at:\n\n*   ⚡️ *JavaScript/TypeScript:* Front-end, back-end, you name it! I can make your website interactive and your server purr.\n*   ⚛️ *React/React Native:* I love building user interfaces with these frameworks. They're fast, efficient, and fun!\n*   ☁️ *Cloud Platforms (Google Cloud, Firebase):* I can deploy and manage your apps on the cloud, making them scalable and reliable.\n*   💾 *Node.js/Express:* Building robust and scalable backends is my jam!\n*   🛠️ *Frameworks/Libraries:* I enjoy creating frameworks, libraries, and tools to help developers. My PhpSlides (github.com/PhpSlides) and phpSPA library (github.com/dconco/phpspa and phpspa.readthedocs.io) are examples of my work.\n\nI also know a bit of Laravel and C++, but my main focus is on the JavaScript/TypeScript ecosystem. 😉\n\nWant to dive deeper into a specific area, Akachukwu? And follow me on github (github.com/dconco) 😜\n",
+            "messageId": "wamid.HBgNMjM0ODE2NzE2OTc0NBUCABIYIDQ1NjRBRTkwN0E5MzM1MTJERjdBQjI0OEExMUU1Nzc1AA==",
+            "timestamp": "2025-09-16T15:46:58.119Z"
+         },
+         {
+            "text": "Okay",
+            "reply": "Cool cool! 😎 So, got any project ideas brewing, Akachukwu? Or just browsing? 😜 Feel free to ask if you have any question.\n",
+            "messageId": "wamid.HBgNMjM0ODE2NzE2OTc0NBUCABIYIDNFNjE0QzYyQTZEQzg4NTk1RUFBMUFFN0YzMDBCQjA4AA==",
+            "timestamp": "2025-09-16T15:48:22.974Z"
+         },
+         {
+            "text": "Okay",
+            "reply": "Okay Akachukwu, let me know if anything comes to mind. 😉 Always open for a chat! Also, did you check my github? github.com/dconco 🚀\n",
+            "messageId": "wamid.HBgNMjM0ODE2NzE2OTc0NBUCABIYIDMyREQ5NThBRUE3NzM0N0Y0NkEzRDY4NzQxODVEODg0AA==",
+            "timestamp": "2025-09-16T15:48:40.030Z"
+         }
+      ]
+   },
+   "2348025983267": {
+      "name": "dconco",
+      "messages": [
+         {
+            "text": "{\"from\":\"2348025983267\",\"id\":\"wamid.HBgNMjM0ODAyNTk4MzI2NxUCABIYFjNFQjA1NTBFQkRCMzA2RTcwM0FFQTMA\",\"timestamp\":\"1758040908\",\"type\":\"sticker\",\"sticker\":{\"mime_type\":\"image/webp\",\"sha256\":\"0JpEzJ6FuIF1Tlfw9AhleLiSNzGDNF6QSdH2sNKjbuE=\",\"id\":\"1178433057430391\",\"animated\":false}}",
+            "reply": "Hey dconco! 👋 I see you sent a sticker! But I don't currently have the ability to interact with them.\n\nHow's it going? Anything I can help you with today? 😉 Feel free to ask me anything about dconco! 🚀 And don't forget to follow me on GitHub! github.com/dconco 😉\n",
+            "messageId": "wamid.HBgNMjM0ODAyNTk4MzI2NxUCABIYFjNFQjA1NTBFQkRCMzA2RTcwM0FFQTMA",
+            "timestamp": "2025-09-16T16:41:54.217Z"
+         },
+         {
+            "text": "{\"from\":\"2348025983267\",\"id\":\"wamid.HBgNMjM0ODAyNTk4MzI2NxUCABIYFjNFQjAwREUzMjEyRTMxNzlBNTgxMEUA\",\"timestamp\":\"1758040937\",\"type\":\"sticker\",\"sticker\":{\"mime_type\":\"image/webp\",\"sha256\":\"khc9jk1FaUXT1Um5kOFQeZgn8xz5Ag61aC6OKbzmVss=\",\"id\":\"1089558813159063\",\"animated\":true}}",
+            "reply": "Another sticker! 😅 I'm starting to feel left out since I can't see them. 💔\n\nBut hey, what's up? Anything on your mind? 🤔 Or just spamming me with stickers? 😂\n\nRemember to check out my GitHub! github.com/dconco 🚀\n",
+            "messageId": "wamid.HBgNMjM0ODAyNTk4MzI2NxUCABIYFjNFQjAwREUzMjEyRTMxNzlBNTgxMEUA",
+            "timestamp": "2025-09-16T16:42:24.475Z"
+         }
+      ]
+   }
 }
