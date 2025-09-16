@@ -1,6 +1,5 @@
-import WhatsappService from '../utils/whatsappService';
-import { cacheMessage } from '../utils/quotaChecker';
-import { InteractiveMessage } from '../types/index';
+import WhatsappService from '@/utils/whatsappService';
+import { InteractiveMessage } from '@/types/index';
 
 // Handle interactive messages (buttons, lists)
 export default async function handleInteractiveMessage(

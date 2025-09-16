@@ -1,11 +1,15 @@
-import { cacheMessage } from '@/utils/quotaChecker';
 import WhatsappService from '@/utils/whatsappService';
 
 export default async function handleTextMessage(from: string, text: string, messageId: string, name: string|undefined): Promise<string|void> {
 	const whatsapp = new WhatsappService();
 	const lowerText = text.toLowerCase();
+	const greetings = ['hello', 'hi', 'hey', 'awfar', 'hfar', 'whatsup', 'hy', 'greetings', 'good morning', 'good afternoon', 'good evening'];
 
-	if (lowerText.includes('hello') || lowerText.includes('hi')) {
+	/**
+	 * Greeting responses
+	 */
+
+	if (greetings.some(greet => lowerText.includes(greet))) {
 		const response = handleGreeting(text, name);
 
 		const result = await whatsapp.sendTextMessage(from, response, messageId);	

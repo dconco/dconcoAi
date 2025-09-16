@@ -5,7 +5,8 @@ export declare const unreadMessagesFilePath: string;
 export declare const cachedMessagesFilePath: string;
 
 export declare interface QuotaData {
-   contacts: string[];
+   contact: string;
+   timestamp: string;
 }
 
 export declare interface UnreadMessage {

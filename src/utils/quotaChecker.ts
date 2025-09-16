@@ -7,16 +7,40 @@ import { loadQuota, loadUnreadMessages, loadCachedMessages, quotaFilePath, unrea
 
 /**
  * ========================================
+ * Remove expired quota entries (24+ hours old)
+ * ========================================
+ */
+export const cleanExpiredQuota = (): void => {
+   try {
+      const quota: QuotaData[] = loadQuota();
+      const now = Date.now();
+      const filtered = quota.filter(({ timestamp }) => 
+         now - new Date(timestamp).getTime() < 24 * 60 * 60 * 1000
+      );
+      
+      if (filtered.length !== quota.length) {
+         writeFileSync(quotaFilePath, JSON.stringify(filtered, null, 2), 'utf8');
+         console.log(`Removed ${quota.length - filtered.length} expired quota entries`);
+      }
+   } catch (error) {
+      console.error('Error cleaning quota:', error);
+   }
+}
+
+/**
+ * ========================================
  * Check the quota for sending messages.
  * ========================================
  */
 export const checkQuota = async (message: WhatsAppMessage|null|string, name: string | undefined): Promise<boolean> => {
    const whatsapp: WhatsAppService = new WhatsAppService();
 
+   cleanExpiredQuota();
+   
    const quotaLimit = 8;
-   const quota: QuotaData = loadQuota();
+   const quota: QuotaData[] = loadQuota();
 
-   if (quota.contacts && quota.contacts.length >= quotaLimit) {
+   if (quota && quota.length >= quotaLimit) {
       if (!message || typeof message === "string") return false;
 
       saveUnreadMessage({ message, name: name || '' });
@@ -36,14 +60,15 @@ export const checkQuota = async (message: WhatsAppMessage|null|string, name: str
  */
 export const saveQuota = (contact: string): void => {
    try {
-      const quota: QuotaData = loadQuota();
+      const quota: QuotaData[] = loadQuota();
+      const existingContact = quota.find(({ contact: c }) => c === contact);
 
-      if (!quota.contacts.includes(contact)) {
-        quota.contacts.push(contact);
+      if (!existingContact) {
+        quota.push({ contact, timestamp: new Date().toISOString() });
         
         // Use synchronous write to prevent race conditions
         writeFileSync(quotaFilePath, JSON.stringify(quota, null, 2), 'utf8');
-        console.log(`Contact ${contact} added to quota. Total: ${quota.contacts.length}`);
+        console.log(`Contact ${contact} added to quota. Total: ${quota.length}`);
       }
    } catch (error) {
       console.error('Error writing quota file:', error);

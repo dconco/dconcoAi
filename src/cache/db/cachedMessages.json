@@ -97,6 +97,24 @@
         "reply": "Thanks for your message! I will get back to you soon.",
         "messageId": "wamid.HBgNMjM0ODAyNTk4MzI2NxUCABIYFjNFQjBEMkFDRUQyNDhGQjMzMTA5MDYA",
         "timestamp": "2025-09-15T23:54:52.249Z"
+      },
+      {
+        "text": "Hi",
+        "reply": "Hello dconco! 👋 How can I assist you today?",
+        "messageId": "wamid.HBgNMjM0ODAyNTk4MzI2NxUCABIYIEE1QkJBODE2NjNEQjAwQUQzREQyMjQ3RUI5MUU2NUY5AA==",
+        "timestamp": "2025-09-16T00:20:42.704Z"
+      },
+      {
+        "text": "hi",
+        "reply": "Hi dconco! 👋 What can I do for you?",
+        "messageId": "wamid.HBgNMjM0ODAyNTk4MzI2NxUCABIYFjNFQjA2RjVBQjg3QkY5MjIwMzcwMDIA",
+        "timestamp": "2025-09-16T06:54:46.683Z"
+      },
+      {
+        "text": "hey dave",
+        "reply": "Hey dconco! 👋 How may I help you?",
+        "messageId": "wamid.HBgNMjM0ODAyNTk4MzI2NxUCABIYFjNFQjAzOTY2QjREMjc2MzcwMkNBRjgA",
+        "timestamp": "2025-09-16T07:16:01.157Z"
       }
     ]
   },
@@ -152,6 +170,40 @@
         "text": "the guy in the pic looked mad...the  u told me to calm down..now you are telling me you can't view non-text message",
         "reply": "Thanks for your message! I will get back to you soon.",
         "timestamp": "2025-09-15T21:40:26.283Z"
+      },
+      {
+        "text": "hy",
+        "reply": "Thanks for your message! I will get back to you soon.",
+        "messageId": "wamid.HBgNMjM0OTA0NDIzNzAwORUCABIYIDU3MEU2MTU5MUFGMTVDMkJDMDUwNzUzMTI1QTg3NDYyAA==",
+        "timestamp": "2025-09-16T07:23:13.572Z"
+      }
+    ]
+  },
+  "2348086976247": {
+    "name": "Olateju Olamide Emmanuel",
+    "messages": [
+      {
+        "text": "hey Dave",
+        "reply": "Thanks for your message! I will get back to you soon.",
+        "messageId": "wamid.HBgNMjM0ODA4Njk3NjI0NxUCABIYFjNFQjBEQzkyMTQ0QjcxNEI4NjI2M0YA",
+        "timestamp": "2025-09-16T07:13:24.410Z"
+      }
+    ]
+  },
+  "2349114768221": {
+    "name": "°°__KOREXI__°°",
+    "messages": [
+      {
+        "text": "Hii",
+        "reply": "Hey °°__KOREXI__°°! 👋 How may I help you?",
+        "messageId": "wamid.HBgNMjM0OTExNDc2ODIyMRUCABIYIEFDMkU1MjI5QTA3RTlGRUI3MjZBMkIyODZGMUNDQjlBAA==",
+        "timestamp": "2025-09-16T07:30:21.793Z"
+      },
+      {
+        "text": "Do you solve math",
+        "reply": "Thanks for your message! I will get back to you soon.",
+        "messageId": "wamid.HBgNMjM0OTExNDc2ODIyMRUCABIYIEFDODE2NjE3N0Q5MDk2MDM5M0FDQ0ZBQTgxQzc5ODBEAA==",
+        "timestamp": "2025-09-16T07:49:18.265Z"
       }
     ]
   }

@@ -2,7 +2,7 @@ import {
 	WhatsAppApiResponse,
 	Button,
 	ListSection
-} from '@/types/index';
+} from '@/types';
 import { saveQuota } from '@/utils/quotaChecker';
 
 export default class WhatsAppService {

@@ -7,13 +7,13 @@ export const unreadMessagesFilePath = join(__dirname, '../cache/db/unreadMessage
 export const cachedMessagesFilePath = join(__dirname, '../cache/db/cachedMessages.json');
 export const cachedAPIMessagesFilePath = join(__dirname, '../cache/db/cachedAPIMessages.json');
 
-export const loadQuota = (): QuotaData => {
+export const loadQuota = (): QuotaData[] => {
    try {
      const data = readFileSync(quotaFilePath, 'utf8');
-     return JSON.parse(data) as QuotaData;
+     return JSON.parse(data) as QuotaData[];
    } catch (error) {
      console.log('Error reading quota file, initializing with empty data:', error);
-     return { contacts: [] } as QuotaData;
+     return [] as QuotaData[];
    }
 };
 
