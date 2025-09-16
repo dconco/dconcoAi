@@ -12,6 +12,7 @@
 	},
 	"author": "dconco",
 	"dependencies": {
+		"@google/genai": "^1.19.0",
 		"dotenv": "^16.6.1",
 		"express": "^4.21.2"
 	},
