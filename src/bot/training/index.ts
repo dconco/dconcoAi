@@ -12,4 +12,7 @@ instructions[2] = require('./knowledge').default;
 /*  LIMITATIONS  */
 instructions[3] = require('./limitations').default;
 
+/*  REMEMBER  */
+instructions[4] = require('./remember').default;
+
 export default instructions;
