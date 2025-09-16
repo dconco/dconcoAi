@@ -3,7 +3,7 @@ import WhatsappService from '@/utils/whatsappService';
 export default async function handleTextMessage(from: string, text: string, messageId: string, name: string|undefined): Promise<string|void> {
 	const whatsapp = new WhatsappService();
 	const lowerText = text.toLowerCase();
-	const greetings = ['hello', 'hi', 'hey', 'awfar', 'hfar', 'whatsup', 'hy', 'greetings', 'good morning', 'good afternoon', 'good evening'];
+	const greetings = ['hello', 'hi', 'xup', 'sup', 'hey', 'awfar', 'hfar', 'whatsup', 'hy', 'greetings', 'good morning', 'good afternoon', 'good evening'];
 
 	/**
 	 * Greeting responses

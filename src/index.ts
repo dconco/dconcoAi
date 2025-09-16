@@ -32,7 +32,7 @@ app.post('/api/send-message', async (req: Request<{}, {}, SendMessageRequest>, r
 				.json({ error: 'Phone number and message are required' });
 		}
 
-		if (!checkQuota(to, '')) {
+		if (!(await checkQuota(to, ''))) {
 			return res
 				.status(403)
 				.json({ error: 'Quota exceeded for this user.' });

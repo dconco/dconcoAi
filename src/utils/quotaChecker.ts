@@ -40,18 +40,26 @@ export const checkQuota = async (message: WhatsAppMessage|null|string, name: str
    cleanExpiredQuota();
    
    const quotaLimit = 8;
-   const quota: QuotaData[] = loadQuota();
+   const quota: QuotaData[] = loadQuota(); // Reload after cleaning
 
-   if (quota && quota.length >= quotaLimit) {
-      if (!message || typeof message === "string") return false;
-
-      saveUnreadMessage({ message, name: name || '' });
-      console.log(`Quota exceeded. Message from ${name || message.from} ignored.`);
-      return false;
+   if (message && typeof message !== 'string') {
+      const runningQuota = quota.find(contact => contact.contact === message.from)
+      
+      if (!runningQuota && quota.length >= quotaLimit) {
+         saveUnreadMessage({ message, name: name || '' });
+         console.log(`Quota exceeded. Message from ${name || message.from} ignored.`);
+         return false;
+      }
+   } else if (typeof message === 'string') {
+      const runningQuota = quota.find(contact => contact.contact === message)
+      
+      if (!runningQuota && quota.length >= quotaLimit) {
+         return false;
+      }
    }
 
    if (!message || typeof message === "string") return true;
-   await whatsapp.markAsRead(message?.id || '');
+   await whatsapp.markAsRead(message.id);
    return true;
 }
 
