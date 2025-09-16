@@ -64,7 +64,7 @@ export default async function handleTextMessage(from: string, text: string, mess
 		const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1024&height=1024&seed=-1&enhance=true`;
 
 		const result = await whatsapp.sendImage(from, imageUrl, image.caption, messageId);
-		if (result) return 'Image generated and sent.';
+		if (result) return image.caption;
 	} else {
 		const result = await whatsapp.sendTextMessage(from, response, messageId);
 		if (result) return response;
