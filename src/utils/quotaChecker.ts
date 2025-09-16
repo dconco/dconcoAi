@@ -18,7 +18,7 @@ export const cleanExpiredQuota = (): void => {
       
       const filtered = quota.filter(({ timestamp }) => {
          const age = now - new Date(timestamp).getTime();
-         return age < 24 * 60 * 60 * 1000; // Keep if less than 24 hours old
+         return age < 2 * 60 * 60 * 1000; // Keep if less than 24 hours old
       });
       
       if (filtered.length !== quota.length) {

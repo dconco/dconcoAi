@@ -4,7 +4,7 @@ import handleInteractiveMessage from '@/helper/handleInteractiveMessage';
 import handleStickerMessage from '@/helper/handleStickerMessage';
 import handleImageMessage from '@/helper/handleImageMessage';
 import { WhatsAppMessage, WhatsAppWebhook } from '@/types';
-import { cacheMessage, checkQuota, saveUsers } from '@/utils/quotaChecker';
+import { cacheMessage, saveUsers } from '@/utils/quotaChecker';
 import WhatsAppService from '@/utils/whatsappService';
 import chatWithUser from '@/bot';
 

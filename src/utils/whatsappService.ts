@@ -3,7 +3,6 @@ import {
 	Button,
 	ListSection
 } from '@/types';
-import { saveQuota } from '@/utils/quotaChecker';
 
 export default class WhatsAppService {
 	private token: string;
@@ -26,7 +25,7 @@ export default class WhatsAppService {
 
 	// Send a text message
 	async sendTextMessage(to: string, message: string, messageId: string|null|undefined): Promise<WhatsAppApiResponse> {
-		saveQuota(to);
+		// saveQuota(to);
 
 		const payload: any = {
 			to,
@@ -66,7 +65,7 @@ export default class WhatsAppService {
 
 	// Send a message with buttons
 	async sendButtonMessage(to: string, bodyText: string, buttons: Button[]): Promise<WhatsAppApiResponse> {
-		saveQuota(to);
+		// saveQuota(to);
 
 		try {
 			const response = await fetch(this.baseUrl, {
@@ -115,7 +114,7 @@ export default class WhatsAppService {
 
 	// Send a list message
 	async sendListMessage(to: string, bodyText: string, buttonText: string, sections: ListSection[]): Promise<WhatsAppApiResponse> {
-		saveQuota(to);
+		// saveQuota(to);
 
 		try {
 			const response = await fetch(this.baseUrl, {
@@ -159,7 +158,7 @@ export default class WhatsAppService {
 
 	// Send media message (image, document, etc.)
 	async sendMediaMessage(to: string, mediaType: string, mediaId: string, caption: string = ''): Promise<WhatsAppApiResponse> {
-		saveQuota(to);
+		// saveQuota(to);
 
 		try {
 			const mediaObject: Record<string, any> = {
@@ -212,7 +211,7 @@ export default class WhatsAppService {
 		languageCode: string = 'en_US',
 		parameters: string[] = []
 	): Promise<WhatsAppApiResponse> {
-		saveQuota(to);
+		// saveQuota(to);
 
 		try {
 			const response = await fetch(this.baseUrl, {

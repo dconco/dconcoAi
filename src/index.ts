@@ -3,7 +3,7 @@ import express, { Express, Request, Response } from 'express';
 import WhatsappService from '@/utils/whatsappService';
 import WebhookController from '@/controllers/webhookController';
 import MessagesController from '@/controllers/messagesController';
-import { cacheAPIMessage, checkQuota, saveUsers } from '@/utils/quotaChecker';
+import { cacheAPIMessage, saveUsers } from '@/utils/quotaChecker';
 import { SendMessageRequest } from '@/types';
 
 dotenv.config();
