@@ -3,7 +3,7 @@ export declare interface WhatsAppMessage {
 	from: string;
 	id: string;
 	timestamp: string;
-	type: 'text' | 'interactive' | 'image' | 'document' | 'audio' | 'video' | 'sticker';
+	type: 'text' | 'interactive' | 'image' | 'document' | 'audio' | 'video' | 'sticker' | 'reaction';
 	text?: {
 		body: string;
 	};
@@ -24,6 +24,10 @@ export declare interface WhatsAppMessage {
 		id: string;
 		mime_type: string;
 		sha256: string;
+	};
+	reaction?: {
+		message_id: string;
+		emoji: string;
 	};
 }
 

@@ -1,4 +1,5 @@
 import chatWithUser from '@/bot';
+import { isImageGenerationRequest } from '@/bot/imageGeneration';
 import WhatsappService from '@/utils/whatsappService';
 
 export default async function handleTextMessage(from: string, text: string, messageId: string, name: string|undefined): Promise<string|void> {
@@ -55,7 +56,17 @@ export default async function handleTextMessage(from: string, text: string, mess
 	 * Default response
 	 */
 	const response = await chatWithUser(name, from, text);
+	
+	const image = isImageGenerationRequest(response);
 
-	const result = await whatsapp.sendTextMessage(from, response, messageId);
-	if (result) return response;
+	if (image.isImageRequest && image.prompt) {
+		const encodedPrompt = encodeURIComponent(image.prompt);
+		const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1024&height=1024&seed=-1&enhance=true`;
+
+		const result = await whatsapp.sendImage(from, imageUrl, image.caption, messageId);
+		if (result) return 'Image generated and sent.';
+	} else {
+		const result = await whatsapp.sendTextMessage(from, response, messageId);
+		if (result) return response;
+	}
 }

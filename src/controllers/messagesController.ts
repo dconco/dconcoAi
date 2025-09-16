@@ -4,8 +4,10 @@ import handleInteractiveMessage from '@/helper/handleInteractiveMessage';
 import handleStickerMessage from '@/helper/handleStickerMessage';
 import handleImageMessage from '@/helper/handleImageMessage';
 import handleVoiceMessage from '@/helper/handleVoiceMessage';
+import handleReactionMessage from '@/helper/handleReactionMessage';
 import { WhatsAppMessage, WhatsAppWebhook } from '@/types';
 import { cacheMessage, saveUsers } from '@/utils/quotaChecker';
+import { checkRateLimit, shouldSendWarning } from '@/utils/rateLimit';
 import WhatsAppService from '@/utils/whatsappService';
 import chatWithUser from '@/bot';
 
@@ -41,9 +43,17 @@ export default async function MessagesController(req: Request, res: Response): P
 export const sendMessage = async (name: string | undefined, message: WhatsAppMessage): Promise<any> => {
 	const whatsapp: WhatsAppService = new WhatsAppService();
 
-	// if (!(await checkQuota(message, name))) return;
-	// await new Promise(resolve => setTimeout(resolve, 3000)); // wait 3s
-   await whatsapp.markAsRead(message.id);
+	// Check rate limit
+	if (!checkRateLimit(message.from)) {
+		// Only send warning if we haven't sent 2 already
+		if (shouldSendWarning(message.from)) {
+			const rateLimitMessage = `Whoa there! 🐌 You're sending messages too fast! Slow down a bit and try again. 😅`;
+			await whatsapp.sendTextMessage(message.from, rateLimitMessage, message.id);
+		}
+		return;
+	}
+
+	await whatsapp.markAsRead(message.id);
 
 	// Handle different message types
 	if (message.type === 'text' && message.text) {
@@ -89,6 +99,15 @@ export const sendMessage = async (name: string | undefined, message: WhatsAppMes
 		if (reply) {
 			await whatsapp.sendTextMessage(message.from, reply, message.id);
 			cacheMessage({ contact: message.from, text: JSON.stringify(message), reply, name: name || '', messageId: message.id });
+			saveUsers({ contact: message.from, name });
+		}
+	} else if (message.type === 'reaction' && message.reaction) {
+		const reply = await handleReactionMessage(message.from, message.reaction, message.id, name);
+
+		if (reply) {
+			const whatsapp = new WhatsAppService();
+			await whatsapp.sendTextMessage(message.from, reply, message.id);
+			cacheMessage({ contact: message.from, text: `Reacted with ${message.reaction.emoji}`, reply, name: name || '', messageId: message.id });
 			saveUsers({ contact: message.from, name });
 		}
 	} else {

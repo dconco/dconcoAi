@@ -63,6 +63,45 @@ export default class WhatsAppService {
 		}
 	}
 
+	// Send image
+	async sendImage(to: string, uri: string, caption: string = '', messageId?: string): Promise<WhatsAppApiResponse> {
+		try {
+			const payload: any = {
+				to,
+				messaging_product: 'whatsapp',
+				type: 'image',
+				image: {
+					link: uri,
+					caption: caption
+				}
+			};
+			
+			if (messageId) payload.context = { message_id: messageId };
+
+			const response = await fetch(this.baseUrl, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${this.token}`,
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(payload),
+			});
+
+			if (!response.ok) {
+				const errorData = await response.json();
+				throw new Error(
+					`HTTP ${response.status}: ${JSON.stringify(errorData)}`
+				);
+			}
+
+			const data = await response.json() as WhatsAppApiResponse;
+			return data;
+		} catch (error) {
+			console.error('Error sending base64 image:', (error as Error).message);
+			throw error;
+		}
+	}
+
 	// Send a message with buttons
 	async sendButtonMessage(to: string, bodyText: string, buttons: Button[]): Promise<WhatsAppApiResponse> {
 		// saveQuota(to);
