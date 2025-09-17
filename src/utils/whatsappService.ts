@@ -379,4 +379,39 @@ export default class WhatsAppService {
 		
 		return await this.downloadMedia(mediaUrl);
 	}
+
+	// React to a message with emoji
+	async reactToMessage(to: string, messageId: string, emoji: string): Promise<WhatsAppApiResponse> {
+		try {
+			const response = await fetch(this.baseUrl, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${this.token}`,
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					to,
+					messaging_product: 'whatsapp',
+					type: 'reaction',
+					reaction: {
+						message_id: messageId,
+						emoji: emoji
+					}
+				}),
+			});
+
+			if (!response.ok) {
+				const errorData = await response.json();
+				throw new Error(
+					`HTTP ${response.status}: ${JSON.stringify(errorData)}`
+				);
+			}
+
+			const data = await response.json() as WhatsAppApiResponse;
+			return data;
+		} catch (error) {
+			console.error('Error reacting to message:', (error as Error).message);
+			throw error;
+		}
+	}
 }

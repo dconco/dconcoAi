@@ -1,5 +1,5 @@
 import chatWithUser from '@/bot';
-import { isImageGenerationRequest } from '@/bot/imageGeneration';
+import { isImageGenerationRequest, isReactionRequest } from '@/bot/imageGeneration';
 import WhatsappService from '@/utils/whatsappService';
 
 export default async function handleTextMessage(from: string, text: string, messageId: string, name: string|undefined): Promise<string|void> {
@@ -58,6 +58,7 @@ export default async function handleTextMessage(from: string, text: string, mess
 	const response = await chatWithUser(name, from, text);
 	
 	const image = isImageGenerationRequest(response);
+	const reaction = isReactionRequest(response);
 
 	if (image.isImageRequest && image.prompt) {
 		let imageUrl;
@@ -77,7 +78,18 @@ export default async function handleTextMessage(from: string, text: string, mess
 
 		const result = await whatsapp.sendImage(from, imageUrl, image.caption, messageId);
 		if (result) return image.caption;
-	} else {
+	}
+	
+	else if (reaction.isReactionRequest && reaction.emoji) {
+		await whatsapp.reactToMessage(from, messageId, reaction.emoji);
+
+		if (reaction.message) {
+			const result = await whatsapp.sendTextMessage(from, reaction.message, messageId);
+			if (result) return reaction.message;
+		}
+	}
+
+	else {
 		const result = await whatsapp.sendTextMessage(from, response, messageId);
 		if (result) return response;
 	}
