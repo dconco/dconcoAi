@@ -5,6 +5,7 @@ import WebhookController from '@/controllers/webhookController';
 import MessagesController from '@/controllers/messagesController';
 import { cacheAPIMessage, saveUsers } from '@/utils/quotaChecker';
 import { SendMessageRequest } from '@/types';
+import { getModelStatus, getCurrentModel } from '@/utils/modelFallback';
 
 dotenv.config();
 
@@ -72,6 +73,50 @@ app.get('/api/status', (_: Request, res: Response) => {
 			process.env.WHATSAPP_TOKEN && process.env.WHATSAPP_PHONE_NUMBER_ID
 		),
 	});
+});
+
+app.get('/api/models', (_: Request, res: Response) => {
+	try {
+		const modelStatus = getModelStatus();
+		res.json({
+			success: true,
+			data: modelStatus
+		});
+	} catch (error) {
+		res.status(500).json({ 
+			success: false, 
+			error: (error as Error).message 
+		});
+	}
+});
+
+app.get('/api/current-model', (_: Request, res: Response) => {
+	try {
+		const currentModel = getCurrentModel();
+		const modelStatus = getModelStatus();
+		
+		// Find the current model details
+		const currentModelData = modelStatus.usage.find(m => m.name === currentModel);
+		
+		res.json({
+			success: true,
+			data: {
+				currentModel: currentModel,
+				version: currentModelData?.version || 'unknown',
+				dailyUsage: currentModelData?.dailyUsage || 0,
+				dailyLimit: currentModelData?.dailyLimit || 0,
+				usagePercentage: currentModelData?.usagePercentage || 0,
+				isBlocked: currentModelData?.isBlocked || false,
+				isUnlimited: currentModelData?.dailyLimit >= 999999,
+				timestamp: new Date().toISOString()
+			}
+		});
+	} catch (error) {
+		res.status(500).json({ 
+			success: false, 
+			error: (error as Error).message 
+		});
+	}
 });
 
 // --- Start Server ---

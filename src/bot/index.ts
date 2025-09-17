@@ -4,6 +4,7 @@ import { config } from "dotenv";
 import instructions from "./training";
 import path from "path";
 import fs from "fs";
+import { getCurrentModel, recordModelUsage, handleQuotaExhausted } from "@/utils/modelFallback";
 
 config()
 
@@ -37,8 +38,12 @@ export default async function chatWithUser(
       { role: "model", parts: [{ text: msg.reply } as Part] }
    ]);
 
+   // Get current active model
+   let currentModel = getCurrentModel();
+   console.log(`🤖 Using model: ${currentModel}`);
+
    const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash", // Switch to 1.5-flash for higher quota
+      model: currentModel,
       systemInstruction: instructions.join('\n\n')
    });
 
@@ -59,13 +64,64 @@ export default async function chatWithUser(
 
    try {
       const result = await chat.sendMessage(parts);
+      
+      // Record successful usage
+      recordModelUsage(currentModel);
+      
       return result.response.text();
    } catch (error: any) {
       console.error('❌ Gemini API Error:', error);
       
       // Handle quota exhaustion specifically
       if (error.status === 429) {
-         return "I've reached my daily limit for AI responses! 😅 This happens when I get too popular. Try again tomorrow or contact my creator for an upgrade! 🚀";
+         console.log(`🔄 Quota exhausted for ${currentModel}, trying fallback...`);
+         
+         // Switch to fallback model and retry once
+         const fallbackModel = handleQuotaExhausted(currentModel);
+         
+         if (fallbackModel !== currentModel) {
+            try {
+               console.log(`🔄 Retrying with fallback model: ${fallbackModel}`);
+               const fallbackModelInstance = genAI.getGenerativeModel({
+                  model: fallbackModel,
+                  systemInstruction: instructions.join('\n\n')
+               });
+               
+               const fallbackChat = fallbackModelInstance.startChat({ history });
+               const result = await fallbackChat.sendMessage(parts);
+               
+               // Record successful usage
+               recordModelUsage(fallbackModel);
+               
+               return result.response.text();
+            } catch (fallbackError: any) {
+               console.error('❌ Fallback model also failed:', fallbackError);
+               
+               // If fallback also fails with 429, try another fallback
+               if (fallbackError.status === 429) {
+                  const secondFallback = handleQuotaExhausted(fallbackModel);
+                  if (secondFallback !== fallbackModel) {
+                     console.log(`🔄 Trying second fallback: ${secondFallback}`);
+                     try {
+                        const secondFallbackInstance = genAI.getGenerativeModel({
+                           model: secondFallback,
+                           systemInstruction: instructions.join('\n\n')
+                        });
+                        const secondFallbackChat = secondFallbackInstance.startChat({ history });
+                        const result = await secondFallbackChat.sendMessage(parts);
+                        recordModelUsage(secondFallback);
+                        return result.response.text();
+                     } catch (finalError: any) {
+                        console.error('❌ All fallbacks failed:', finalError);
+                        return "I'm experiencing technical difficulties with my AI models! 🛠️ Please try again in a moment.";
+                     }
+                  }
+               }
+               return "I'm having technical difficulties right now! 🛠️ Try again in a few minutes.";
+            }
+         } else {
+            return "I'm experiencing technical difficulties! �️ Please try again in a moment.";
+         }
       }
       
       // Handle other API errors
