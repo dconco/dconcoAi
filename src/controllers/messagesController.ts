@@ -7,7 +7,7 @@ import handleVoiceMessage from '@/helper/handleVoiceMessage';
 import handleReactionMessage from '@/helper/handleReactionMessage';
 import { WhatsAppMessage, WhatsAppWebhook } from '@/types';
 import { cacheMessage, saveUsers } from '@/utils/quotaChecker';
-import { checkRateLimit, shouldSendWarning } from '@/utils/rateLimit';
+import { checkRateLimit, shouldSendWarning, storeLastMessage, hasPendingMessage } from '@/utils/rateLimit';
 import WhatsAppService from '@/utils/whatsappService';
 import chatWithUser from '@/bot';
 
@@ -43,11 +43,32 @@ export default async function MessagesController(req: Request, res: Response): P
 export const sendMessage = async (name: string | undefined, message: WhatsAppMessage): Promise<any> => {
 	const whatsapp: WhatsAppService = new WhatsAppService();
 
-	// Check rate limit
+	// First check if user has a pending message from rate limiting
+	const pending = hasPendingMessage(message.from);
+	if (pending.hasMessage && pending.message) {
+		console.log(`📬 Processing pending message for ${message.from}: ${pending.message}`);
+		// Process their last message that was blocked by rate limit
+		await whatsapp.markAsRead(message.id);
+		
+		if (message.type === 'text') {
+			const reply = await handleTextMessage(message.from, pending.message, pending.messageId || message.id, pending.userName);
+			console.log(`Pending message reply: ${reply}`);
+		}
+		
+		// Continue to process the current message normally (they're no longer rate limited)
+	}
+
+	// Check rate limit for current message
 	if (!checkRateLimit(message.from)) {
+		// Store this message to respond to later
+		if (message.type === 'text' && message.text) {
+			storeLastMessage(message.from, message.text.body, message.id, name);
+			console.log(`💾 Stored message for later: ${message.text.body}`);
+		}
+		
 		// Only send warning if we haven't sent 2 already
 		if (shouldSendWarning(message.from)) {
-			const rateLimitMessage = `Whoa there! 🐌 You're sending messages too fast! Slow down a bit and try again. 😅`;
+			const rateLimitMessage = `Whoa there! 🐌 You're sending messages too fast! I'll respond to your last message once the cooldown ends. 😅`;
 			await whatsapp.sendTextMessage(message.from, rateLimitMessage, message.id);
 		}
 		return;

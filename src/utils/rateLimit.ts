@@ -7,6 +7,9 @@ interface RateLimitData {
         windowStart: number;
         warningsSent: number;
         silenceUntil?: number; // Timestamp when silence period ends
+        lastMessage?: string; // Store last message to respond to after cooldown
+        lastMessageId?: string; // Store message ID for context
+        userName?: string; // Store user name for context
     };
 }
 
@@ -142,4 +145,49 @@ export function getRemainingRequests(contact: string): { remaining: number, rese
     const resetIn = Math.max(0, windowDuration - timeSinceWindowStart);
     
     return { remaining, resetIn };
+}
+
+// Store last message when rate limited
+export function storeLastMessage(contact: string, message: string, messageId: string, userName?: string): void {
+    const rateLimitData = loadRateLimit();
+    
+    if (rateLimitData[contact]) {
+        rateLimitData[contact].lastMessage = message;
+        rateLimitData[contact].lastMessageId = messageId;
+        rateLimitData[contact].userName = userName;
+        saveRateLimit(rateLimitData);
+    }
+}
+
+// Check if user was rate limited and has a pending message
+export function hasPendingMessage(contact: string): { hasMessage: boolean, message?: string, messageId?: string, userName?: string } {
+    const now = Date.now();
+    const rateLimitData = loadRateLimit();
+    
+    if (!rateLimitData[contact]) {
+        return { hasMessage: false };
+    }
+    
+    const userLimit = rateLimitData[contact];
+    
+    // Check if user was in silence period and it just ended
+    if (userLimit.silenceUntil && now >= userLimit.silenceUntil && userLimit.lastMessage) {
+        // Clear the pending message and return it
+        const pendingMessage = {
+            hasMessage: true,
+            message: userLimit.lastMessage,
+            messageId: userLimit.lastMessageId,
+            userName: userLimit.userName
+        };
+        
+        // Clear the stored message
+        delete rateLimitData[contact].lastMessage;
+        delete rateLimitData[contact].lastMessageId;
+        delete rateLimitData[contact].userName;
+        saveRateLimit(rateLimitData);
+        
+        return pendingMessage;
+    }
+    
+    return { hasMessage: false };
 }
