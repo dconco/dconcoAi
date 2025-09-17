@@ -38,7 +38,7 @@ export default async function chatWithUser(
    ]);
 
    const model = genAI.getGenerativeModel({
-      model: "gemini-2.0-flash",
+      model: "gemini-1.5-flash", // Switch to 1.5-flash for higher quota
       systemInstruction: instructions.join('\n\n')
    });
 
@@ -57,6 +57,27 @@ export default async function chatWithUser(
       });
    }
 
-   const result = await chat.sendMessage(parts);
-   return result.response.text();
+   try {
+      const result = await chat.sendMessage(parts);
+      return result.response.text();
+   } catch (error: any) {
+      console.error('❌ Gemini API Error:', error);
+      
+      // Handle quota exhaustion specifically
+      if (error.status === 429) {
+         return "I've reached my daily limit for AI responses! 😅 This happens when I get too popular. Try again tomorrow or contact my creator for an upgrade! 🚀";
+      }
+      
+      // Handle other API errors
+      if (error.status === 401) {
+         return "Authentication issue with my AI brain! 🤖 Please contact the developer.";
+      }
+      
+      if (error.status === 403) {
+         return "Access denied to my AI services! 🚫 Please contact the developer.";
+      }
+      
+      // Generic fallback
+      return "Sorry, I'm having technical difficulties right now! 🛠️ Try again in a few minutes.";
+   }
 }

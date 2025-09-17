@@ -26,9 +26,9 @@ function loadRateLimit(): RateLimitData {
 
 export function checkRateLimit(contact: string): boolean {
     const now = Date.now();
-    const windowDuration = 30 * 1000; // 30 seconds
-    const maxRequests = 4;
-    const spamPenalty = 5 * 1000; // +5 seconds for each spam message
+    const windowDuration = 2 * 60 * 1000; // 2 minutes window
+    const maxRequests = 3; // Only 3 requests per 2 minutes
+    const spamPenalty = 30 * 1000; // +30 seconds for each spam message
     
     const rateLimitData = loadRateLimit();
     
@@ -111,8 +111,8 @@ export function shouldSendWarning(contact: string): boolean {
 
 export function getRemainingRequests(contact: string): { remaining: number, resetIn: number, silenceTimeLeft?: number } {
     const now = Date.now();
-    const windowDuration = 30 * 1000;
-    const maxRequests = 4;
+    const windowDuration = 2 * 60 * 1000; // 2 minutes
+    const maxRequests = 3; // Match the new limits
     
     const rateLimitData = loadRateLimit();
     
