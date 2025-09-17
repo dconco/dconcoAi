@@ -23,7 +23,7 @@ export default async function handleStickerMessage(
 		const base64Sticker = stickerBuffer.toString('base64');
 		
 		// Create a context message for the bot
-		const contextMessage = `[STICKER_RECEIVED] User sent a sticker. Analyze this sticker and respond appropriately. Sticker details: mime_type: ${sticker.mime_type}, animated: ${sticker.animated || false}`;
+		const contextMessage = `User sent a sticker (${sticker.mime_type}${sticker.animated ? ', animated' : ''}). Please analyze this sticker and respond naturally to its content, emotion, or meaning. Don't say you can't process it - you can see it!`;
 		
 		// Send to bot with sticker
 		const reply = await chatWithUser(name, from, contextMessage, {
@@ -36,6 +36,6 @@ export default async function handleStickerMessage(
 		return response;
 	} catch (error) {
 		console.error('Error handling sticker:', error);
-		return "I see you sent a sticker! ✨ But I don't currently have the ability to process it right now. Text is my thing for the moment! 🚀";
+		return "I can see your sticker! ✨ But I'm having a technical hiccup processing it right now. 🛠️ Try sending it again!";
 	}
 }
