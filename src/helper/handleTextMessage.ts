@@ -60,8 +60,19 @@ export default async function handleTextMessage(from: string, text: string, mess
 	const image = isImageGenerationRequest(response);
 
 	if (image.isImageRequest && image.prompt) {
+		let imageUrl;
 		const encodedPrompt = encodeURIComponent(image.prompt);
-		const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1024&height=1024&seed=-1&enhance=true`;
+
+		if (image.prompt === "my_picture") {
+			const myPics = [
+				'https://raw.githubusercontent.com/dconco/dconco/main/profile1.png',
+				'https://raw.githubusercontent.com/dconco/dconco/main/profile2.png',
+				'https://raw.githubusercontent.com/dconco/dconco/main/profile3.png',
+				'https://raw.githubusercontent.com/dconco/dconco/main/profile4.png',
+			];
+			imageUrl = myPics[Math.floor(Math.random() * myPics.length)];
+		}
+		imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1024&height=1024&seed=-1&enhance=true`;
 
 		const result = await whatsapp.sendImage(from, imageUrl, image.caption, messageId);
 		if (result) return image.caption;
