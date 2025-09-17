@@ -1,10 +1,11 @@
 import WhatsAppService from "@/utils/whatsappService";
 import chatWithUser from "@/bot";
+import { handleMessages } from "./handleMessages";
 
 export default async function handleReactionMessage(
 	from: string,
 	reaction: any,
-	_messageId: string,
+	messageId: string,
 	name?: string
 ): Promise<string | null> {
 	try {
@@ -16,8 +17,9 @@ export default async function handleReactionMessage(
 		
 		// Send to bot
 		const reply = await chatWithUser(name, from, contextMessage);
-
-		return reply;
+		
+		const response = await handleMessages(from, reply || '', messageId, name);
+		return response;
 	} catch (error) {
 		console.error('Error handling reaction:', error);
 		return `Thanks for the reaction! ${reaction.emoji || '😊'} I appreciate the feedback! 🚀`;

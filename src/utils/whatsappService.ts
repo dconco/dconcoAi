@@ -308,6 +308,36 @@ export default class WhatsAppService {
 				body: JSON.stringify({
 					messaging_product: 'whatsapp',
 					status: 'read',
+					message_id: messageId
+				}),
+			});
+
+			if (!response.ok) {
+				// Read receipts might not be supported - make it non-critical
+				console.log('Read receipt not supported or failed (non-critical)');
+				return null;
+			}
+
+			const data = await response.json() as WhatsAppApiResponse;
+			return data;
+		} catch (error) {
+			// Make read receipts non-critical - don't throw errors
+			console.log('Read receipt failed (non-critical):', (error as Error).message);
+			return null;
+		}
+	}
+
+	// Start typing indicator
+	async startTyping(messageId: string): Promise<WhatsAppApiResponse | null> {
+		try {
+			const response = await fetch(this.baseUrl, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${this.token}`,
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					messaging_product: 'whatsapp',
 					message_id: messageId,
 					typing_indicator: {
 						type: "text"
@@ -316,8 +346,42 @@ export default class WhatsAppService {
 			});
 
 			if (!response.ok) {
-				// Read receipts might not be supported - make it non-critical
-				console.log('Read receipt not supported or failed (non-critical)');
+				// Typing indicator might not be supported - make it non-critical
+				console.log('Typing indicator not supported or failed (non-critical)');
+				return null;
+			}
+
+			const data = await response.json() as WhatsAppApiResponse;
+			return data;
+		} catch (error) {
+			// Make read receipts non-critical - don't throw errors
+			console.log('Read receipt failed (non-critical):', (error as Error).message);
+			return null;
+		}
+	}
+
+	// Start typing indicator
+	async markAsReadAndStartTyping(messageId: string): Promise<WhatsAppApiResponse | null> {
+		try {
+			const response = await fetch(this.baseUrl, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${this.token}`,
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					messaging_product: 'whatsapp',
+					message_id: messageId,
+					status: 'read',
+					typing_indicator: {
+						type: "text"
+					}
+				}),
+			});
+
+			if (!response.ok) {
+				// Mark as read or Typing indicator might not be supported - make it non-critical
+				console.log('Mark as read or Typing indicator not supported or failed (non-critical)');
 				return null;
 			}
 

@@ -1,10 +1,11 @@
 import WhatsAppService from "@/utils/whatsappService";
 import chatWithUser from "@/bot";
+import { handleMessages } from "./handleMessages";
 
 export default async function handleVoiceMessage(
 	from: string,
 	audio: any,
-	_messageId: string,
+	messageId: string,
 	name?: string
 ): Promise<string | null> {
 	try {
@@ -27,7 +28,8 @@ export default async function handleVoiceMessage(
 		// Send to bot (Gemini doesn't support audio yet, so we'll just acknowledge it)
 		const reply = await chatWithUser(name, from, contextMessage);
 
-		return reply;
+		const response = await handleMessages(from, reply || '', messageId, name);
+		return response;
 	} catch (error) {
 		console.error('Error handling voice note:', error);
 		return "I see you sent a voice note! 🎤 But I can't process audio messages yet. Can you type your message instead? 😉";

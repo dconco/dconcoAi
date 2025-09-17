@@ -1,10 +1,11 @@
 import WhatsAppService from "@/utils/whatsappService";
 import chatWithUser from "@/bot";
+import { handleMessages } from "./handleMessages";
 
 export default async function handleStickerMessage(
 	from: string,
 	sticker: any,
-	_messageId: string,
+	messageId: string,
 	name?: string
 ): Promise<string | null> {
 	try {
@@ -31,7 +32,8 @@ export default async function handleStickerMessage(
 			data: base64Sticker
 		});
 
-		return reply;
+		const response = await handleMessages(from, reply || '', messageId, name);
+		return response;
 	} catch (error) {
 		console.error('Error handling sticker:', error);
 		return "I see you sent a sticker! ✨ But I don't currently have the ability to process it right now. Text is my thing for the moment! 🚀";

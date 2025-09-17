@@ -2,10 +2,12 @@ import chatWithUser from '@/bot';
 import WhatsappService from '@/utils/whatsappService';
 import { isReactionRequest } from '@/bot/reactionRequest';
 import { isImageGenerationRequest } from '@/bot/imageGenerationRequest';
+import { handleMessages } from './handleMessages';
 
-export default async function handleTextMessage(from: string, text: string, messageId: string, name: string|undefined): Promise<string|void> {
-	const whatsapp = new WhatsappService();
-
+export default async function handleTextMessage(from: string, text: string, messageId: string, name: string|undefined): Promise<string|null> {
+	const response = await chatWithUser(name, from, text);
+	const result = await handleMessages(from, response || '', messageId, name);
+	return result;
 	/**
 	 * Menu and Options
 	 */
@@ -56,42 +58,4 @@ export default async function handleTextMessage(from: string, text: string, mess
 	/**
 	 * Default response
 	 */
-	const response = await chatWithUser(name, from, text);
-	
-	const image = isImageGenerationRequest(response);
-	const reaction = isReactionRequest(response);
-
-	if (image.isImageRequest && image.prompt) {
-		let imageUrl;
-		const encodedPrompt = encodeURIComponent(image.prompt);
-
-		if (image.prompt === "my_picture") {
-			const myPics = [
-				'https://raw.githubusercontent.com/dconco/dconco/main/profile1.png',
-				'https://raw.githubusercontent.com/dconco/dconco/main/profile2.png',
-				'https://raw.githubusercontent.com/dconco/dconco/main/profile3.png',
-				'https://raw.githubusercontent.com/dconco/dconco/main/profile4.png',
-			];
-			imageUrl = myPics[Math.floor(Math.random() * myPics.length)];
-		} else {
-			imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1024&height=1024&seed=-1&enhance=true`;
-		}
-
-		const result = await whatsapp.sendImage(from, imageUrl, image.caption, messageId);
-		if (result) return image.caption;
-	}
-	
-	else if (reaction.isReactionRequest && reaction.emoji) {
-		await whatsapp.reactToMessage(from, messageId, reaction.emoji);
-
-		if (reaction.message && reaction.message.trim().length > 0) {
-			const result = await whatsapp.sendTextMessage(from, reaction.message, messageId);
-			if (result) return reaction.message;
-		}
-	}
-
-	else {
-		const result = await whatsapp.sendTextMessage(from, response, messageId);
-		if (result) return response;
-	}
 }

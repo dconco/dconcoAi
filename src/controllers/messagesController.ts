@@ -77,7 +77,7 @@ export const sendMessage = async (name: string | undefined, message: WhatsAppMes
 		}
 	}
 
-	await whatsapp.markAsRead(message.id);
+	await whatsapp.markAsReadAndStartTyping(message.id);
 
 	// Handle different message types
 	if (message.type === 'text' && message.text) {
@@ -109,7 +109,6 @@ export const sendMessage = async (name: string | undefined, message: WhatsAppMes
 		const reply = await handleStickerMessage(message.from, message.sticker, message.id, name);
 
 		if (reply) {
-			await whatsapp.sendTextMessage(message.from, reply, message.id);
 			cacheMessage({ contact: message.from, text: JSON.stringify(message), reply, name: name || '', messageId: message.id });
 			saveUsers({ contact: message.from, name });
 		}
@@ -119,7 +118,6 @@ export const sendMessage = async (name: string | undefined, message: WhatsAppMes
 		const reply = await handleImageMessage(message.from, message.image, message.id, name);
 
 		if (reply) {
-			await whatsapp.sendTextMessage(message.from, reply, message.id);
 			cacheMessage({ contact: message.from, text: JSON.stringify(message), reply, name: name || '', messageId: message.id });
 			saveUsers({ contact: message.from, name });
 		}
@@ -129,7 +127,6 @@ export const sendMessage = async (name: string | undefined, message: WhatsAppMes
 		const reply = await handleVoiceMessage(message.from, message.audio, message.id, name);
 
 		if (reply) {
-			await whatsapp.sendTextMessage(message.from, reply, message.id);
 			cacheMessage({ contact: message.from, text: JSON.stringify(message), reply, name: name || '', messageId: message.id });
 			saveUsers({ contact: message.from, name });
 		}
@@ -139,8 +136,6 @@ export const sendMessage = async (name: string | undefined, message: WhatsAppMes
 		const reply = await handleReactionMessage(message.from, message.reaction, message.id, name);
 
 		if (reply) {
-			const whatsapp = new WhatsAppService();
-			await whatsapp.sendTextMessage(message.from, reply, message.id);
 			cacheMessage({ contact: message.from, text: `Reacted with ${message.reaction.emoji}`, reply, name: name || '', messageId: message.id });
 			saveUsers({ contact: message.from, name });
 		}

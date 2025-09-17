@@ -1,10 +1,11 @@
 import WhatsAppService from "@/utils/whatsappService";
 import chatWithUser from "@/bot";
+import { handleMessages } from "./handleMessages";
 
 export default async function handleImageMessage(
 	from: string,
 	image: any,
-	_messageId: string,
+	messageId: string,
 	name?: string
 ): Promise<string | null> {
 	try {
@@ -31,7 +32,8 @@ export default async function handleImageMessage(
 			data: base64Image
 		});
 
-		return reply;
+		const response = await handleMessages(from, reply || '', messageId, name);
+		return response;
 	} catch (error) {
 		console.error('Error handling image:', error);
 		return "I see you sent an image! 📸 But I'm having trouble processing it right now. Feel free to describe it to me instead! 😉";
