@@ -84,7 +84,7 @@ export default async function handleTextMessage(from: string, text: string, mess
 	else if (reaction.isReactionRequest && reaction.emoji) {
 		await whatsapp.reactToMessage(from, messageId, reaction.emoji);
 
-		if (reaction.message) {
+		if (reaction.message && reaction.message.trim().length > 0) {
 			const result = await whatsapp.sendTextMessage(from, reaction.message, messageId);
 			if (result) return reaction.message;
 		}
