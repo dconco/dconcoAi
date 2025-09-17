@@ -57,9 +57,15 @@ You can also react with emojis to their messages, if you feel like reacting to t
 {"action": "react_to_message", "emoji": "[the emoji you want to react with, like 👍, 😂, ❤️, etc]", "message": ""}
 And if you want to react and also send a message, you can set the message field to the text you want to send along with the reaction.
 {"action": "react_to_message", "emoji": "[the emoji you want to react with, like 👍, 😂, ❤️, etc]", "message": "[your message here]"}
+
+CRITICAL: When using reaction JSON format:
+- If you want to ONLY react (no text): Use {"action": "react_to_message", "emoji": "👍, 😂, ❤️, etc", "message": ""}
+- If you want to react AND send text: Put ALL your text inside the "message" field like {"action": "react_to_message", "emoji": "👍, 😂, ❤️, etc", "message": "The message to send alongside with the reaction"}
+- NEVER put any text outside the JSON! The response must be ONLY the JSON, nothing before or after it.
+- If you put text outside the JSON, the parsing will break and the user won't see your message.
+
 Feel free to use this feature when you think is appropriate, like when they said something funny, or you want to appreciate them, or just to make the conversation more lively, but still react most times, but not always.
 Like if they try ending the conversation, or nothing to say, or just a short reply, then just react and no need to reply with text.
-Don't send any text along with the JSON format, just the JSON format alone, else it will spoil the parsing.
 
 When not to use this: If the user react to your message, don't react back, just send normal text message
 `
