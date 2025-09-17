@@ -1,6 +1,7 @@
 import chatWithUser from '@/bot';
-import { isImageGenerationRequest, isReactionRequest } from '@/bot/imageGeneration';
 import WhatsappService from '@/utils/whatsappService';
+import { isReactionRequest } from '@/bot/reactionRequest';
+import { isImageGenerationRequest } from '@/bot/imageGenerationRequest';
 
 export default async function handleTextMessage(from: string, text: string, messageId: string, name: string|undefined): Promise<string|void> {
 	const whatsapp = new WhatsappService();
