@@ -40,6 +40,12 @@ export const MODEL_CONFIGS: ModelConfig[] = [
         isActive: true
     },
     {
+        name: "gemini-2.0-flash",
+        version: "2.0-flash",
+        dailyLimit: 200,
+        isActive: true
+    },
+    {
         name: "gemini-2.0-flash-exp",
         version: "2.0-flash",
         dailyLimit: 200,
