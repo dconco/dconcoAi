@@ -6,6 +6,7 @@ interface RateLimitData {
         requests: number;
         windowStart: number;
         warningsSent: number;
+        silenceUntil?: number; // Timestamp when silence period ends
     };
 }
 
@@ -27,6 +28,7 @@ export function checkRateLimit(contact: string): boolean {
     const now = Date.now();
     const windowDuration = 30 * 1000; // 30 seconds
     const maxRequests = 4;
+    const spamPenalty = 5 * 1000; // +5 seconds for each spam message
     
     const rateLimitData = loadRateLimit();
     
@@ -42,6 +44,15 @@ export function checkRateLimit(contact: string): boolean {
     }
     
     const userLimit = rateLimitData[contact];
+    
+    // Check if user is in silence period
+    if (userLimit.silenceUntil && now < userLimit.silenceUntil) {
+        // User is still in silence period, add +5 seconds for continued spamming
+        rateLimitData[contact].silenceUntil = userLimit.silenceUntil + spamPenalty;
+        saveRateLimit(rateLimitData);
+        return false;
+    }
+    
     const timeSinceWindowStart = now - userLimit.windowStart;
     
     if (timeSinceWindowStart >= windowDuration) {
@@ -57,13 +68,15 @@ export function checkRateLimit(contact: string): boolean {
     
     // Always increment request count when user sends message
     rateLimitData[contact].requests++;
-    saveRateLimit(rateLimitData);
     
     if (userLimit.requests >= maxRequests) {
-        // Rate limit exceeded
+        // Rate limit exceeded - start 30 second silence period
+        rateLimitData[contact].silenceUntil = now + windowDuration;
+        saveRateLimit(rateLimitData);
         return false;
     }
     
+    saveRateLimit(rateLimitData);
     return true;
 }
 
@@ -96,7 +109,7 @@ export function shouldSendWarning(contact: string): boolean {
     return true;
 }
 
-export function getRemainingRequests(contact: string): { remaining: number, resetIn: number } {
+export function getRemainingRequests(contact: string): { remaining: number, resetIn: number, silenceTimeLeft?: number } {
     const now = Date.now();
     const windowDuration = 30 * 1000;
     const maxRequests = 4;
@@ -108,6 +121,17 @@ export function getRemainingRequests(contact: string): { remaining: number, rese
     }
     
     const userLimit = rateLimitData[contact];
+    
+    // Check if user is in silence period
+    if (userLimit.silenceUntil && now < userLimit.silenceUntil) {
+        const silenceTimeLeft = userLimit.silenceUntil - now;
+        return { 
+            remaining: 0, 
+            resetIn: silenceTimeLeft,
+            silenceTimeLeft: Math.ceil(silenceTimeLeft / 1000) // in seconds
+        };
+    }
+    
     const timeSinceWindowStart = now - userLimit.windowStart;
     
     if (timeSinceWindowStart >= windowDuration) {
