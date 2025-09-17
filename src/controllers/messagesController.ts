@@ -63,7 +63,9 @@ export const sendMessage = async (name: string | undefined, message: WhatsAppMes
 			cacheMessage({ contact: message.from, text: message.text.body, name: name || '', reply, messageId: message.id });
 			saveUsers({ contact: message.from, name });
 		}
-	} else if (message.type === 'interactive' && message.interactive) {
+	}
+	
+	else if (message.type === 'interactive' && message.interactive) {
 		const reply: any = await handleInteractiveMessage(
 			message.from,
 			message.interactive,
@@ -77,7 +79,9 @@ export const sendMessage = async (name: string | undefined, message: WhatsAppMes
 			cacheMessage({ contact: message.from, text, reply: reply.message, name: name || '', messageId: message.id });
 			saveUsers({ contact: message.from, name });
 		}
-	} else if (message.type === 'sticker' && message.sticker) {
+	}
+	
+	else if (message.type === 'sticker' && message.sticker) {
 		const reply = await handleStickerMessage(message.from, message.sticker, message.id, name);
 
 		if (reply) {
@@ -85,7 +89,9 @@ export const sendMessage = async (name: string | undefined, message: WhatsAppMes
 			cacheMessage({ contact: message.from, text: JSON.stringify(message), reply, name: name || '', messageId: message.id });
 			saveUsers({ contact: message.from, name });
 		}
-	} else if (message.type === 'image' && message.image) {
+	}
+	
+	else if (message.type === 'image' && message.image) {
 		const reply = await handleImageMessage(message.from, message.image, message.id, name);
 
 		if (reply) {
@@ -93,7 +99,9 @@ export const sendMessage = async (name: string | undefined, message: WhatsAppMes
 			cacheMessage({ contact: message.from, text: JSON.stringify(message), reply, name: name || '', messageId: message.id });
 			saveUsers({ contact: message.from, name });
 		}
-	} else if (message.type === 'audio' && message.audio) {
+	}
+	
+	else if (message.type === 'audio' && message.audio) {
 		const reply = await handleVoiceMessage(message.from, message.audio, message.id, name);
 
 		if (reply) {
@@ -101,7 +109,9 @@ export const sendMessage = async (name: string | undefined, message: WhatsAppMes
 			cacheMessage({ contact: message.from, text: JSON.stringify(message), reply, name: name || '', messageId: message.id });
 			saveUsers({ contact: message.from, name });
 		}
-	} else if (message.type === 'reaction' && message.reaction) {
+	}
+	
+	else if (message.type === 'reaction' && message.reaction) {
 		const reply = await handleReactionMessage(message.from, message.reaction, message.id, name);
 
 		if (reply) {
@@ -110,7 +120,9 @@ export const sendMessage = async (name: string | undefined, message: WhatsAppMes
 			cacheMessage({ contact: message.from, text: `Reacted with ${message.reaction.emoji}`, reply, name: name || '', messageId: message.id });
 			saveUsers({ contact: message.from, name });
 		}
-	} else {
+	}
+	
+	else {
 		const reply = await chatWithUser(name, message.from, JSON.stringify(message));
 		const response = await whatsapp.sendTextMessage(message.from, reply, message.id);
 

@@ -42,7 +42,6 @@ app.post('/api/send-message', async (req: Request<{}, {}, SendMessageRequest>, r
 			await whatsapp.markAsRead(req.body.messageId);
 		}
 
-		// await new Promise(resolve => setTimeout(resolve, 3000)); // wait 3s
 		const result = await whatsapp.sendTextMessage(to, message, req.body?.messageId);
 
 		if (result) {
