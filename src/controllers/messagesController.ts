@@ -7,7 +7,7 @@ import handleVoiceMessage from '@/helper/handleVoiceMessage';
 import handleReactionMessage from '@/helper/handleReactionMessage';
 import { WhatsAppMessage, WhatsAppWebhook } from '@/types';
 import { cacheMessage, saveUsers } from '@/utils/quotaChecker';
-import { checkRateLimit, shouldSendWarning, storeLastMessage, hasPendingMessage } from '@/utils/rateLimit';
+import { checkRateLimit, shouldSendWarning, storeLastMessage, getPendingMessage } from '@/utils/rateLimit';
 import WhatsAppService from '@/utils/whatsappService';
 import chatWithUser from '@/bot';
 
@@ -43,24 +43,9 @@ export default async function MessagesController(req: Request, res: Response): P
 export const sendMessage = async (name: string | undefined, message: WhatsAppMessage): Promise<any> => {
 	const whatsapp: WhatsAppService = new WhatsAppService();
 
-	// First check if user has a pending message from rate limiting
-	const pending = hasPendingMessage(message.from);
-	if (pending.hasMessage && pending.message) {
-		console.log(`📬 Processing pending message for ${message.from}: ${pending.message}`);
-		// Process their last message that was blocked by rate limit
-		await whatsapp.markAsRead(message.id);
-		
-		if (message.type === 'text') {
-			const reply = await handleTextMessage(message.from, pending.message, pending.messageId || message.id, pending.userName);
-			console.log(`Pending message reply: ${reply}`);
-		}
-		
-		// Continue to process the current message normally (they're no longer rate limited)
-	}
-
-	// Check rate limit for current message
+	// Check rate limit first
 	if (!checkRateLimit(message.from)) {
-		// Store this message to respond to later
+		// Store this message to respond to later (only for text messages)
 		if (message.type === 'text' && message.text) {
 			storeLastMessage(message.from, message.text.body, message.id, name);
 			console.log(`💾 Stored message for later: ${message.text.body}`);
@@ -72,6 +57,24 @@ export const sendMessage = async (name: string | undefined, message: WhatsAppMes
 			await whatsapp.sendTextMessage(message.from, rateLimitMessage, message.id);
 		}
 		return;
+	}
+
+	// Check if user has a pending message to process first
+	const pending = getPendingMessage(message.from);
+	if (pending.hasMessage && pending.message) {
+		console.log(`📬 Processing pending message for ${message.from}: ${pending.message}`);
+		// Process their last stored message first
+		const reply = await handleTextMessage(message.from, pending.message, pending.messageId || message.id, pending.userName);
+		if (reply) {
+			cacheMessage({ 
+				contact: message.from, 
+				text: pending.message, 
+				name: pending.userName || name || '', 
+				reply, 
+				messageId: pending.messageId || message.id 
+			});
+			saveUsers({ contact: message.from, name: pending.userName || name });
+		}
 	}
 
 	await whatsapp.markAsRead(message.id);

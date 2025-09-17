@@ -6,10 +6,9 @@ interface RateLimitData {
         requests: number;
         windowStart: number;
         warningsSent: number;
-        silenceUntil?: number; // Timestamp when silence period ends
-        lastMessage?: string; // Store last message to respond to after cooldown
-        lastMessageId?: string; // Store message ID for context
-        userName?: string; // Store user name for context
+        lastMessage?: string;
+        lastMessageId?: string;
+        userName?: string;
     };
 }
 
@@ -29,9 +28,9 @@ function loadRateLimit(): RateLimitData {
 
 export function checkRateLimit(contact: string): boolean {
     const now = Date.now();
-    const windowDuration = 2 * 60 * 1000; // 2 minutes window
-    const maxRequests = 3; // Only 3 requests per 2 minutes
-    const spamPenalty = 30 * 1000; // +30 seconds for each spam message
+    const windowDuration = 30 * 1000; // 30 seconds
+    const maxRequests = 4; // 4 requests per window
+    const spamPenalty = 5 * 1000; // +5 seconds for spamming
     
     const rateLimitData = loadRateLimit();
     
@@ -47,15 +46,6 @@ export function checkRateLimit(contact: string): boolean {
     }
     
     const userLimit = rateLimitData[contact];
-    
-    // Check if user is in silence period
-    if (userLimit.silenceUntil && now < userLimit.silenceUntil) {
-        // User is still in silence period, add +5 seconds for continued spamming
-        rateLimitData[contact].silenceUntil = userLimit.silenceUntil + spamPenalty;
-        saveRateLimit(rateLimitData);
-        return false;
-    }
-    
     const timeSinceWindowStart = now - userLimit.windowStart;
     
     if (timeSinceWindowStart >= windowDuration) {
@@ -69,16 +59,15 @@ export function checkRateLimit(contact: string): boolean {
         return true;
     }
     
-    // Always increment request count when user sends message
-    rateLimitData[contact].requests++;
-    
     if (userLimit.requests >= maxRequests) {
-        // Rate limit exceeded - start 30 second silence period
-        rateLimitData[contact].silenceUntil = now + windowDuration;
+        // Rate limit exceeded - add spam penalty (extend window)
+        rateLimitData[contact].windowStart -= spamPenalty;
         saveRateLimit(rateLimitData);
         return false;
     }
     
+    // Increment request count
+    rateLimitData[contact].requests++;
     saveRateLimit(rateLimitData);
     return true;
 }
@@ -112,10 +101,10 @@ export function shouldSendWarning(contact: string): boolean {
     return true;
 }
 
-export function getRemainingRequests(contact: string): { remaining: number, resetIn: number, silenceTimeLeft?: number } {
+export function getRemainingRequests(contact: string): { remaining: number, resetIn: number } {
     const now = Date.now();
-    const windowDuration = 2 * 60 * 1000; // 2 minutes
-    const maxRequests = 3; // Match the new limits
+    const windowDuration = 30 * 1000; // Back to 30 seconds
+    const maxRequests = 4; // Back to 4 requests
     
     const rateLimitData = loadRateLimit();
     
@@ -124,17 +113,6 @@ export function getRemainingRequests(contact: string): { remaining: number, rese
     }
     
     const userLimit = rateLimitData[contact];
-    
-    // Check if user is in silence period
-    if (userLimit.silenceUntil && now < userLimit.silenceUntil) {
-        const silenceTimeLeft = userLimit.silenceUntil - now;
-        return { 
-            remaining: 0, 
-            resetIn: silenceTimeLeft,
-            silenceTimeLeft: Math.ceil(silenceTimeLeft / 1000) // in seconds
-        };
-    }
-    
     const timeSinceWindowStart = now - userLimit.windowStart;
     
     if (timeSinceWindowStart >= windowDuration) {
@@ -159,35 +137,26 @@ export function storeLastMessage(contact: string, message: string, messageId: st
     }
 }
 
-// Check if user was rate limited and has a pending message
-export function hasPendingMessage(contact: string): { hasMessage: boolean, message?: string, messageId?: string, userName?: string } {
-    const now = Date.now();
+// Check if user has a pending message and clear it
+export function getPendingMessage(contact: string): { hasMessage: boolean, message?: string, messageId?: string, userName?: string } {
     const rateLimitData = loadRateLimit();
     
-    if (!rateLimitData[contact]) {
+    if (!rateLimitData[contact] || !rateLimitData[contact].lastMessage) {
         return { hasMessage: false };
     }
     
-    const userLimit = rateLimitData[contact];
+    const pendingMessage = {
+        hasMessage: true,
+        message: rateLimitData[contact].lastMessage,
+        messageId: rateLimitData[contact].lastMessageId,
+        userName: rateLimitData[contact].userName
+    };
     
-    // Check if user was in silence period and it just ended
-    if (userLimit.silenceUntil && now >= userLimit.silenceUntil && userLimit.lastMessage) {
-        // Clear the pending message and return it
-        const pendingMessage = {
-            hasMessage: true,
-            message: userLimit.lastMessage,
-            messageId: userLimit.lastMessageId,
-            userName: userLimit.userName
-        };
-        
-        // Clear the stored message
-        delete rateLimitData[contact].lastMessage;
-        delete rateLimitData[contact].lastMessageId;
-        delete rateLimitData[contact].userName;
-        saveRateLimit(rateLimitData);
-        
-        return pendingMessage;
-    }
+    // Clear the stored message
+    delete rateLimitData[contact].lastMessage;
+    delete rateLimitData[contact].lastMessageId;
+    delete rateLimitData[contact].userName;
+    saveRateLimit(rateLimitData);
     
-    return { hasMessage: false };
+    return pendingMessage;
 }
