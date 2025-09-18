@@ -1,7 +1,15 @@
-export function isReactionRequest(text: string): { isReactionRequest: boolean, emoji?: string, message?: string } {
+type ReactionRequest = {
+    action: "react_to_message";
+    emoji: string;
+    message?: string;
+};
+
+export type ReactionRequestResponse = { isReactionRequest: boolean, emoji?: string, message?: string };
+
+export function isReactionRequest(text: string): ReactionRequestResponse {
     try {
         // First try to parse as direct JSON
-        const parsed = JSON.parse(text);
+        const parsed: ReactionRequest = JSON.parse(text);
 
         if (parsed.action === "react_to_message" && parsed.emoji) {
             return {
@@ -15,7 +23,7 @@ export function isReactionRequest(text: string): { isReactionRequest: boolean, e
         const jsonMatch = text.match(/```json\s*\n?([\s\S]*?)\n?\s*```/i) || text.match(/```\s*\n?([\s\S]*?)\n?\s*```/i);
         if (jsonMatch) {
             try {
-                const parsed = JSON.parse(jsonMatch[1].trim());
+                const parsed: ReactionRequest = JSON.parse(jsonMatch[1].trim());
                 if (parsed.action === "react_to_message" && parsed.emoji) {
                     return {
                         isReactionRequest: true,
@@ -32,7 +40,7 @@ export function isReactionRequest(text: string): { isReactionRequest: boolean, e
         const jsonPrefixMatch = text.match(/^json\s*\n?([\s\S]*)/i);
         if (jsonPrefixMatch) {
             try {
-                const parsed = JSON.parse(jsonPrefixMatch[1].trim());
+                const parsed: ReactionRequest = JSON.parse(jsonPrefixMatch[1].trim());
                 if (parsed.action === "react_to_message" && parsed.emoji) {
                     return {
                         isReactionRequest: true,

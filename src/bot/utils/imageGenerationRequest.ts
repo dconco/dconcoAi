@@ -1,7 +1,15 @@
-export function isImageGenerationRequest(text: string): { isImageRequest: boolean, prompt?: string, caption?: string } {
+type ImageGenerationRequest = {
+   action: "generate_image";
+   prompt: string;
+   caption?: string;
+};
+
+export type ImageGenerationRequestResponse = { isImageRequest: boolean, prompt?: string, caption?: string };
+
+export function isImageGenerationRequest(text: string): ImageGenerationRequestResponse {
     try {
         // First try to parse as direct JSON
-        const parsed = JSON.parse(text);
+        const parsed: ImageGenerationRequest = JSON.parse(text);
         if (parsed.action === "generate_image" && parsed.prompt) {
             return {
                 isImageRequest: true,
@@ -14,7 +22,7 @@ export function isImageGenerationRequest(text: string): { isImageRequest: boolea
         const jsonMatch = text.match(/```json\s*\n?([\s\S]*?)\n?\s*```/i) || text.match(/```\s*\n?([\s\S]*?)\n?\s*```/i);
         if (jsonMatch) {
             try {
-                const parsed = JSON.parse(jsonMatch[1].trim());
+                const parsed: ImageGenerationRequest = JSON.parse(jsonMatch[1].trim());
                 if (parsed.action === "generate_image" && parsed.prompt) {
                     return {
                         isImageRequest: true,
@@ -31,7 +39,7 @@ export function isImageGenerationRequest(text: string): { isImageRequest: boolea
         const jsonPrefixMatch = text.match(/^json\s*\n?([\s\S]*)/i);
         if (jsonPrefixMatch) {
             try {
-                const parsed = JSON.parse(jsonPrefixMatch[1].trim());
+                const parsed: ImageGenerationRequest = JSON.parse(jsonPrefixMatch[1].trim());
                 if (parsed.action === "generate_image" && parsed.prompt) {
                     return {
                         isImageRequest: true,

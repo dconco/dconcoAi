@@ -1,12 +1,23 @@
-import { isImageGenerationRequest } from "@/bot/imageGenerationRequest";
-import { isReactionRequest } from "@/bot/reactionRequest";
+import { ContactOwnerRequestResponse, isContactOwnerRequest } from "@/bot/utils/contactOwnerRequest";
+import { ImageGenerationRequestResponse, isImageGenerationRequest } from "@/bot/utils/imageGenerationRequest";
+import { isReactionRequest, ReactionRequestResponse } from "@/bot/utils/reactionRequest";
 import WhatsAppService from "@/utils/whatsappService";
 
 export const handleMessages = async (from: string, reply: string, messageId: string, _name?: string): Promise<string | null> => {
    const whatsapp: WhatsAppService = new WhatsAppService();
-   const imageReq = isImageGenerationRequest(reply);
-   const reaction = isReactionRequest(reply);
-   
+   const imageReq: ImageGenerationRequestResponse = isImageGenerationRequest(reply);
+   const reaction: ReactionRequestResponse = isReactionRequest(reply);
+   const contactOwner: ContactOwnerRequestResponse = isContactOwnerRequest(reply);
+
+   if (contactOwner.isContactOwnerRequest) {
+      const ownerNumber = process.env.OWNER_WHATSAPP_NUMBER;
+      const message = `Contact From: ${from}\n\n${contactOwner.message_owner}`;
+
+      if (ownerNumber) {
+         whatsapp.sendTextMessage(ownerNumber, message, null);
+      }
+   }
+
    if (imageReq.isImageRequest && imageReq.prompt) {
       let imageUrl;
       const encodedPrompt = encodeURIComponent(imageReq.prompt);
