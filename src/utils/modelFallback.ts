@@ -25,13 +25,13 @@ export const MODEL_CONFIGS: ModelConfig[] = [
         name: "gemini-2.5-pro",
         version: "2.5-pro",
         dailyLimit: 50, // Conservative limit for pro model
-        isActive: true
+        isActive: false
     },
     {
         name: "gemini-2.5-flash",
         version: "2.5-flash",
         dailyLimit: 200,
-        isActive: true
+        isActive: false
     },
     {
         name: "gemini-2.5-flash-lite",
