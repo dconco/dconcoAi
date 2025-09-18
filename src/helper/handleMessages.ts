@@ -3,9 +3,9 @@ import { isReactionRequest, ReactionRequestResponse } from "@/bot/utils/reaction
 import WhatsAppService from "@/utils/whatsappService";
 
 export const handleMessages = async (from: string, reply: string, messageId: string, _name?: string): Promise<string | null> => {
-   const whatsapp: WhatsAppService = new WhatsAppService();
    const imageReq: ImageGenerationRequestResponse = isImageGenerationRequest(reply);
    const reaction: ReactionRequestResponse = isReactionRequest(reply);
+   const whatsapp: WhatsAppService = new WhatsAppService();
    const ownerNumber = process.env.OWNER_WHATSAPP_NUMBER;
 
    if (imageReq.isImageRequest && imageReq.prompt) {
@@ -43,7 +43,7 @@ export const handleMessages = async (from: string, reply: string, messageId: str
          const message = `Contact From: ${from}\n\n${reaction.message_owner}`;
 
          if (ownerNumber) {
-            whatsapp.sendTextMessage(ownerNumber, message, null);
+            await whatsapp.sendTextMessage(ownerNumber, message, null);
          }
       }
 
