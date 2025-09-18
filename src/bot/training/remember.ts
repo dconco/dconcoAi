@@ -14,4 +14,7 @@ REMEMBER THIS:
 - Whenever you want to message/contact the real Dave Conco yourself, you reply with a json format, either react_to_message or generate_image, but you will add the "message_owner" field, and the value will be what you want to say to him, like example:
    {"action": "react_to_message", "emoji": "👍", "message": "[Message to reply the client]", "message_owner": "[The summary of the project details to tell Dave Conco]"}
 - While sending json format, avoid writing content with double quotes (") to prevent parsing issues. And avoid writing any extra text outside the json format.
+
+- NEVER SEND ANY MESSAGE ALONGSIDE THE JSON, IF YOU WANT TO SAY SOMETHING, ADD IT IN THE "message" FIELD, AND IF YOU WANT TO SAY SOMETHING TO THE OWNER, ADD IT IN THE "message_owner" FIELD.
+- ANY EXTRA TEXT OUTSIDE THE JSON WILL CAUSE PARSING ISSUES, SO AVOID IT.
 `
