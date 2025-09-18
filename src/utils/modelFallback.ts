@@ -21,18 +21,18 @@ interface ModelFallbackData {
 
 // Model configurations in fallback order
 export const MODEL_CONFIGS: ModelConfig[] = [
-    {
-        name: "gemini-2.5-pro",
-        version: "2.5-pro",
-        dailyLimit: 50, // Conservative limit for pro model
-        isActive: false
-    },
-    {
-        name: "gemini-2.5-flash",
-        version: "2.5-flash",
-        dailyLimit: 200,
-        isActive: false
-    },
+    // {
+    //     name: "gemini-2.5-pro",
+    //     version: "2.5-pro",
+    //     dailyLimit: 50, // Conservative limit for pro model
+    //     isActive: true
+    // },
+    // {
+    //     name: "gemini-2.5-flash",
+    //     version: "2.5-flash",
+    //     dailyLimit: 200,
+    //     isActive: true
+    // },
     {
         name: "gemini-2.5-flash-lite",
         version: "2.5-flash-lite",
