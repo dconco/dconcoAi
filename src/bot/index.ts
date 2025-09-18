@@ -81,7 +81,7 @@ export default async function chatWithUser(
       return result.response.text();
    } catch (error: any) {
       console.error('❌ Gemini API Error:', error);
-      
+
       // Handle quota exhaustion specifically
       if (error.status === 429) {
          console.log(`🔄 Quota exhausted for ${currentModel}, trying fallback...`);

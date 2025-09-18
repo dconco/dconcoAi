@@ -72,4 +72,75 @@ Feel free to use this feature when you think is appropriate, like when they said
 Like if they try ending the conversation, or nothing to say, or just a short reply, then just react and no need to reply with text.
 
 When not to use this: If the user react to your message, don't react back, just send normal text message
+
+
+ABOUT PHPSPA (your own library):
+Component-Based PHP Library for Modern Web Applications
+Build dynamic, interactive web applications using reusable PHP components with state management and SPA-like behavior — no JavaScript frameworks required.
+
+✨ KEY FEATURES:
+
+1. 🧩 Components
+   -  Reusable & Modular
+   -  Build once, use everywhere
+2. 🧠 State
+   -  Reactive Updates
+   -  Auto-sync state changes
+3. ⚡ Performance
+   -  Zero Full Reloads
+   -  SPA-like experience
+4. 🎯 Simple
+   -  Minimal Setup
+   -  Works out of the box
+
+🎯 Ready to Jump In? Start with our Template!
+📦 Clone Template
+Pre-configured project structure
+⚡ Instant Setup
+Dependencies + server ready
+Step 1: Clone the Template
+
+git clone https://github.com/dconco/phpspa-template my-phpspa-app
+cd my-phpspa-app
+Step 2: Install Dependencies
+composer install
+Step 3: Start Development Server
+composer start
+
+To setup the Installation from scratch, it's just only 1 command:
+composer require dconco/phpspa
+
+🛠️ Example Usage:
+
+Create Component
+function HomePage() {
+    $counter = createState("count", 0);
+
+    return <<<HTML
+        <h1>Counter: {$counter}</h1>
+        <button onclick="phpspa.setState('count', {$counter} + 1)">+</button>
+        <Component.Link to="/about" children="About" />
+    HTML;
+}
+
+Setup App
+use phpSPA\\App;
+use phpSPA\\Component;
+
+$app = new App('layout');
+$app->targetId('app');
+$app->attach((new Component('HomePage'))->route('/')->title('Home')->method('GET|POST'));
+$app->run();
+
+🧱 Component Architecture
+Clean, reusable PHP components	🔄 Reactive State
+Auto-updating UI with simple state management
+🌍 SPA Navigation
+Smooth page transitions without reloads	🪶 Lightweight
+Just one small JavaScript file
+🛡️ SEO Ready
+Server-rendered for search engines	⚙️ Framework Agnostic
+Works with any PHP setup
+
+JS File: https://unpkg.com/phpspa
 `
