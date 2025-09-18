@@ -2,9 +2,10 @@ type ReactionRequest = {
     action: "react_to_message";
     emoji: string;
     message?: string;
+    message_owner?: string;
 };
 
-export type ReactionRequestResponse = { isReactionRequest: boolean, emoji?: string, message?: string };
+export type ReactionRequestResponse = { isReactionRequest: boolean, emoji?: string, message?: string, message_owner?: string };
 
 export function isReactionRequest(text: string): ReactionRequestResponse {
     try {
@@ -15,7 +16,8 @@ export function isReactionRequest(text: string): ReactionRequestResponse {
             return {
                 isReactionRequest: true,
                 emoji: parsed.emoji,
-                message: parsed.message
+                message: parsed.message,
+                message_owner: parsed?.message_owner && parsed.message_owner.trim().length > 0 ? parsed.message_owner : undefined
             };
         }
     } catch (error) {
@@ -28,7 +30,8 @@ export function isReactionRequest(text: string): ReactionRequestResponse {
                     return {
                         isReactionRequest: true,
                         emoji: parsed.emoji,
-                        message: parsed.message
+                        message: parsed.message,
+                        message_owner: parsed?.message_owner && parsed.message_owner.trim().length > 0 ? parsed.message_owner : undefined
                     };
                 }
             } catch (innerError) {
@@ -45,7 +48,8 @@ export function isReactionRequest(text: string): ReactionRequestResponse {
                     return {
                         isReactionRequest: true,
                         emoji: parsed.emoji,
-                        message: parsed.message
+                        message: parsed.message,
+                        message_owner: parsed?.message_owner && parsed.message_owner.trim().length > 0 ? parsed.message_owner : undefined
                     };
                 }
             } catch (innerError) {
@@ -80,7 +84,8 @@ export function isReactionRequest(text: string): ReactionRequestResponse {
                         return {
                             isReactionRequest: true,
                             emoji: parsed.emoji,
-                            message: combinedMessage || undefined
+                            message: combinedMessage || undefined,
+                            message_owner: parsed?.message_owner && parsed.message_owner.trim().length > 0 ? parsed.message_owner : undefined
                         };
                     }
                 } catch (innerError) {
