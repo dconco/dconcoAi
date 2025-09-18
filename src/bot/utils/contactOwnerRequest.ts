@@ -5,6 +5,7 @@ type ContactOwnerRequest = {
 export type ContactOwnerRequestResponse = { isContactOwnerRequest: boolean, message_owner?: string };
 
 export function isContactOwnerRequest(text: string): ContactOwnerRequestResponse {
+    console.log(text);
     try {
         // First try to parse as direct JSON
         const parsed: ContactOwnerRequest  = JSON.parse(text);
