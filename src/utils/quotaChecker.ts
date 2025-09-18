@@ -6,6 +6,7 @@ import { CachedAPIMessageData, CachedAPIMessageInterface, CachedMessageData, Cac
 import { loadQuota, loadUnreadMessages, loadCachedMessages, quotaFilePath, unreadMessagesFilePath, cachedMessagesFilePath, loadCachedAPIMessages, cachedAPIMessagesFilePath } from "./loadCaches";
 import ReplyUnreadMessages from "./gradualReply";
 import { getUser, saveUser, UserExists } from "@/services/userService";
+import { saveMessage } from "@/services/messageService";
 
 /**
  * ========================================
@@ -117,8 +118,14 @@ export const saveUnreadMessage = ({ message, name }: UnreadMessageInterface): vo
  * Cache message to local file.
  * ========================================
  */
-export const cacheMessage = ({contact, text, name, reply, messageId}: CachedMessageInterface): void => {
+export const cacheMessage = async ({contact, text, name, reply, messageId}: CachedMessageInterface): Promise<void> => {
    try {
+      await saveMessage({ contact, name, text, reply, messageId: messageId || '' });
+   }
+   
+   catch (error) {
+      console.log('MongoDB save failed, using JSON fallback');
+
       const cachedMessages: CachedMessageData = loadCachedMessages();
 
       if (!cachedMessages[contact]) {
@@ -129,8 +136,6 @@ export const cacheMessage = ({contact, text, name, reply, messageId}: CachedMess
 
       // Use synchronous write to prevent race conditions
       writeFileSync(cachedMessagesFilePath, JSON.stringify(cachedMessages, null, 3), 'utf8');
-   } catch (error) {
-      console.error('Error writing cached messages file:', error);
    }
 }
 
@@ -166,7 +171,11 @@ export const saveUsers = async ({contact, name}: UsersInterface): Promise<void> 
          user.name = name;
          await user.save();
       }
-   } catch (error) {
+   }
+   
+   catch (error) {
+      console.log('MongoDB save failed, using JSON fallback for users');
+
       const users = JSON.parse(readFileSync(join(__dirname, '../cache/db/users.json'), 'utf8')) as UsersInterface[];
       const existingUser = users.find(user => user.contact === contact);
 

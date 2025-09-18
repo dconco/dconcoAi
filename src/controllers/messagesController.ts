@@ -8,7 +8,6 @@ import handleReactionMessage from '@/helper/handleReactionMessage';
 import { WhatsAppMessage, WhatsAppWebhook } from '@/types';
 import { cacheMessage, saveUsers } from '@/utils/quotaChecker';
 import { checkRateLimit, shouldSendWarning, storeLastMessage, getPendingMessage } from '@/utils/rateLimit';
-import { saveMessage } from '@/services/messageService';
 import WhatsAppService from '@/utils/whatsappService';
 import chatWithUser from '@/bot';
 
@@ -64,6 +63,7 @@ export const sendMessage = async (name: string | undefined, message: WhatsAppMes
 	const pending = getPendingMessage(message.from);
 	if (pending.hasMessage && pending.message) {
 		console.log(`📬 Processing pending message for ${message.from}: ${pending.message}`);
+
 		// Process their last stored message first
 		const reply = await handleTextMessage(message.from, pending.message, pending.messageId || message.id, pending.userName);
 		if (reply) {
@@ -85,18 +85,7 @@ export const sendMessage = async (name: string | undefined, message: WhatsAppMes
 		const reply = await handleTextMessage(message.from, message.text.body, message.id, name);
 
 		if (reply) {
-			try {
-				await saveMessage({
-					contact: message.from,
-					name: name || '',
-					text: message.text.body,
-					reply,
-					messageId: message.id
-				});
-			} catch (error) {
-				console.log('MongoDB save failed, using JSON fallback');
-				cacheMessage({ contact: message.from, text: message.text.body, name: name || '', reply, messageId: message.id });
-			}
+			cacheMessage({ contact: message.from, text: message.text.body, name: name || '', reply, messageId: message.id });
 			saveUsers({ contact: message.from, name });
 		}
 	}
