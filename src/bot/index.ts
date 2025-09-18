@@ -5,6 +5,7 @@ import instructions from "./training";
 import path from "path";
 import fs from "fs";
 import { getCurrentModel, recordModelUsage, handleQuotaExhausted } from "@/utils/modelFallback";
+import { getMessageHistory } from "@/services/messageService";
 
 config()
 
@@ -17,9 +18,9 @@ function loadMessages(number: string) {
 
    const data: CachedMessageData = JSON.parse(fs.readFileSync(filePath, "utf8"));
 
-   if (data[number]?.messages.length > 10) {
-      // Keep only the last 10 messages
-      data[number].messages = data[number].messages.slice(-10);
+   if (data[number]?.messages.length > 20) {
+      // Keep only the last 20 messages
+      data[number].messages = data[number].messages.slice(-20);
    }
    return data[number]?.messages || [];
 }
@@ -30,7 +31,16 @@ export default async function chatWithUser(
    userMessage: string, 
    media?: { type: 'image' | 'sticker', mimeType: string, data: string }
 ): Promise<string> {
-   const oldMessages = loadMessages(number);
+   // Try to get messages from MongoDB first, fallback to JSON
+   let oldMessages;
+   try {
+      const dbMessages = await getMessageHistory(number);
+      oldMessages = dbMessages;
+   } catch (error) {
+      console.log('Using JSON fallback for messages');
+      oldMessages = loadMessages(number);
+   }
+   
    if (name) instructions.push(`The user's name is ${name}. Respond in a friendly and professional manner.`);
 
    const history = oldMessages.flatMap(msg => [
@@ -67,7 +77,7 @@ export default async function chatWithUser(
       
       // Record successful usage
       recordModelUsage(currentModel);
-      
+
       return result.response.text();
    } catch (error: any) {
       console.error('❌ Gemini API Error:', error);

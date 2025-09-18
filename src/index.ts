@@ -6,8 +6,12 @@ import MessagesController from '@/controllers/messagesController';
 import { cacheAPIMessage, saveUsers } from '@/utils/quotaChecker';
 import { SendMessageRequest } from '@/types';
 import { getModelStatus, getCurrentModel } from '@/utils/modelFallback';
+import connectDB from '@/utils/database';
 
 dotenv.config();
+
+// Connect to MongoDB
+connectDB();
 
 const app: Express = express();
 const PORT: number = Number(process.env.PORT) || 3000;

@@ -11,7 +11,7 @@ export async function saveMessage(data: {
     return await message.save();
 }
 
-export async function getMessages(contact: string, limit: number = 10): Promise<IMessage[]> {
+export async function getMessages(contact: string, limit: number = 20): Promise<IMessage[]> {
     return await Message.find({ contact })
         .sort({ timestamp: -1 })
         .limit(limit)
@@ -19,7 +19,7 @@ export async function getMessages(contact: string, limit: number = 10): Promise<
 }
 
 export async function getMessageHistory(contact: string): Promise<{ text: string; reply: string }[]> {
-    const messages = await getMessages(contact, 10);
+    const messages = await getMessages(contact, 20);
     return messages.reverse().map(msg => ({
         text: msg.text,
         reply: msg.reply

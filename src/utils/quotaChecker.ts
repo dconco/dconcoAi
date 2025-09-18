@@ -5,6 +5,7 @@ import { readFileSync, writeFileSync } from "fs";
 import { CachedAPIMessageData, CachedAPIMessageInterface, CachedMessageData, CachedMessageInterface, QuotaData, UnreadMessageData, UnreadMessageInterface, UsersInterface } from "../types/cache";
 import { loadQuota, loadUnreadMessages, loadCachedMessages, quotaFilePath, unreadMessagesFilePath, cachedMessagesFilePath, loadCachedAPIMessages, cachedAPIMessagesFilePath } from "./loadCaches";
 import ReplyUnreadMessages from "./gradualReply";
+import { getUser, saveUser, UserExists } from "@/services/userService";
 
 /**
  * ========================================
@@ -155,8 +156,17 @@ export const cacheAPIMessage = ({contact, message, name}: CachedAPIMessageInterf
    }
 }
 
-export const saveUsers = ({contact, name}: UsersInterface): void => {
+export const saveUsers = async ({contact, name}: UsersInterface): Promise<void> => {
    try {
+      const user = await getUser({contact});
+
+      if (!user) {
+         await saveUser({contact, name});
+      } else if (name !== undefined && user.name !== name) {
+         user.name = name;
+         await user.save();
+      }
+   } catch (error) {
       const users = JSON.parse(readFileSync(join(__dirname, '../cache/db/users.json'), 'utf8')) as UsersInterface[];
       const existingUser = users.find(user => user.contact === contact);
 
@@ -168,8 +178,7 @@ export const saveUsers = ({contact, name}: UsersInterface): void => {
       } else {
          users.push({ contact, name });
       }
+
       writeFileSync(join(__dirname, '../cache/db/users.json'), JSON.stringify(users, null, 3), 'utf8');
-   } catch (error) {
-      console.error('Error writing users file:', error);
    }
 }
