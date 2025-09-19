@@ -1,9 +1,9 @@
 import chatWithUser from '@/bot';
 import { handleMessages } from './handleMessages';
 
-export default async function handleTextMessage(from: string, text: string, messageId: string, name: string|undefined): Promise<string|null> {
-	const response = await chatWithUser(name, from, text);
-	const result = await handleMessages(from, response || '', messageId, name);
+export default async function handleTextMessage(from: string, text: string, messageId: string): Promise<string|null> {
+	const response = await chatWithUser(from, text);
+	const result = await handleMessages(from, response || '', messageId);
 	return result;
 	/**
 	 * Menu and Options

@@ -26,7 +26,6 @@ function loadMessages(number: string) {
 }
 
 export default async function chatWithUser(
-   name: string|undefined, 
    number: string, 
    userMessage: string, 
    media?: { type: 'image' | 'sticker', mimeType: string, data: string }
@@ -50,15 +49,9 @@ export default async function chatWithUser(
    let currentModel = getCurrentModel();
    console.log(`🤖 Using model: ${currentModel}`);
 
-   // Create system instruction with name context if available
-   let systemInstruction = instructions.join('\n\n');
-   if (name) {
-      systemInstruction += `\n\nIMPORTANT: The user you're talking to is named "${name}". Remember this name and use it naturally in conversation. When they ask about their name or you refer to them, use "${name}".`;
-   }
-
    const model = genAI.getGenerativeModel({
       model: currentModel,
-      systemInstruction: systemInstruction
+      systemInstruction: instructions.join('\n\n')
    });
 
    const chat = model.startChat({ history });
@@ -98,7 +91,7 @@ export default async function chatWithUser(
                console.log(`🔄 Retrying with fallback model: ${fallbackModel}`);
                const fallbackModelInstance = genAI.getGenerativeModel({
                   model: fallbackModel,
-                  systemInstruction: systemInstruction
+                  systemInstruction: instructions.join('\n\n')
                });
                
                const fallbackChat = fallbackModelInstance.startChat({ history });
@@ -119,7 +112,7 @@ export default async function chatWithUser(
                      try {
                         const secondFallbackInstance = genAI.getGenerativeModel({
                            model: secondFallback,
-                           systemInstruction: systemInstruction
+                           systemInstruction: instructions.join('\n\n')
                         });
                         const secondFallbackChat = secondFallbackInstance.startChat({ history });
                         const result = await secondFallbackChat.sendMessage(parts);

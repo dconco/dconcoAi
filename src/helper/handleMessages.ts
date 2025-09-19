@@ -2,7 +2,7 @@ import { ImageGenerationRequestResponse, isImageGenerationRequest } from "@/bot/
 import { isReactionRequest, ReactionRequestResponse } from "@/bot/utils/reactionRequest";
 import WhatsAppService from "@/utils/whatsappService";
 
-export const handleMessages = async (from: string, reply: string, messageId: string, _name?: string): Promise<string | null> => {
+export const handleMessages = async (from: string, reply: string, messageId: string): Promise<string | null> => {
    const imageReq: ImageGenerationRequestResponse = isImageGenerationRequest(reply);
    const reaction: ReactionRequestResponse = isReactionRequest(reply);
    const whatsapp: WhatsAppService = new WhatsAppService();

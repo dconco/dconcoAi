@@ -6,7 +6,6 @@ export default async function handleImageMessage(
 	from: string,
 	image: any,
 	messageId: string,
-	name?: string
 ): Promise<string | null> {
 	try {
 		const whatsapp = new WhatsAppService();
@@ -26,13 +25,13 @@ export default async function handleImageMessage(
 		const contextMessage = `[IMAGE_RECEIVED] User sent an image. Analyze this image and respond appropriately. Image details: mime_type: ${image.mime_type}, caption: "${image.caption || 'No caption'}"`;
 		
 		// Send to bot with image
-		const reply = await chatWithUser(name, from, contextMessage, {
+		const reply = await chatWithUser(from, contextMessage, {
 			type: 'image',
 			mimeType: image.mime_type,
 			data: base64Image
 		});
 
-		const response = await handleMessages(from, reply || '', messageId, name);
+		const response = await handleMessages(from, reply || '', messageId);
 		return response;
 	} catch (error) {
 		console.error('Error handling image:', error);

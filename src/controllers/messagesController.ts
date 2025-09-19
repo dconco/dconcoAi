@@ -65,7 +65,7 @@ export const sendMessage = async (name: string | undefined, message: WhatsAppMes
 		console.log(`📬 Processing pending message for ${message.from}: ${pending.message}`);
 
 		// Process their last stored message first
-		const reply = await handleTextMessage(message.from, pending.message, pending.messageId || message.id, pending.userName);
+		const reply = await handleTextMessage(message.from, pending.message, pending.messageId || message.id);
 		if (reply) {
 			cacheMessage({ 
 				contact: message.from, 
@@ -82,7 +82,7 @@ export const sendMessage = async (name: string | undefined, message: WhatsAppMes
 
 	// Handle different message types
 	if (message.type === 'text' && message.text) {
-		const reply = await handleTextMessage(message.from, message.text.body, message.id, name);
+		const reply = await handleTextMessage(message.from, message.text.body, message.id);
 
 		if (reply) {
 			cacheMessage({ contact: message.from, text: message.text.body, name: name || '', reply, messageId: message.id });
@@ -94,8 +94,7 @@ export const sendMessage = async (name: string | undefined, message: WhatsAppMes
 		const reply: any = await handleInteractiveMessage(
 			message.from,
 			message.interactive,
-			message.id,
-			name
+			message.id
 		);
 
 		if (reply) {
@@ -107,7 +106,7 @@ export const sendMessage = async (name: string | undefined, message: WhatsAppMes
 	}
 	
 	else if (message.type === 'sticker' && message.sticker) {
-		const reply = await handleStickerMessage(message.from, message.sticker, message.id, name);
+		const reply = await handleStickerMessage(message.from, message.sticker, message.id);
 
 		if (reply) {
 			cacheMessage({ contact: message.from, text: JSON.stringify(message), reply, name: name || '', messageId: message.id });
@@ -116,7 +115,7 @@ export const sendMessage = async (name: string | undefined, message: WhatsAppMes
 	}
 	
 	else if (message.type === 'image' && message.image) {
-		const reply = await handleImageMessage(message.from, message.image, message.id, name);
+		const reply = await handleImageMessage(message.from, message.image, message.id);
 
 		if (reply) {
 			cacheMessage({ contact: message.from, text: JSON.stringify(message), reply, name: name || '', messageId: message.id });
@@ -125,7 +124,7 @@ export const sendMessage = async (name: string | undefined, message: WhatsAppMes
 	}
 	
 	else if (message.type === 'audio' && message.audio) {
-		const reply = await handleVoiceMessage(message.from, message.audio, message.id, name);
+		const reply = await handleVoiceMessage(message.from, message.audio, message.id);
 
 		if (reply) {
 			cacheMessage({ contact: message.from, text: JSON.stringify(message), reply, name: name || '', messageId: message.id });
@@ -134,7 +133,7 @@ export const sendMessage = async (name: string | undefined, message: WhatsAppMes
 	}
 	
 	else if (message.type === 'reaction' && message.reaction) {
-		const reply = await handleReactionMessage(message.from, message.reaction, message.id, name);
+		const reply = await handleReactionMessage(message.from, message.reaction, message.id);
 
 		if (reply) {
 			cacheMessage({ contact: message.from, text: `Reacted with ${message.reaction.emoji}`, reply, name: name || '', messageId: message.id });
@@ -143,7 +142,7 @@ export const sendMessage = async (name: string | undefined, message: WhatsAppMes
 	}
 	
 	else {
-		const reply = await chatWithUser(name, message.from, JSON.stringify(message));
+		const reply = await chatWithUser(message.from, JSON.stringify(message));
 		const response = await whatsapp.sendTextMessage(message.from, reply, message.id);
 
 		if (response) {
