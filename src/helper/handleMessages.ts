@@ -10,7 +10,9 @@ export const handleMessages = async (from: string, reply: string, messageId: str
 
    if (imageReq.isImageRequest && imageReq.prompt) {
       let imageUrl;
-      const encodedPrompt = encodeURIComponent(imageReq.prompt);
+      // Sanitize the prompt to remove problematic characters before encoding
+      const sanitizedPrompt = imageReq.prompt.replace(/[\"\\]/g, '');
+      const encodedPrompt = encodeURIComponent(sanitizedPrompt);
 
       if (imageReq.prompt === "my_picture") {
          const myPics = [
@@ -21,8 +23,9 @@ export const handleMessages = async (from: string, reply: string, messageId: str
          ];
          imageUrl = myPics[Math.floor(Math.random() * myPics.length)];
       } else {
-         imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1024&height=1024&seed=-1&enhance=true`;
+         imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}`;
       }
+      console.log("Generated Image URL:", imageUrl);
 
       if (imageReq.message_owner) {
          const message = `Contact From: ${from}\n\n${imageReq.message_owner}`;
@@ -32,11 +35,16 @@ export const handleMessages = async (from: string, reply: string, messageId: str
          }
       }
 
-      const result = await whatsapp.sendImage(from, imageUrl, imageReq.caption, messageId);
-      if (result) return imageReq.caption || "Here's the image you requested! 📸";
-   }
+      try {
+         const result = await whatsapp.sendImage(from, imageUrl, imageReq.caption, messageId);
+         if (result) return imageReq.caption || "Here's the image you requested! 📸";
+      } catch (error) {
+         console.error("Error sending image:", error);
+         await whatsapp.sendTextMessage(from, "❌ Failed to generate or send image. Please try again later.", messageId);
+         return null;
+      }
       
-   else if (reaction.isReactionRequest && reaction.emoji) {
+   } else if (reaction.isReactionRequest && reaction.emoji) {
       await whatsapp.reactToMessage(from, messageId, reaction.emoji);
 
       if (reaction.message_owner) {
@@ -51,9 +59,7 @@ export const handleMessages = async (from: string, reply: string, messageId: str
          const result = await whatsapp.sendTextMessage(from, reaction.message, messageId);
          if (result) return reaction.message;
       }
-   }
-
-   else {
+   } else {
 		const result = await whatsapp.sendTextMessage(from, reply, messageId);
 		if (result) return reply;
    }

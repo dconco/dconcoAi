@@ -4,6 +4,10 @@ import {
 	ListSection
 } from '@/types';
 
+interface WhatsAppMediaUploadResponse {
+	id: string;
+}
+
 export default class WhatsAppService {
 	private token: string;
 	private phoneNumberId: string;
@@ -66,12 +70,44 @@ export default class WhatsAppService {
 	// Send image
 	async sendImage(to: string, uri: string, caption: string = '', messageId?: string): Promise<WhatsAppApiResponse> {
 		try {
+			// 1. Download the image from the provided URI
+			const imageResponse = await fetch(uri);
+			if (!imageResponse.ok) {
+				throw new Error(`Failed to download image from ${uri}: HTTP ${imageResponse.status}`);
+			}
+			const imageBuffer = await imageResponse.arrayBuffer();
+			const contentType = imageResponse.headers.get('content-type') || 'image/jpeg'; // Default to jpeg if not specified
+
+			// 2. Upload the image to WhatsApp's media endpoint
+			const uploadUrl = `https://graph.facebook.com/v23.0/${this.phoneNumberId}/media`;
+			const formData = new FormData();
+			formData.append('file', new Blob([imageBuffer], { type: contentType }), 'image.jpg');
+			formData.append('type', contentType);
+			formData.append('messaging_product', 'whatsapp');
+
+			const uploadResponse = await fetch(uploadUrl, {
+				method: 'POST',
+				headers: {
+					Authorization: `Bearer ${this.token}`,
+				},
+				body: formData,
+			});
+
+			if (!uploadResponse.ok) {
+				const errorData = await uploadResponse.json();
+				throw new Error(`Failed to upload image to WhatsApp: HTTP ${uploadResponse.status} - ${JSON.stringify(errorData)}`);
+			}
+
+			const uploadData = await uploadResponse.json() as WhatsAppMediaUploadResponse;
+			const mediaId = uploadData.id;
+
+			// 3. Construct the payload with the media_id
 			const payload: any = {
 				to,
 				messaging_product: 'whatsapp',
 				type: 'image',
 				image: {
-					link: uri,
+					id: mediaId,
 					caption: caption
 				}
 			};
@@ -86,6 +122,7 @@ export default class WhatsAppService {
 				},
 				body: JSON.stringify(payload),
 			});
+			console.log("sendImage response status:", response);
 
 			if (!response.ok) {
 				const errorData = await response.json();
@@ -97,8 +134,7 @@ export default class WhatsAppService {
 			const data = await response.json() as WhatsAppApiResponse;
 			return data;
 		} catch (error) {
-			await this.sendTextMessage(to, "❌ Failed to send image. Please try again later.", messageId || undefined);
-			console.error('Error sending base64 image:', (error as Error).message);
+			console.error('Error sending image:', (error as Error).message);
 			throw error;
 		}
 	}
