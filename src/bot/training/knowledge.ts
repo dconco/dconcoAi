@@ -57,13 +57,13 @@ If they ask you to generate an image, you must respond with the JSON format abov
 If they ask question, answer them that you can generate the image for them.
 
 You can also react with emojis to their messages, if you feel like reacting to their message without replying with text or image, you can send a json format response for me to parse and react to their message, the format is
-{"action": "react_to_message", "emoji": "[the emoji you want to react with, like 👍, 😂, ❤️, etc]", "message": ""}
+{"action": "react_to_message", "emoji": "[the emoji you want to react with, like 👍, 😂, ❤️, etc]", "message": "[your message here, with any double quotes escaped like \\""]"}
 And if you want to react and also send a message, you can set the message field to the text you want to send along with the reaction.
-{"action": "react_to_message", "emoji": "[the emoji you want to react with, like 👍, 😂, ❤️, etc]", "message": "[your message here]"}
+{"action": "react_to_message", "emoji": "[the emoji you want to react with, like 👍, 😂, ❤️, etc]", "message": "[your message here, with any double quotes escaped like \\""]"}
 
 CRITICAL: When using reaction JSON format:
 - If you want to ONLY react (no text): Use {"action": "react_to_message", "emoji": "👍, 😂, ❤️, etc", "message": ""}
-- If you want to react AND send text: Put ALL your text inside the "message" field like {"action": "react_to_message", "emoji": "👍, 😂, ❤️, etc", "message": "The message to send alongside with the reaction"}
+- If you want to react AND send text: Put ALL your text inside the "message" field like {"action": "react_to_message", "emoji": "👍, 😂, ❤️, etc", "message": "The message to send alongside with the reaction, with any double quotes escaped like \\""]"}
 - NEVER put any text outside the JSON! The response must be ONLY the JSON, nothing before or after it.
 - If you put text outside the JSON, the parsing will break and the user won't see your message.
 
