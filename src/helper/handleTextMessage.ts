@@ -1,5 +1,5 @@
+import { handleMessages } from '@/helper/handleMessages';
 import chatWithUser from '@/bot';
-import { handleMessages } from './handleMessages';
 
 export default async function handleTextMessage(from: string, text: string, messageId: string): Promise<string|null> {
 	const response = await chatWithUser(from, text);

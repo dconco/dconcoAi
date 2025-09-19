@@ -1,5 +1,5 @@
 import chatWithUser from "@/bot";
-import { handleMessages } from "./handleMessages";
+import { handleMessages } from "@/helper/handleMessages";
 
 export default async function handleReactionMessage(
 	from: string,

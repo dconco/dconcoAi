@@ -97,6 +97,7 @@ export default class WhatsAppService {
 			const data = await response.json() as WhatsAppApiResponse;
 			return data;
 		} catch (error) {
+			await this.sendTextMessage(to, "❌ Failed to send image. Please try again later.", messageId || undefined);
 			console.error('Error sending base64 image:', (error as Error).message);
 			throw error;
 		}

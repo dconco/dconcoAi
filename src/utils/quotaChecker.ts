@@ -1,12 +1,12 @@
-import WhatsAppService from "@/utils/whatsappService";
 import { join } from "path";
 import { WhatsAppMessage } from "@/types";
 import { readFileSync, writeFileSync } from "fs";
 import { CachedAPIMessageData, CachedAPIMessageInterface, CachedMessageData, CachedMessageInterface, QuotaData, UnreadMessageData, UnreadMessageInterface, UsersInterface } from "../types/cache";
 import { loadQuota, loadUnreadMessages, loadCachedMessages, quotaFilePath, unreadMessagesFilePath, cachedMessagesFilePath, loadCachedAPIMessages, cachedAPIMessagesFilePath } from "./loadCaches";
-import ReplyUnreadMessages from "./gradualReply";
-import { getUser, saveUser, UserExists } from "@/services/userService";
+import { getUser, saveUser } from "@/services/userService";
 import { saveMessage } from "@/services/messageService";
+import WhatsAppService from "@/utils/whatsappService";
+import ReplyUnreadMessages from "@/utils/gradualReply";
 
 /**
  * ========================================

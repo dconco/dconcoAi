@@ -1,6 +1,6 @@
+import { handleMessages } from "@/helper/handleMessages";
 import WhatsAppService from "@/utils/whatsappService";
 import chatWithUser from "@/bot";
-import { handleMessages } from "./handleMessages";
 
 export default async function handleStickerMessage(
 	from: string,
