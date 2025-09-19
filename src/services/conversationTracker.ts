@@ -22,7 +22,7 @@ export class ConversationTracker {
         
         // Configuration from environment variables with defaults
         this.CONVERSATION_WINDOW_HOURS = Number(process.env.FOLLOWUP_WINDOW_HOURS) || 24;
-        this.FOLLOWUP_DELAY_MINUTES = Number(process.env.FOLLOWUP_DELAY_MINUTES) || 30;
+        this.FOLLOWUP_DELAY_MINUTES = Number(process.env.FOLLOWUP_DELAY_MINUTES) || 120; // Changed to 2 hours (120 minutes)
         this.MAX_FOLLOWUPS = Number(process.env.MAX_FOLLOWUPS) || 3;
         this.ENABLED = process.env.FOLLOWUP_ENABLED !== 'false'; // Default to true unless explicitly disabled
         
