@@ -116,6 +116,9 @@ composer require dconco/phpspa
 🛠️ Example Usage:
 
 Create Component
+<?php
+use function phpSPA\\Component\\createState;
+
 function HomePage() {
     $counter = createState("count", 0);
 
@@ -125,8 +128,10 @@ function HomePage() {
         <Component.Link to="/about" children="About" />
     HTML;
 }
+?>
 
 Setup App
+<?php
 use phpSPA\\App;
 use phpSPA\\Component;
 
@@ -134,6 +139,7 @@ $app = new App('layout');
 $app->targetId('app');
 $app->attach((new Component('HomePage'))->route('/')->title('Home')->method('GET|POST'));
 $app->run();
+?>
 
 🧱 Component Architecture
 Clean, reusable PHP components	🔄 Reactive State
