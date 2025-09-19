@@ -1,11 +1,11 @@
+import { getCurrentModel, recordModelUsage, handleQuotaExhausted } from "@/utils/modelFallback";
 import { GoogleGenerativeAI, Part } from "@google/generative-ai";
+import { getMessageHistory } from "@/services/messageService";
 import { CachedMessageData } from "@/types/cache";
+import instructions from "@/bot/training";
 import { config } from "dotenv";
-import instructions from "./training";
 import path from "path";
 import fs from "fs";
-import { getCurrentModel, recordModelUsage, handleQuotaExhausted } from "@/utils/modelFallback";
-import { getMessageHistory } from "@/services/messageService";
 
 config()
 
@@ -40,8 +40,10 @@ export default async function chatWithUser(
       console.log('Using JSON fallback for messages');
       oldMessages = loadMessages(number);
    }
-   
-   if (name) instructions.push(`The user's name is ${name}. Respond in a friendly and professional manner.`);
+
+   if (name) {
+      oldMessages = [{ text: `I am ${name}`, reply: "Nice to meet you!" }, ...oldMessages];
+   }
 
    const history = oldMessages.flatMap(msg => [
       { role: "user", parts: [{ text: msg.text } as Part] },
