@@ -11,6 +11,7 @@ export interface ConversationState {
 
 export class ConversationTracker {
     private whatsappService: WhatsAppService;
+    private followUpTimestamps: Map<string, Date[]> = new Map(); // Track follow-up times per contact
     private readonly CONVERSATION_WINDOW_HOURS: number;
     private readonly FOLLOWUP_DELAY_MINUTES: number;
     private readonly MAX_FOLLOWUPS: number;
@@ -68,9 +69,22 @@ export class ConversationTracker {
 
         for (const conv of recentConversations) {
             // Check if we've already sent follow-ups recently
-            const followUpCount = await this.getRecentFollowUpCount(conv._id);
+            const followUpCount = this.getRecentFollowUpCount(conv._id);
             
-            if (followUpCount < this.MAX_FOLLOWUPS) {
+            // Get the last follow-up time to ensure minimum spacing
+            const lastFollowUpTime = this.getLastFollowUpTime(conv._id);
+            const now = new Date();
+            const minTimeBetweenFollowUps = this.FOLLOWUP_DELAY_MINUTES * 60 * 1000; // Use same delay for spacing
+            
+            let canSendFollowUp = followUpCount < this.MAX_FOLLOWUPS;
+            
+            // If we've sent a follow-up before, check if enough time has passed
+            if (lastFollowUpTime) {
+                const timeSinceLastFollowUp = now.getTime() - lastFollowUpTime.getTime();
+                canSendFollowUp = canSendFollowUp && (timeSinceLastFollowUp >= minTimeBetweenFollowUps);
+            }
+            
+            if (canSendFollowUp) {
                 conversationStates.push({
                     contact: conv._id,
                     lastMessageTime: conv.lastMessageTime,
@@ -87,14 +101,34 @@ export class ConversationTracker {
     /**
      * Count how many follow-up messages we've sent to this contact recently
      */
-    private async getRecentFollowUpCount(contact: string): Promise<number> {
-        const last2Hours = new Date(Date.now() - (2 * 60 * 60 * 1000));
+    private getRecentFollowUpCount(contact: string): number {
+        const followUps = this.followUpTimestamps.get(contact) || [];
+        const last24Hours = new Date(Date.now() - (24 * 60 * 60 * 1000));
         
-        return await Message.countDocuments({
-            contact,
-            timestamp: { $gte: last2Hours },
-            text: { $regex: /follow.*up|check.*in|still.*there|wondering/i } // Pattern to identify follow-up messages
-        });
+        // Filter to only count follow-ups in the last 24 hours
+        const recentFollowUps = followUps.filter(timestamp => timestamp >= last24Hours);
+        
+        // Update the stored timestamps to remove old ones
+        this.followUpTimestamps.set(contact, recentFollowUps);
+        
+        return recentFollowUps.length;
+    }
+
+    /**
+     * Get the timestamp of the last follow-up message sent to a contact
+     */
+    private getLastFollowUpTime(contact: string): Date | null {
+        const followUps = this.followUpTimestamps.get(contact) || [];
+        return followUps.length > 0 ? followUps[followUps.length - 1] : null;
+    }
+
+    /**
+     * Record that we sent a follow-up message
+     */
+    private recordFollowUpSent(contact: string): void {
+        const followUps = this.followUpTimestamps.get(contact) || [];
+        followUps.push(new Date());
+        this.followUpTimestamps.set(contact, followUps);
     }
 
     /**
@@ -145,6 +179,9 @@ export class ConversationTracker {
             
             await this.whatsappService.sendTextMessage(contact, message, null);
             
+            // Record that we sent a follow-up
+            this.recordFollowUpSent(contact);
+            
             // Log this as a follow-up message
             console.log(`📤 Sent follow-up to ${contact}: ${message}`);
             
@@ -182,6 +219,17 @@ export class ConversationTracker {
     async shouldSendFollowUp(contact: string): Promise<boolean> {
         const conversations = await this.getConversationsNeedingFollowUp();
         return conversations.some(c => c.contact === contact);
+    }
+
+    /**
+     * Update conversation tracking when user sends a message (clear follow-ups)
+     */
+    updateConversation(contact: string, _messageTime: Date): void {
+        if (!this.ENABLED) return;
+
+        // Clear follow-up timestamps when user replies
+        this.followUpTimestamps.delete(contact);
+        console.log(`🔄 Cleared follow-up tracking for ${contact} (user replied)`);
     }
 }
 
