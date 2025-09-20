@@ -3,6 +3,7 @@ import {
 	Button,
 	ListSection
 } from '@/types';
+import { serif } from 'weird-fonts';
 
 interface WhatsAppMediaUploadResponse {
 	id: string;
@@ -36,7 +37,7 @@ export default class WhatsAppService {
 			messaging_product: 'whatsapp',
 			type: 'text',
 			text: {
-				body: message,
+				body: serif(message, { fontStyle: "bold-italic" }),
 			},
 		};
 		if (messageId) payload.context = { message_id: messageId };
@@ -108,7 +109,7 @@ export default class WhatsAppService {
 				type: 'image',
 				image: {
 					id: mediaId,
-					caption: caption
+					caption: serif(caption, { fontStyle: "bold-italic" })
 				}
 			};
 			
