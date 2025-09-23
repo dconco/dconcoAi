@@ -11,8 +11,19 @@ export const style = (text: string) => serif(text, {
 const client = new Client({
    authStrategy: new LocalAuth(),
    puppeteer: {
-      executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
-      headless: true
+      executablePath: process.env.NODE_ENV !== 'production' ? 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe' : undefined,
+      headless: true,
+      args: process.env.NODE_ENV !== 'production' ? [
+         '--no-sandbox',
+         '--disable-setuid-sandbox',
+         '--disable-dev-shm-usage',
+         '--disable-accelerated-2d-canvas',
+         '--no-first-run',
+         '--no-zygote',
+         '--disable-gpu',
+         '--disable-web-security',
+         '--disable-features=VizDisplayCompositor'
+      ] : undefined
    }
 });
 
