@@ -31,7 +31,7 @@ async function updateName() {
     },
     body: JSON.stringify({
       messaging_product: "whatsapp",
-      name: "dconco AI"
+      name: "𝒅𝒄𝒐𝒏𝒄𝒐 𝑨𝑰"
     })
   });
 
@@ -52,7 +52,7 @@ async function verifyName() {
 			phone_number: "09064772574",
 			method: "sms",
 			pin: process.env.WHATSAPP_2FA_PIN || "123456",
-			cert: "CmYKIgi5lOafwuaLAxIGZW50OndhIglkY29uY28gQUlQ4aikxgYaQETWzbLyU02VDQ5Rnh0hHmu1gZHdvia6QuH4zaoqkCxYSx6QyXGgtF545hd67k4UzYcZbg5q2oDHSeJ/Nt5GJAsSMG0bVsDy+emt8VqzsJuoZCmTXuPiXsD3KV4tKexLOtxe00n0Cm7IpuDRIVFiJ8CLxQ=="
+			cert: "CmYKIgjK0srM5L/DAhIGZW50OndhIglkY29uY28gQUlQ8OW6xgYaQKD2wVvvsdlNx1Ffnf/faSMNZahKwbbXNLfdextReIB2BCt7KeOCkK0i3bQ+SAjwU6mh8OmigwsFR1FoqZE70AUSMG0bVsDy+emt8VqzsJuoZCmTXuPiXsD3KV48ZPJLOtxeHKLuuq7ix7rY0uWR86YQEw=="
 		})
   });
 
@@ -61,6 +61,6 @@ async function verifyName() {
 }
 
 // Uncomment to run
-// verifyName();
+verifyName();
 // updateName();
 // updateAbout();

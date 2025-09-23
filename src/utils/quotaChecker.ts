@@ -1,18 +1,36 @@
-import { join } from "path";
-import { WhatsAppMessage } from "@/types";
 import { readFileSync, writeFileSync } from "fs";
-import { CachedAPIMessageData, CachedAPIMessageInterface, CachedMessageData, CachedMessageInterface, QuotaData, UnreadMessageData, UnreadMessageInterface, UsersInterface } from "../types/cache";
-import { loadQuota, loadUnreadMessages, loadCachedMessages, quotaFilePath, unreadMessagesFilePath, cachedMessagesFilePath, loadCachedAPIMessages, cachedAPIMessagesFilePath } from "./loadCaches";
+import { join } from "path";
+import {
+   CachedAPIMessageData,
+   CachedAPIMessageInterface,
+   CachedGroupMessageData,
+   CachedGroupMessageInterface,
+   CachedMessageData,
+   CachedMessageInterface,
+   QuotaData,
+   UnreadMessageData,
+   UnreadMessageInterface,
+   UsersInterface
+} from "@/types/cache";
+import {
+   loadQuota,
+   loadUnreadMessages,
+   loadCachedMessages,
+   quotaFilePath,
+   unreadMessagesFilePath,
+   cachedMessagesFilePath,
+   loadCachedAPIMessages,
+   cachedAPIMessagesFilePath,
+   loadCachedGroupMessages,
+   cachedGroupMessagesFilePath
+} from "@/utils/loadCaches";
+import { WhatsAppMessage } from "@/types";
 import { getUser, saveUser } from "@/services/userService";
 import { saveMessage } from "@/services/messageService";
 import WhatsAppService from "@/utils/whatsappService";
 import ReplyUnreadMessages from "@/utils/gradualReply";
 
-/**
- * ========================================
- * Remove expired quota entries (24+ hours old)
- * ========================================
- */
+
 export const cleanExpiredQuota = (): void => {
    try {
       const quota: QuotaData[] = loadQuota();
@@ -35,11 +53,7 @@ export const cleanExpiredQuota = (): void => {
    }
 }
 
-/**
- * ========================================
- * Check the quota for sending messages.
- * ========================================
- */
+
 export const checkQuota = async (message: WhatsAppMessage|null|string, name: string | undefined): Promise<boolean> => {
    const whatsapp: WhatsAppService = new WhatsAppService();
 
@@ -69,11 +83,7 @@ export const checkQuota = async (message: WhatsAppMessage|null|string, name: str
    return true;
 }
 
-/**
- * ========================================
- * Save the contact to the quota list.
- * ========================================
- */
+
 export const saveQuota = (contact: string): void => {
    try {
       const quota: QuotaData[] = loadQuota();
@@ -91,11 +101,7 @@ export const saveQuota = (contact: string): void => {
    }
 }
 
-/**
- * ========================================
- * Save unread message to the unread messages list.
- * ========================================
- */
+
 export const saveUnreadMessage = ({ message, name }: UnreadMessageInterface): void => {
    try {
       const unreadMessages: UnreadMessageData = loadUnreadMessages();
@@ -113,11 +119,7 @@ export const saveUnreadMessage = ({ message, name }: UnreadMessageInterface): vo
    }
 }
 
-/**
- * ========================================
- * Cache message to local file.
- * ========================================
- */
+
 export const cacheMessage = async ({contact, text, name, reply, messageId}: CachedMessageInterface): Promise<void> => {
    try {
       await saveMessage({ contact, name, text, reply, messageId: messageId || '' });
@@ -139,11 +141,21 @@ export const cacheMessage = async ({contact, text, name, reply, messageId}: Cach
    }
 }
 
-/**
- * ========================================
- * Cache message coming from API to local file.
- * ========================================
- */
+
+export const cacheGroupMessage = ({groupId, user, name, text, reply, time}: CachedGroupMessageInterface): void => {
+   const cachedMessages: CachedGroupMessageData = loadCachedGroupMessages();
+
+   if (!cachedMessages[groupId]) {
+      cachedMessages[groupId] = { name, messages: [] };
+   }
+
+   cachedMessages[groupId].messages.push({ text, reply, user, timestamp: new Date(time || Date.now()).toISOString() });
+
+   // Use synchronous write to prevent race conditions
+   writeFileSync(cachedGroupMessagesFilePath, JSON.stringify(cachedMessages, null, 3), 'utf8');
+}
+
+
 export const cacheAPIMessage = ({contact, message, name}: CachedAPIMessageInterface): void => {
    try {
       const cachedMessages: CachedAPIMessageData = loadCachedAPIMessages();
@@ -160,6 +172,7 @@ export const cacheAPIMessage = ({contact, message, name}: CachedAPIMessageInterf
       console.error('Error writing cached messages file:', error);
    }
 }
+
 
 export const saveUsers = async ({contact, name}: UsersInterface): Promise<void> => {
    try {

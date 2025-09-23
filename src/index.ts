@@ -1,14 +1,16 @@
 import dotenv from 'dotenv';
+
+// Load environment variables as early as possible
+dotenv.config();
+
 import express, { Express, Request, Response } from 'express';
-import WebhookController from '@/controllers/webhookController';
-import MessagesController from '@/controllers/messagesController';
-import sendMessagesController from '@/controllers/sendMessagesController';
 import { getStats, getMessages, getAllUsers } from '@/controllers/adminController';
 import { currentModel, getModels } from '@/controllers/modelsController';
-import connectDB from '@/utils/database';
 import { conversationScheduler } from '@/services/conversationScheduler';
-
-dotenv.config();
+import sendMessagesController from '@/controllers/sendMessagesController';
+import MessagesController from '@/controllers/messagesController';
+import WebhookController from '@/controllers/webhookController';
+import connectDB from '@/utils/database';
 
 // Connect to MongoDB
 connectDB();

@@ -17,16 +17,42 @@ export declare interface UnreadMessage {
 
 export declare interface CachedMessageInterface {
    contact: string;
-   text: string;
    name: string;
+   text: string;
    reply: string;
-   messageId?: string;
+   messageId: string;
+}
+
+export declare interface CachedGroupMessageInterface {
+   groupId: string;
+   user: string;
+   name: string;
+   text: string;
+   reply: string;
+   time?: Date;
 }
 
 export declare interface CachedMessageData {
    [contact: string]: {
       name: string;
-      messages: { text: string; reply?: string; timestamp: string; messageId?: string }[];
+      messages: {
+         text: string;
+         reply?: string;
+         timestamp?: string;
+         messageId?: string;
+      }[];
+   };
+}
+
+export declare interface CachedGroupMessageData {
+   [groupId: string]: {
+      name: string;
+      messages: {
+         user: string;
+         text: string;
+         reply?: string;
+         timestamp?: string;
+      }[];
    };
 }
 

@@ -1,12 +1,14 @@
 import { ImageGenerationRequestResponse, isImageGenerationRequest } from "@/bot/utils/imageGenerationRequest";
 import { isReactionRequest, ReactionRequestResponse } from "@/bot/utils/reactionRequest";
-import WhatsAppService from "@/utils/whatsappService";
+import { Client, Message, MessageMedia } from "whatsapp-web.js";
+import { style } from "@/dconco-ai";
 
-export const handleMessages = async (from: string, reply: string, messageId: string): Promise<string | null> => {
+export const handleMessages = async (reply: string, message: Message, client: Client): Promise<string | null> => {
    const imageReq: ImageGenerationRequestResponse = isImageGenerationRequest(reply);
    const reaction: ReactionRequestResponse = isReactionRequest(reply);
-   const whatsapp: WhatsAppService = new WhatsAppService();
-   const ownerNumber = process.env.OWNER_WHATSAPP_NUMBER;
+   const myNumber = client.info.wid._serialized;
+   const chat = await message.getContact();
+   const from = chat.id.user;
 
    if (imageReq.isImageRequest && imageReq.prompt) {
       let imageUrl;
@@ -27,40 +29,35 @@ export const handleMessages = async (from: string, reply: string, messageId: str
       }
 
       if (imageReq.message_owner) {
-         const message = `Contact From: ${from}\n\n${imageReq.message_owner}`;
-
-         if (ownerNumber) {
-            whatsapp.sendTextMessage(ownerNumber, message, null);
-         }
+         const text = `Contact From: ${from}\n\n${imageReq.message_owner}`;
+         client.sendMessage(myNumber, style(text));
       }
 
       try {
-         const result = await whatsapp.sendImage(from, imageUrl, imageReq.caption, messageId);
+         const media = await MessageMedia.fromUrl(imageUrl);
+         const result = await message.reply(media, undefined, { caption: style(imageReq.caption || "Here's the image you requested! 📸") });
          if (result) return imageReq.caption || "Here's the image you requested! 📸";
       } catch (error) {
-         console.error("Error sending image:", error);
-         await whatsapp.sendTextMessage(from, "❌ Failed to generate or send image. Please try again later.", messageId);
+         await message.reply(style("❌ Failed to generate or send image. Please try again later."));
          return null;
       }
-      
-   } else if (reaction.isReactionRequest && reaction.emoji) {
-      await whatsapp.reactToMessage(from, messageId, reaction.emoji);
+   }
+   
+   else if (reaction.isReactionRequest && reaction.emoji) {
+      await message.react(reaction.emoji);
 
       if (reaction.message_owner) {
-         const message = `Contact From: ${from}\n\n${reaction.message_owner}`;
-
-         if (ownerNumber) {
-            await whatsapp.sendTextMessage(ownerNumber, message, null);
-         }
+         const text = `Contact From: ${from}\n\n${reaction.message_owner}`;
+         client.sendMessage(myNumber, style(text));
       }
 
       if (reaction.message && reaction.message.trim().length > 0) {
-         const result = await whatsapp.sendTextMessage(from, reaction.message, messageId);
+         const result = await message.reply(style(reaction.message));
          if (result) return reaction.message;
       }
    } else {
-		const result = await whatsapp.sendTextMessage(from, reply, messageId);
-		if (result) return reply;
+      const result = await message.reply(style(reply));
+      if (result) return reply;
    }
 
    return null;

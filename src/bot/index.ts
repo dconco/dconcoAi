@@ -1,44 +1,89 @@
 import { getCurrentModel, recordModelUsage, handleQuotaExhausted } from "@/utils/modelFallback";
+import { loadCachedGroupMessages, loadCachedMessages } from "@/utils/loadCaches";
+import { CachedGroupMessageData, CachedMessageData } from "@/types/cache";
 import { GoogleGenerativeAI, Part } from "@google/generative-ai";
 import { getMessageHistory } from "@/services/messageService";
-import { CachedMessageData } from "@/types/cache";
 import instructions from "@/bot/training";
 import { config } from "dotenv";
-import path from "path";
-import fs from "fs";
 
-config()
+config();
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
-
-const filePath = path.join(__dirname, "../cache/db/cachedMessages.json");
-
-function loadMessages(number: string) {
-   if (!fs.existsSync(filePath)) return [];
-
-   const data: CachedMessageData = JSON.parse(fs.readFileSync(filePath, "utf8"));
-
-   if (data[number]?.messages.length > 20) {
-      // Keep only the last 20 messages
-      data[number].messages = data[number].messages.slice(-20);
+function loadMessages(number: string): CachedMessageData[string]["messages"] {
+   const data: CachedMessageData = loadCachedMessages();
+   
+   if (data[number]?.messages.length > 30) {
+      // Keep only the last 30 messages
+      data[number].messages = data[number].messages.slice(-30);
    }
    return data[number]?.messages || [];
+}
+
+function loadGroupMessages(groupId: string): CachedGroupMessageData[string]["messages"] {
+   const data: CachedGroupMessageData = loadCachedGroupMessages();
+
+   if (data[groupId]?.messages.length > 30) {
+      // Keep only the last 30 messages
+      data[groupId].messages = data[groupId].messages.slice(-30);
+   }
+   return data[groupId]?.messages || [];
 }
 
 export default async function chatWithUser(
    number: string, 
    userMessage: string, 
-   media?: { type: 'image' | 'sticker', mimeType: string, data: string }
+   media?: { type: 'image' | 'sticker', mimeType: string, data: string },
+   context?: 'group' | 'private' | 'status',
+   chatName?: string,
+   author?: string,
 ): Promise<string> {
+   let API_KEY: string | undefined;
+
    // Try to get messages from MongoDB first, fallback to JSON
-   let oldMessages;
-   try {
-      const dbMessages = await getMessageHistory(number);
-      oldMessages = dbMessages;
-   } catch (error) {
-      console.log('Using JSON fallback for messages');
-      oldMessages = loadMessages(number);
+   let oldMessages: CachedMessageData[string]["messages"] | CachedGroupMessageData[string]["messages"] = [];
+
+   if (context === 'group') {
+      API_KEY = process.env.GEMINI_API_KEY_GROUP;
+      instructions.push("You are in a group chat, so keep your responses brief and to the point.");
+
+      oldMessages = loadGroupMessages(number);
+
+      oldMessages.map(groupMsg => {
+         groupMsg.text = `[${chatName}] ${author ? author + ': ' : ''}${groupMsg.text}`;
+         return groupMsg;
+      });
    }
+
+   else if (context === 'private') {
+      API_KEY = process.env.GEMINI_API_KEY_PRIVATE;
+      instructions.push("You are in a private chat, so you can be more detailed and engaging in your responses.");
+      
+      oldMessages = loadGroupMessages(number);
+
+      oldMessages.map(groupMsg => {
+         groupMsg.text = `[${author ? author + ':' : ''}] ${groupMsg.text}`;
+         return groupMsg;
+      });
+   }
+
+   else if (context === 'status') {
+      API_KEY = process.env.GEMINI_API_KEY_STATUS;
+      instructions.push("You are responding to a status update, so keep your message short and relevant to the status.");
+   }
+   
+   else {
+      API_KEY = process.env.GEMINI_API_KEY;
+      instructions.push("You are in a private chat, so you can be more detailed and engaging in your responses.");
+
+      try {
+         const dbMessages = await getMessageHistory(number);
+         oldMessages = dbMessages;
+      } catch (error) {
+         console.log('Using JSON fallback for messages');
+         oldMessages = loadMessages(number);
+      }
+   }
+
+   const genAI = new GoogleGenerativeAI(API_KEY || "");
 
    const history = oldMessages.flatMap(msg => [
       { role: "user", parts: [{ text: msg.text } as Part] },
