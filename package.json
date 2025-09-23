@@ -6,6 +6,7 @@
 		"build": "npx tsc && npx tsc-alias && cp -r src/cache dist/",
 		"build:check": "npx tsc --noEmit",
 		"start": "node dist/index.js",
+		"start:bot": "node dist/dconco-ai/index.js",
 		"dev": "ts-node-dev --respawn --transpile-only false -r tsconfig-paths/register src/index.ts",
 		"startBot": "ts-node-dev --respawn --transpile-only false -r tsconfig-paths/register src/dconco-ai/index.ts",
 		"updateProfile": "ts-node-dev -r tsconfig-paths/register src/utils/updateProfile.ts",
