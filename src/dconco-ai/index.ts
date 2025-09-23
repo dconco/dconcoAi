@@ -34,6 +34,17 @@ client.on('message_create', (message) => {
    const hour = now.getHours();
    const isNightTime = hour >= 0 && hour < 6; // 12 AM (0) to 6 AM
 
+   // Get message timestamp (in seconds)
+   const messageTime = message.timestamp;
+   const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
+   const timeDifference = currentTime - messageTime;
+
+   // Ignore messages older than 10 seconds
+   if (timeDifference > 10) {
+      console.log(`Message is ${timeDifference} seconds old. Ignoring...`);
+      return; // Skip processing this message
+   }
+
    if (isNightTime) {
       // Random delays during night: 10-40 seconds
       const delays: number[] = [
