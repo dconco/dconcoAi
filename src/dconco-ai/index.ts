@@ -1,10 +1,10 @@
 import qrcode from "qrcode-terminal";
 import messageController from "@/dconco-ai/controller/messageController";
 import { Client, LocalAuth } from "whatsapp-web.js";
-import { serif } from "weird-fonts";
+import Font from "weird-fonts";
 
-export const style = (text: string) => serif(text, {
-   fontStyle: 'bold-italic'
+export const style = (text: string) => Font.sansSerif(text, {
+   fontStyle: 'normal'
 });
 
 // Create a new client instance with local authentication
@@ -13,7 +13,7 @@ const client = new Client({
    puppeteer: {
       executablePath: process.env.NODE_ENV !== 'production' ? 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe' : undefined,
       headless: true,
-      args: process.env.NODE_ENV !== 'production' ? [
+      args: [
          '--no-sandbox',
          '--disable-setuid-sandbox',
          '--disable-dev-shm-usage',
@@ -23,7 +23,7 @@ const client = new Client({
          '--disable-gpu',
          '--disable-web-security',
          '--disable-features=VizDisplayCompositor'
-      ] : undefined
+      ]
    }
 });
 
@@ -50,8 +50,8 @@ client.on('message_create', (message) => {
    const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
    const timeDifference = currentTime - messageTime;
 
-   // Ignore messages older than 10 seconds
-   if (timeDifference > 10) {
+   // Ignore messages older than 60 seconds
+   if (timeDifference > 60) {
       console.log(`Message is ${timeDifference} seconds old. Ignoring...`);
       return; // Skip processing this message
    }

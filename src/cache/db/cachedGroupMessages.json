@@ -255,5 +255,51 @@
             "timestamp": "2025-09-23T00:49:20.946Z"
          }
       ]
+   },
+   "2349037565485@c.us": {
+      "name": "SalisComputerist",
+      "messages": [
+         {
+            "text": "!xup",
+            "reply": "Xup? What's that, fam? You tryna teach me some new slang or what? 😅",
+            "user": "User",
+            "timestamp": "2025-09-23T10:38:59.649Z"
+         }
+      ]
+   },
+   "2348105902536@c.us": {
+      "name": "My Son Joseph",
+      "messages": [
+         {
+            "text": "!hi",
+            "reply": "Hey there! 👋 What's up? How can dconco help you today? ⚡",
+            "user": "User",
+            "timestamp": "2025-09-23T10:46:06.484Z"
+         },
+         {
+            "text": "!xup",
+            "reply": "Hey! 👋 What's up? How can dconco help you today? ⚡",
+            "user": "User",
+            "timestamp": "2025-09-23T10:47:44.091Z"
+         },
+         {
+            "text": "!sss",
+            "reply": "Hey! 👋 What's up? How can dconco help you today? ⚡",
+            "user": "User",
+            "timestamp": "2025-09-23T10:48:41.578Z"
+         },
+         {
+            "text": "!hii",
+            "reply": "Hey there! 👋 What's up? How can dconco help you today? ⚡",
+            "user": "User",
+            "timestamp": "2025-09-23T10:49:55.042Z"
+         },
+         {
+            "text": "!hi",
+            "reply": "Hey there! 👋 What's up? How can dconco help you today? ⚡",
+            "user": "User",
+            "timestamp": "2025-09-23T10:50:56.490Z"
+         }
+      ]
    }
 }

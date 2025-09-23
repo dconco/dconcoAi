@@ -20,10 +20,10 @@ export default async function handleTextMessage(message: Message, client: Client
          const cached = loadCachedGroupMessages();
          const group = cached[chatId];
          
-         if (group && group.messages && group.messages.length >= 3) {
+         if (group && group.messages && group.messages.length >= 2) {
             const lastThree = group.messages.slice(-3).map(m => m.timestamp).filter(Boolean) as string[];
             
-            if (lastThree.length === 3) {
+            if (lastThree.length === 2) {
                const now = Date.now();
                const allWithinOneMinute = lastThree.every(ts => (now - new Date(ts).getTime()) <= 60 * 1000);
                if (allWithinOneMinute) {
