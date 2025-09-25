@@ -66,9 +66,16 @@ export default async function chatWithUser(
                   const isUserMessage = !msg.fromMe || (msg.fromMe && msg.body?.startsWith('!'));
                   
                   if (isUserMessage) {
+                     let messageText = `[${chatName}] ${msgAuthor}: `;
+                     
+                     if (msg.hasMedia) {
+                        messageText += msg.body ? `[Image: ${msg.body}]` : '[Image]';
+                     } else {
+                        messageText += msg.body || '[Media]';
+                     }
+                     
                      const userMsg: {text: string; reply?: string} = { 
-                        text: `[${chatName}] ${msgAuthor}: ${msg.body || '[Media]'}`,
-                        reply: '[NOT REPLYING TO BOT]'
+                        text: messageText
                      };
                      
                      // Look for the next message as a potential reply
@@ -119,15 +126,30 @@ export default async function chatWithUser(
                   const contact = await msg.getContact();
                   const msgAuthor = msg.fromMe ? 'Bot' : (contact.name || contact.pushname || 'User');
                   
-                  if (!msg.fromMe) { // User message
+                  // Check if this is a user message OR a bot message that starts with !
+                  const isUserMessage = !msg.fromMe || (msg.fromMe && msg.body?.startsWith('!'));
+                  
+                  if (isUserMessage) {
+                     let messageText = `[${msgAuthor}] `;
+                     
+                     if (msg.hasMedia) {
+                        messageText += msg.body ? `[Image: ${msg.body}]` : '[Image]';
+                     } else {
+                        messageText += msg.body || '[Media]';
+                     }
+                     
                      const userMsg: {text: string; reply?: string} = { 
-                        text: `[${msgAuthor}] ${msg.body || '[Media]'}`,
-                        reply: '[NOT REPLYING TO BOT]'
+                        text: messageText
                      };
-                     // Check if next message is a reply from bot
-                     if (i + 1 < historyMessages.length && historyMessages[i+1].fromMe) {
-                        userMsg.reply = historyMessages[i+1].body || '';
-                        i++; // Skip the next message since we've used it as a reply
+                     
+                     // Look for the next message as a potential reply
+                     if (i + 1 < historyMessages.length) {
+                        const nextMsg = historyMessages[i + 1];
+                        // If next message is from bot and doesn't start with !, treat it as reply
+                        if (nextMsg.fromMe && nextMsg.body && !nextMsg.body.startsWith('!')) {
+                           userMsg.reply = nextMsg.body;
+                           i++; // Skip the next message since we've used it as a reply
+                        }
                      }
                      processedMsgs.push(userMsg);
                   }
@@ -171,7 +193,7 @@ export default async function chatWithUser(
 
    const history = oldMessages.flatMap(msg => [
       { role: "user", parts: [{ text: msg.text } as Part] },
-      { role: "model", parts: [{ text: msg.reply } as Part] }
+      { role: "model", parts: [{ text: msg.reply || "Ok" } as Part] }
    ]);
 
    // Get current active model

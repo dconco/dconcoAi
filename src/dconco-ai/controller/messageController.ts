@@ -1,9 +1,8 @@
 import handleTextMessage from "@/dconco-ai/helper/handleTextMessage";
-import { handleMessages } from "@/dconco-ai/helper/handleMessages";
+import handleImageMessage from "@/dconco-ai/helper/handleImageMessage";
+import handleStickerMessage from "@/dconco-ai/helper/handleStickerMessage";
 import { Client, Message, MessageTypes } from "whatsapp-web.js";
 import { style } from "@/dconco-ai";
-import chatWithUser from "@/bot";
-import { cacheGroupMessage } from "@/utils/quotaChecker";
 
 export default async function messageController(message: Message, client: Client) {
    const isGroup = message.from.endsWith('@g.us');
@@ -23,7 +22,10 @@ export default async function messageController(message: Message, client: Client
 
       switch (msgBody) {
          case 'ping':
-            message.reply(style('pong! 🏓'));
+            const responses = ['pong', 'pong! 🏓', 'got it!', 'received ✓'];
+            const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+
+            message.reply(style(randomResponse));
             break;
 
          case 'history':
@@ -72,27 +74,9 @@ export default async function messageController(message: Message, client: Client
             break;
 
          default:
-            handleTextMessage(message, client, isGroup ? 'group' : 'private');
-            
-            // const chat = await message.getChat();
-            // const contact =  message.author || await message.getContact() as any;
-            // const author = contact?.name || contact?.pushname || contact || 'User';
-            // const time = new Date();
-
-            // try {
-            //    setTimeout(async () => {
-            //       // Pass the message object as the last parameter for accessing chat history in private chats
-            //       const reply = await chatWithUser(chat.id._serialized, message.body, undefined, isGroup ? 'group' : 'private', author, author, message);
-            //       const response = await handleMessages(reply || '', message, client);
-            //       console.log(response)
-            
-            //       if (response) {
-            //          cacheGroupMessage({ groupId: chat.id._serialized, user: author, name: author, text: message.body, reply: response, time });
-            //       }
-            //    }, Math.random() * 2000 + 1000); // Simulate typing delay of 1-3 seconds
-            // } catch (error) {
-            //    console.error('Error replying to message:', error);
-            // }
+            if (message.type === MessageTypes.TEXT) handleTextMessage(message, client, isGroup ? 'group' : 'private');
+            if (message.type === MessageTypes.IMAGE) handleImageMessage(message, client, isGroup ? 'group' : 'private');
+            if (message.type === MessageTypes.STICKER) handleStickerMessage(message, client, isGroup ? 'group' : 'private');
 
             break;
       }
@@ -102,22 +86,14 @@ export default async function messageController(message: Message, client: Client
 
    if (isGroup && (isMentioned || isReplyToMe) && !message.fromMe) {
       if (message.type === MessageTypes.TEXT) handleTextMessage(message, client, 'group');
+      if (message.type === MessageTypes.IMAGE) handleImageMessage(message, client, 'group');
+      if (message.type === MessageTypes.STICKER) handleStickerMessage(message, client, 'group');
    }
 
    else if (isPrivate && !message.fromMe) {
-      if (message.type === MessageTypes.TEXT)
-         handleTextMessage(message, client, 'private');
-   }
-
-   // Outgoing message created by this client
-   // console.log(`Outgoing message captured: "${message.body}" to ${toNumber} from ${fromNumber}`);
-   // console.log(`Message type: ${message.type}`);
-
-   if (message.body === '!𝒑𝒊𝒏𝒈' || message.body === '!ping') {
-      const responses = ['pong', 'pong! 🏓', 'got it!', 'received ✓'];
-      const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-
-      message.reply(style(randomResponse));
+      if (message.type === MessageTypes.TEXT) handleTextMessage(message, client, 'private');
+      if (message.type === MessageTypes.IMAGE) handleImageMessage(message, client, 'private');
+      if (message.type === MessageTypes.STICKER) handleStickerMessage(message, client, 'private');
    }
 
    return;

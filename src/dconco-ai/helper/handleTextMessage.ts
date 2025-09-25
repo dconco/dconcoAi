@@ -53,7 +53,7 @@ export default async function handleTextMessage(message: Message, client: Client
             if (context === 'group' || context === 'private')
                cacheGroupMessage({ groupId: chatId, user: name || '', name: chatName, text: textMessage, reply: response, time });
          }
-      }, Math.random() * 1000 + 4000); // Simulate typing delay of  seconds
+      }, Math.random() * 1000 + 4000); // Simulate typing delay of 4-5 seconds
    } catch (error) {
       console.error('Error replying to message:', error);
    } finally {
