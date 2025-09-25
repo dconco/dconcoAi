@@ -133,6 +133,12 @@
             "reply": "Yo! What's good? Ready to cook up some code? 🚀",
             "user": "251560982540335:5@lid",
             "timestamp": "2025-09-25T14:41:23.452Z"
+         },
+         {
+            "text": "!generate a picture of a cat",
+            "reply": "Here's a cat for you! 🐱",
+            "user": "251560982540335:5@lid",
+            "timestamp": "2025-09-25T14:41:39.251Z"
          }
       ]
    },
