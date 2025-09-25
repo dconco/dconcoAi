@@ -9,6 +9,15 @@ export const handleMessages = async (reply: string, message: Message, client: Cl
    let myNumber: string;
    let from: string | undefined;
 
+   // Check if this message has already been replied to
+   if (message.hasQuotedMsg) {
+      const quotedMsg = await message.getQuotedMessage();
+      if (quotedMsg.fromMe) {
+         // Don't reply to messages that are replies to bot's messages
+         return null;
+      }
+   }
+
    try {
       const chat = await message.getContact() || await message.getChat();
       myNumber = client.info.wid._serialized;

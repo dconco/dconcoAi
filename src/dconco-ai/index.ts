@@ -45,15 +45,6 @@ client.on('message_create', async (message) => {
       return; // Skip processing this message
    }
 
-   // Check if this message has already been replied to
-   if (message.hasQuotedMsg) {
-      const quotedMsg = await message.getQuotedMessage();
-      if (quotedMsg.fromMe) {
-         // Don't reply to messages that are replies to bot's messages
-         return;
-      }
-   }
-
    if (isNightTime) {
       // Random delays during night: 10-40 seconds
       const delays: number[] = [
