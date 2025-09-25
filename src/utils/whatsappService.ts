@@ -4,6 +4,7 @@ import {
 	ListSection
 } from '@/types';
 import Font from 'weird-fonts';
+import { isCodeOrJson } from '@/utils/textNormalization';
 
 interface WhatsAppMediaUploadResponse {
 	id: string;
@@ -37,7 +38,7 @@ export default class WhatsAppService {
 			messaging_product: 'whatsapp',
 			type: 'text',
 			text: {
-				body: Font.sansSerif(message, { fontStyle: 'normal' }),
+				body: isCodeOrJson(message) ? message : Font.sansSerif(message, { fontStyle: 'normal' }),
 			},
 		};
 		if (messageId) payload.context = { message_id: messageId };
@@ -109,7 +110,7 @@ export default class WhatsAppService {
 				type: 'image',
 				image: {
 					id: mediaId,
-					caption: Font.sansSerif(caption, { fontStyle: 'normal' })
+					caption: isCodeOrJson(caption) ? caption : Font.sansSerif(caption, { fontStyle: 'normal' })
 				}
 			};
 			
@@ -123,7 +124,8 @@ export default class WhatsAppService {
 				},
 				body: JSON.stringify(payload),
 			});
-			console.log("sendImage response status:", response);
+			// Log basic status for troubleshooting
+			console.log('sendImage status:', response.status, response.statusText);
 
 			if (!response.ok) {
 				const errorData = await response.json();

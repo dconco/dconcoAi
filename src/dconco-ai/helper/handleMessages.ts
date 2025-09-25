@@ -6,9 +6,17 @@ import { style } from "@/dconco-ai";
 export const handleMessages = async (reply: string, message: Message, client: Client): Promise<string | null> => {
    const imageReq: ImageGenerationRequestResponse = isImageGenerationRequest(reply);
    const reaction: ReactionRequestResponse = isReactionRequest(reply);
-   const myNumber = client.info.wid._serialized;
-   const chat = await message.getContact();
-   const from = chat.id.user;
+   let myNumber: string;
+   let from: string | undefined;
+
+   try {
+      const chat = await message.getContact() || await message.getChat();
+      myNumber = client.info.wid._serialized;
+      from = chat.id.user || chat.id._serialized;
+   } catch (error) {
+      from = message.from;
+      myNumber = '120363401596625361@g.us';
+   }
 
    if (imageReq.isImageRequest && imageReq.prompt) {
       let imageUrl;
@@ -34,11 +42,18 @@ export const handleMessages = async (reply: string, message: Message, client: Cl
       }
 
       try {
-         const media = await MessageMedia.fromUrl(imageUrl);
+         // Test the URL first
+         const response = await fetch(imageUrl);
+         if (!response.ok) {
+            throw new Error(`Image URL returned ${response.status}: ${response.statusText}`);
+         }
+         
+         const media = await MessageMedia.fromUrl(imageUrl, { unsafeMime: true });
          const result = await message.reply(media, undefined, { caption: style(imageReq.caption || "Here's the image you requested! 📸") });
          if (result) return imageReq.caption || "Here's the image you requested! 📸";
       } catch (error) {
-         await message.reply(style("❌ Failed to generate or send image. Please try again later."));
+         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+         await message.reply(style(`❌ Failed to generate image. Error: ${errorMessage}`));
          return null;
       }
    }

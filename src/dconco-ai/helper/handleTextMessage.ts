@@ -7,12 +7,12 @@ import { Client, Message } from "whatsapp-web.js";
 export default async function handleTextMessage(message: Message, client: Client, context: 'group' | 'private' | 'status') {
    const time = new Date();
    const chat = await message.getChat();
-   const contact = await message.getContact();
+   const contact =  message.author || await message.getContact() as any;
 
    const textMessage = message.body;
    const chatId = chat.id._serialized;
-   const name = contact.name || contact.pushname || 'User';
-   const chatName = chat.name || contact.name || contact.pushname || 'Chat';
+   const name = contact?.name || contact?.pushname || contact || 'User';
+   const chatName = chat.name || contact?.name || contact?.pushname || contact || 'Chat';
 
    // --- New: If group/private, use cached group/private messages and check last 3 timestamps ---
    if (context === 'group' || context === 'private') {
@@ -25,9 +25,9 @@ export default async function handleTextMessage(message: Message, client: Client
             
             if (lastThree.length === 2) {
                const now = Date.now();
-               const allWithinOneMinute = lastThree.every(ts => (now - new Date(ts).getTime()) <= 60 * 1000);
-               if (allWithinOneMinute) {
-                  // don't reply when last 3 messages are within 1 minute
+               const allWithinTwoMinutes = lastThree.every(ts => (now - new Date(ts).getTime()) <= 2 * 60 * 1000);
+               if (allWithinTwoMinutes) {
+                  // don't reply when last 3 messages are within 2 minutes
                   return;
                }
             }
@@ -42,10 +42,11 @@ export default async function handleTextMessage(message: Message, client: Client
    chat.sendSeen();
    await new Promise(resolve => setTimeout(resolve, Math.random() * 1000 + 500)); // Wait 0.5-1.5 seconds
    chat.sendStateTyping();
-   
+
    try {
       setTimeout(async () => {
-         const reply = await chatWithUser(chatId, textMessage, undefined, context, chatName, name);
+         // Pass the message object as the last parameter for accessing chat history in private chats
+         const reply = await chatWithUser(chatId, textMessage, undefined, context, chatName, name, message);
          const response = await handleMessages(reply || '', message, client);
 
          if (response) {

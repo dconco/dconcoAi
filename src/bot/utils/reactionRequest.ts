@@ -7,10 +7,14 @@ type ReactionRequest = {
 
 export type ReactionRequestResponse = { isReactionRequest: boolean, emoji?: string, message?: string, message_owner?: string };
 
+import { normalizeForJsonish } from "@/utils/textNormalization";
+
 export function isReactionRequest(text: string): ReactionRequestResponse {
+    // Normalize text to convert styled unicode (e.g., mathematical script) to ASCII
+    const normalized = normalizeForJsonish(text);
     try {
         // First try to parse as direct JSON
-        const parsed: ReactionRequest = JSON.parse(text);
+        const parsed: ReactionRequest = JSON.parse(normalized);
 
         if (parsed.action === "react_to_message" && parsed.emoji) {
             return {
@@ -22,7 +26,7 @@ export function isReactionRequest(text: string): ReactionRequestResponse {
         }
     } catch (error) {
         // If direct JSON parsing fails, try to extract JSON from markdown code blocks
-        const jsonMatch = text.match(/```json\s*\n?([\s\S]*?)\n?\s*```/i) || text.match(/```\s*\n?([\s\S]*?)\n?\s*```/i);
+    const jsonMatch = normalized.match(/```json\s*\n?([\s\S]*?)\n?\s*```/i) || normalized.match(/```\s*\n?([\s\S]*?)\n?\s*```/i);
         if (jsonMatch) {
             try {
                 const parsed: ReactionRequest = JSON.parse(jsonMatch[1].trim());
@@ -40,7 +44,7 @@ export function isReactionRequest(text: string): ReactionRequestResponse {
         }
         
         // Also try to match if text starts with "json" followed by JSON
-        const jsonPrefixMatch = text.match(/^json\s*\n?([\s\S]*)/i);
+    const jsonPrefixMatch = normalized.match(/^json\s*\n?([\s\S]*)/i);
         if (jsonPrefixMatch) {
             try {
                 const parsed: ReactionRequest = JSON.parse(jsonPrefixMatch[1].trim());
@@ -60,7 +64,7 @@ export function isReactionRequest(text: string): ReactionRequestResponse {
         // Try to find JSON anywhere in the text (for cases where AI sends text before JSON)
         // Use a more robust approach to find complete JSON objects
         const jsonPattern = /\{(?:[^{}]|"[^"]*")*"action"\s*:\s*"react_to_message"(?:[^{}]|"[^"]*")*\}/g;
-        const matches = text.match(jsonPattern);
+        const matches = normalized.match(jsonPattern);
         
         if (matches) {
             for (const match of matches) {
@@ -68,8 +72,8 @@ export function isReactionRequest(text: string): ReactionRequestResponse {
                     const parsed: ReactionRequest = JSON.parse(match);
                     if (parsed.action === "react_to_message" && parsed.emoji) {
                         // Extract text before the JSON to combine with the message
-                        const jsonIndex = text.indexOf(match);
-                        const textBeforeJson = text.substring(0, jsonIndex).trim();
+                        const jsonIndex = normalized.indexOf(match);
+                        const textBeforeJson = normalized.substring(0, jsonIndex).trim();
                         
                         // Combine text before JSON with the message field
                         let combinedMessage = "";

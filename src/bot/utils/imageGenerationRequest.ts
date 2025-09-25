@@ -7,10 +7,14 @@ type ImageGenerationRequest = {
 
 export type ImageGenerationRequestResponse = { isImageRequest: boolean, prompt?: string, caption?: string, message_owner?: string };
 
+import { normalizeForJsonish } from "@/utils/textNormalization";
+
 export function isImageGenerationRequest(text: string): ImageGenerationRequestResponse {
+    // Normalize to ASCII-ish to recover from stylized unicode
+    const normalized = normalizeForJsonish(text);
     try {
         // First try to parse as direct JSON
-        const parsed: ImageGenerationRequest = JSON.parse(text);
+        const parsed: ImageGenerationRequest = JSON.parse(normalized);
         if (parsed.action === "generate_image" && parsed.prompt) {
             return {
                 isImageRequest: true,
@@ -21,7 +25,7 @@ export function isImageGenerationRequest(text: string): ImageGenerationRequestRe
         }
     } catch (error) {
         // If direct JSON parsing fails, try to extract JSON from markdown code blocks
-        const jsonMatch = text.match(/```json\s*\n?([\s\S]*?)\n?\s*```/i) || text.match(/```\s*\n?([\s\S]*?)\n?\s*```/i);
+    const jsonMatch = normalized.match(/```json\s*\n?([\s\S]*?)\n?\s*```/i) || normalized.match(/```\s*\n?([\s\S]*?)\n?\s*```/i);
         if (jsonMatch) {
             try {
                 const parsed: ImageGenerationRequest = JSON.parse(jsonMatch[1].trim());
@@ -39,7 +43,7 @@ export function isImageGenerationRequest(text: string): ImageGenerationRequestRe
         }
         
         // Also try to match if text starts with "json" followed by JSON
-        const jsonPrefixMatch = text.match(/^json\s*\n?([\s\S]*)/i);
+    const jsonPrefixMatch = normalized.match(/^json\s*\n?([\s\S]*)/i);
         if (jsonPrefixMatch) {
             try {
                 const parsed: ImageGenerationRequest = JSON.parse(jsonPrefixMatch[1].trim());
@@ -59,7 +63,7 @@ export function isImageGenerationRequest(text: string): ImageGenerationRequestRe
         // Try to find JSON anywhere in the text (for cases where AI sends text before JSON)
         // Use a more robust approach to find complete JSON objects
         const jsonPattern = /\{(?:[^{}]|"[^"]*")*"action"\s*:\s*"generate_image"(?:[^{}]|"[^"]*")*\}/g;
-        const matches = text.match(jsonPattern);
+    const matches = normalized.match(jsonPattern);
         
         if (matches) {
             for (const match of matches) {
@@ -67,8 +71,8 @@ export function isImageGenerationRequest(text: string): ImageGenerationRequestRe
                     const parsed: ImageGenerationRequest = JSON.parse(match);
                     if (parsed.action === "generate_image" && parsed.prompt) {
                         // Extract text before the JSON to combine with the message
-                        const jsonIndex = text.indexOf(match);
-                        const textBeforeJson = text.substring(0, jsonIndex).trim();
+                        const jsonIndex = normalized.indexOf(match);
+                        const textBeforeJson = normalized.substring(0, jsonIndex).trim();
 
                         // Combine text before JSON with the caption field
                         let combinedCaption = "";

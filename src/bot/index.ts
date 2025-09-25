@@ -5,6 +5,7 @@ import { GoogleGenerativeAI, Part } from "@google/generative-ai";
 import { getMessageHistory } from "@/services/messageService";
 import instructions from "@/bot/training";
 import { config } from "dotenv";
+import { Message } from "whatsapp-web.js";
 
 config();
 
@@ -35,17 +36,63 @@ export default async function chatWithUser(
    context?: 'group' | 'private' | 'status',
    chatName?: string,
    author?: string,
+   message?: Message, // WhatsApp Message object for accessing chat history
 ): Promise<string> {
    let API_KEY: string | undefined;
-
+   
    // Try to get messages from MongoDB first, fallback to JSON
    let oldMessages: CachedMessageData[string]["messages"] | CachedGroupMessageData[string]["messages"] = [];
 
    if (context === 'group') {
       API_KEY = process.env.GEMINI_API_KEY_GROUP;
-      instructions.push("You are in a group chat, so keep your responses brief and to the point.");
+      instructions.push("YOU ARE IN GROUP CHAT, so keep your responses straight to the point accoring to the previous messages.\nAVOID ASKING QUESTIONS LIKE 'How can I help you'?\nYou are in a group chat, not to help anybody!");
 
-      oldMessages = loadGroupMessages(number);
+      // If message object is provided, fetch history from WhatsApp Web
+      if (message) {
+         try {
+            const chat = await message.getChat();
+            const historyMessages = await chat.fetchMessages({ limit: 30 });
+
+            // Process messages into oldMessages format
+            const processedMsgs: {text: string; reply?: string}[] = [];
+            for (let i = 0; i < historyMessages.length; i++) {
+               const msg = historyMessages[i];
+               
+               if (msg.body || msg.hasMedia) {
+                  const contact = msg.author || msg.from;
+                  const msgAuthor = msg.fromMe ? 'Bot' : contact;
+                  
+                  // Check if this is a user message OR a bot message that starts with !
+                  const isUserMessage = !msg.fromMe || (msg.fromMe && msg.body?.startsWith('!'));
+                  
+                  if (isUserMessage) {
+                     const userMsg: {text: string; reply?: string} = { 
+                        text: `[${chatName}] ${msgAuthor}: ${msg.body || '[Media]'}`,
+                        reply: '[NOT REPLYING TO BOT]'
+                     };
+                     
+                     // Look for the next message as a potential reply
+                     if (i + 1 < historyMessages.length) {
+                        const nextMsg = historyMessages[i + 1];
+                        // If next message is from bot and doesn't start with !, treat it as reply
+                        if (nextMsg.fromMe && nextMsg.body && !nextMsg.body.startsWith('!')) {
+                           userMsg.reply = nextMsg.body;
+                           i++; // Skip the next message since we've used it as a reply
+                        }
+                     }
+                     processedMsgs.push(userMsg);
+                  }
+               }
+            }
+            oldMessages = processedMsgs;
+         } catch (err) {
+            console.log('Failed to get WhatsApp Web history, falling back to cache');
+            oldMessages = loadGroupMessages(number);
+         }
+      } else {
+         // Fallback to cached messages if no message object
+         oldMessages = loadGroupMessages(number);
+      }
 
       oldMessages.map(groupMsg => {
          groupMsg.text = `[${chatName}] ${author ? author + ': ' : ''}${groupMsg.text}`;
@@ -55,9 +102,46 @@ export default async function chatWithUser(
 
    else if (context === 'private') {
       API_KEY = process.env.GEMINI_API_KEY_PRIVATE;
-      instructions.push("You are in a private chat, so you can be more detailed and engaging in your responses.");
+      instructions.push("YOU ARE IN PRIVATE CHAT.");
       
-      oldMessages = loadGroupMessages(number);
+      // If message object is provided, fetch history from WhatsApp Web
+      if (message) {
+         try {
+            const chat = await message.getChat();
+            const historyMessages = await chat.fetchMessages({ limit: 30 });
+            
+            // Process messages into oldMessages format
+            const processedMsgs: {text: string; reply?: string}[] = [];
+            for (let i = 0; i < historyMessages.length; i++) {
+               const msg = historyMessages[i];
+               
+               if (msg.body || msg.hasMedia) {
+                  const contact = await msg.getContact();
+                  const msgAuthor = msg.fromMe ? 'Bot' : (contact.name || contact.pushname || 'User');
+                  
+                  if (!msg.fromMe) { // User message
+                     const userMsg: {text: string; reply?: string} = { 
+                        text: `[${msgAuthor}] ${msg.body || '[Media]'}`,
+                        reply: '[NOT REPLYING TO BOT]'
+                     };
+                     // Check if next message is a reply from bot
+                     if (i + 1 < historyMessages.length && historyMessages[i+1].fromMe) {
+                        userMsg.reply = historyMessages[i+1].body || '';
+                        i++; // Skip the next message since we've used it as a reply
+                     }
+                     processedMsgs.push(userMsg);
+                  }
+               }
+            }
+            oldMessages = processedMsgs;
+         } catch (err) {
+            console.log('Failed to get WhatsApp Web history, falling back to cache');
+            oldMessages = loadGroupMessages(number); // Use private message cache as fallback
+         }
+      } else {
+         // Fallback to cached messages if no message object
+         oldMessages = loadGroupMessages(number);
+      }
 
       oldMessages.map(groupMsg => {
          groupMsg.text = `[${author ? author + ':' : ''}] ${groupMsg.text}`;
@@ -72,7 +156,7 @@ export default async function chatWithUser(
    
    else {
       API_KEY = process.env.GEMINI_API_KEY;
-      instructions.push("You are in a private chat, so you can be more detailed and engaging in your responses.");
+      instructions.push("YOU ARE IN PRIVATE CHAT");
 
       try {
          const dbMessages = await getMessageHistory(number);
