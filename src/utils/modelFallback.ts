@@ -106,6 +106,13 @@ function isNewDay(lastReset: string): boolean {
 }
 
 function resetDailyUsageIfNeeded(data: ModelFallbackData): ModelFallbackData {
+    // Check if daily reset is enabled via environment variable
+    const shouldResetDaily = process.env.RESET_MODEL_USAGE_DAILY === 'true';
+
+    if (!shouldResetDaily) {
+        return data;
+    }
+
     const today = new Date().toISOString();
     
     for (const modelName in data.models) {
