@@ -28,7 +28,7 @@ client.on('ready', () => {
 });
 
 
-client.on('message_create', (message) => {
+client.on('message_create', async (message) => {
    // Check if it's night time
    const now = new Date();
    const hour = now.getHours();
@@ -39,10 +39,19 @@ client.on('message_create', (message) => {
    const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
    const timeDifference = currentTime - messageTime;
 
-   // Ignore messages older than 60 seconds
-   if (timeDifference > 60) {
+   // Ignore messages older than 5 minutes
+   if (timeDifference > 300) {
       console.log(`Message is ${timeDifference} seconds old. Ignoring...`);
       return; // Skip processing this message
+   }
+
+   // Check if this message has already been replied to
+   if (message.hasQuotedMsg) {
+      const quotedMsg = await message.getQuotedMessage();
+      if (quotedMsg.fromMe) {
+         // Don't reply to messages that are replies to bot's messages
+         return;
+      }
    }
 
    if (isNightTime) {

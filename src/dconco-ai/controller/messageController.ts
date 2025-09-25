@@ -17,6 +17,7 @@ export default async function messageController(message: Message, client: Client
    const mentions = await message.getMentions();
    const isMentioned = mentions.some(mention => mention.id.user === myNumber);
 
+
    if (message.fromMe && message.body.startsWith('!')) {
       const msgBody = message.body.slice(1).trim().toLowerCase();
 
