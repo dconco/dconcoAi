@@ -15,27 +15,24 @@ export default async function handleTextMessage(message: Message, client: Client
    const chatName = chat.name || contact?.name || contact?.pushname || contact || 'Chat';
 
    // --- New: If group/private, use cached group/private messages and check last 3 timestamps ---
-   if (context === 'group' || context === 'private') {
-      try {
-         const cached = loadCachedGroupMessages();
-         const group = cached[chatId];
+   try {
+      const cached = loadCachedGroupMessages();
+      const group = cached[chatId];
+      
+      if (group && group.messages && group.messages.length >= 2) {
+         const lastThree = group.messages.slice(-3).map(m => m.timestamp).filter(Boolean) as string[];
          
-         if (group && group.messages && group.messages.length >= 2) {
-            const lastThree = group.messages.slice(-3).map(m => m.timestamp).filter(Boolean) as string[];
-            
-            if (lastThree.length === 2) {
-               const now = Date.now();
-               const allWithinTwoMinutes = lastThree.every(ts => (now - new Date(ts).getTime()) <= 2 * 60 * 1000);
-               if (allWithinTwoMinutes) {
-                  // don't reply when last 3 messages are within 2 minutes
-                  return;
-               }
+         if (lastThree.length === 2) {
+            const allWithinTwoMinutes = lastThree.every(ts => (time.getTime() - new Date(ts).getTime()) <= 2 * 60 * 1000);
+            if (allWithinTwoMinutes) {
+               // don't reply when last 3 messages are within 2 minutes
+               return;
             }
          }
-      } catch (err) {
-         console.error('Error checking cached group messages:', err);
-         // If error reading cache, continue to process normally
       }
+   } catch (err) {
+      console.error('Error checking cached group messages:', err);
+      // If error reading cache, continue to process normally
    }
 
    await new Promise(resolve => setTimeout(resolve, Math.random() * 2000 + 1000)); // Mark as seen after 1-3 seconds

@@ -1,5 +1,6 @@
 import chatWithUser from "@/bot";
 import { handleMessages } from "@/dconco-ai/helper/handleMessages";
+import { loadCachedGroupMessages } from "@/utils/loadCaches";
 import { cacheGroupMessage } from "@/utils/quotaChecker";
 import { Client, Message } from "whatsapp-web.js";
 
@@ -14,7 +15,28 @@ export default async function handleImageMessage(message: Message, client: Clien
       const contact =  message.author || await message.getContact() as any;
       const name = contact?.name || contact?.pushname || contact || 'User';
       const chatName = chat.name || contact?.name || contact?.pushname || contact || 'Chat';
-      
+
+      // --- New: If group/private, use cached group/private messages and check last 3 timestamps ---
+      try {
+         const cached = loadCachedGroupMessages();
+         const group = cached[chat.id._serialized];
+         
+         if (group && group.messages && group.messages.length >= 2) {
+            const lastThree = group.messages.slice(-3).map(m => m.timestamp).filter(Boolean) as string[];
+
+            if (lastThree.length === 2) {
+               const allWithinTwoMinutes = lastThree.every(ts => (time.getTime() - new Date(ts).getTime()) <= 2 * 60 * 1000);
+               if (allWithinTwoMinutes) {
+                  // don't reply when last 3 messages are within 2 minutes
+                  return;
+               }
+            }
+         }
+      } catch (err) {
+         console.error('Error checking cached group messages:', err);
+         // If error reading cache, continue to process normally
+      }
+
       const media = await message.downloadMedia();
       if (!media) {
          message.reply("Failed to download image");
