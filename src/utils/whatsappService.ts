@@ -3,8 +3,7 @@ import {
 	Button,
 	ListSection
 } from '@/types';
-import Font from 'weird-fonts';
-import { isCodeOrJson } from '@/utils/textNormalization';
+import { style } from '@/dconco-ai';
 
 interface WhatsAppMediaUploadResponse {
 	id: string;
@@ -38,7 +37,7 @@ export default class WhatsAppService {
 			messaging_product: 'whatsapp',
 			type: 'text',
 			text: {
-				body: isCodeOrJson(message) ? message : Font.sansSerif(message, { fontStyle: 'normal' }),
+				body: style(message),
 			},
 		};
 		if (messageId) payload.context = { message_id: messageId };
@@ -110,7 +109,7 @@ export default class WhatsAppService {
 				type: 'image',
 				image: {
 					id: mediaId,
-					caption: isCodeOrJson(caption) ? caption : Font.sansSerif(caption, { fontStyle: 'normal' })
+					caption: style(caption),
 				}
 			};
 			

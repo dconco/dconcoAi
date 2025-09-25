@@ -1,3 +1,5 @@
+import { normalizeForJsonish } from "@/utils/textNormalization";
+
 type ReactionRequest = {
     action: "react_to_message";
     emoji: string;
@@ -6,8 +8,6 @@ type ReactionRequest = {
 };
 
 export type ReactionRequestResponse = { isReactionRequest: boolean, emoji?: string, message?: string, message_owner?: string };
-
-import { normalizeForJsonish } from "@/utils/textNormalization";
 
 export function isReactionRequest(text: string): ReactionRequestResponse {
     // Normalize text to convert styled unicode (e.g., mathematical script) to ASCII

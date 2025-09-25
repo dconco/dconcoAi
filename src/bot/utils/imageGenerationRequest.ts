@@ -1,3 +1,5 @@
+import { normalizeForJsonish } from "@/utils/textNormalization";
+
 type ImageGenerationRequest = {
    action: "generate_image";
    prompt: string;
@@ -6,8 +8,6 @@ type ImageGenerationRequest = {
 };
 
 export type ImageGenerationRequestResponse = { isImageRequest: boolean, prompt?: string, caption?: string, message_owner?: string };
-
-import { normalizeForJsonish } from "@/utils/textNormalization";
 
 export function isImageGenerationRequest(text: string): ImageGenerationRequestResponse {
     // Normalize to ASCII-ish to recover from stylized unicode

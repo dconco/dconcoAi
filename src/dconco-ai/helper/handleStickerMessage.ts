@@ -23,7 +23,7 @@ export default async function handleStickerMessage(message: Message, client: Cli
          
          if (group && group.messages && group.messages.length >= 2) {
             const lastThree = group.messages.slice(-3).map(m => m.timestamp).filter(Boolean) as string[];
-            
+
             if (lastThree.length === 2) {
                const allWithinTwoMinutes = lastThree.every(ts => (time.getTime() - new Date(ts).getTime()) <= 2 * 60 * 1000);
                if (allWithinTwoMinutes) {
