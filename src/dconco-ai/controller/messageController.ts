@@ -37,9 +37,9 @@ export default async function messageController(message: Message, client: Client
             message.reply(style(randomResponse))
             break
 
-         case /^everyone\b/i.test(msgBody) ? msgBody : '':
+         case /^tag\b/i.test(msgBody) ? msgBody : '':
             const raw = msgBody.trim()
-            if (!/^everyone\b/i.test(raw)) return
+            if (!/^tag\b/i.test(raw)) return
 
             let helloMessage = [
                "Hello everyone! 👋",
@@ -49,9 +49,11 @@ export default async function messageController(message: Message, client: Client
                "Salutations! Wishing you all a fantastic day ahead! 🎉"
             ]
 
-            // Extract optional message and flag
-            let args = raw.replace(/^everyone\b\s*/i, "").trim()
+            // Extract optional message and flags
+            let args = raw.replace(/^tag\b\s*/i, "").trim()
             const onlyAdmins = /(^|\s)--admin(\s|$)/i.test(args)
+            const silentTag = /(^|\s)--silent(\s|$)/i.test(args)
+            
             if (onlyAdmins) {
                args = args.replace(/(^|\s)--admin(\s|$)/i, " ").trim()
 
@@ -62,6 +64,10 @@ export default async function messageController(message: Message, client: Client
                   "Hi admin all! Just dropping by to say hello! 🙌",
                   "Salutations admins! Wishing you all a fantastic day ahead! 🎉"
                ]
+            }
+            
+            if (silentTag) {
+               args = args.replace(/(^|\s)--silent(\s|$)/i, " ").trim()
             }
 
             const chat = await message.getChat()
@@ -99,11 +105,20 @@ export default async function messageController(message: Message, client: Client
 
             for (let i = 0; i < total; i += batchSize) {
                const batchMentions = mentions.slice(i, i + batchSize)
-               const mentionText = batchMentions
-                  .map((jid) => `@${jid.split("@")[0]}`)
-                  .join(" ")
-
-               const messageText = i === 0 ? `${prefixMessage}\n\n${mentionText}` : mentionText
+               
+               let messageText: string
+               
+               if (silentTag) {
+                  // Silent tag: use zero-width characters to make it invisible
+                  // This will send notifications but won't show visible text
+                  messageText = "\u200B".repeat(batchMentions.length)
+               } else {
+                  // Normal visible tag
+                  const mentionText = batchMentions
+                     .map((jid) => `@${jid.split("@")[0]}`)
+                     .join(" ")
+                  messageText = i === 0 ? `${prefixMessage}\n\n${mentionText}` : mentionText
+               }
 
                await message.reply(messageText, undefined, { mentions: batchMentions })
 
