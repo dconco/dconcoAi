@@ -3,7 +3,6 @@ import { getMessageHistory, getGroupMessageHistory } from "@/services/messageSer
 import { GoogleGenerativeAI, Part } from "@google/generative-ai";
 import instructions from "@/bot/training";
 import { config } from "dotenv";
-import { Message } from "whatsapp-web.js";
 
 config();
 
@@ -16,7 +15,7 @@ export default async function chatWithUser(
    author?: string,
 ): Promise<string> {
    let API_KEY: string | undefined;
-   
+
    // Get messages from MongoDB
    let oldMessages: { text: string; reply?: string; user?: string }[] = [];
 

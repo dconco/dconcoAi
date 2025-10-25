@@ -103,7 +103,8 @@ export default async function messageController(message: Message, client: Client
 
             if (silentTag) {
                // Silent tag: mention everyone at once with invisible text
-               const messageText = "\u200B" // Single zero-width space
+               // Using empty string or zero-width characters to make it nearly invisible
+               const messageText = args.length > 0 ? args : baseText // "\u200E\u200B" // Zero-width chars or custom message
                await message.reply(messageText, undefined, { mentions })
             } else {
                // Normal visible tag: batch to prevent rate limiting

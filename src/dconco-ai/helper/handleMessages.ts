@@ -19,12 +19,15 @@ export const handleMessages = async (reply: string, message: Message, client: Cl
 
       chatMessages.forEach(async (msg) => {
          const quotedMsg = await msg.getQuotedMessage();
+   
          if (quotedMsg && quotedMsg.fromMe) {
             // Message has already been replied to by the bot
             from = undefined;
          }
       });
    });
+
+   if (from === undefined) return null;
 
    try {
       const chat = await message.getContact() || await message.getChat();
