@@ -144,10 +144,12 @@ export default async function chatWithUser(
                      }
                   }
                }
-               return "I'm having technical difficulties right now! 🛠️ Try again in a few minutes.";
+               console.log("I'm having technical difficulties right now! 🛠️ Try again in a few minutes.");
+               return "";
             }
          } else {
-            return "I'm experiencing technical difficulties! �️ Please try again in a moment.";
+            console.log("I'm experiencing technical difficulties! 🛠️ Please try again in a moment.");
+            return "";
          }
       }
       
@@ -161,6 +163,7 @@ export default async function chatWithUser(
       }
       
       // Generic fallback
-      return "Sorry, I'm having technical difficulties right now! 🛠️ Try again in a few minutes.";
+      console.log("Sorry, I'm having technical difficulties right now! 🛠️ Try again in a few minutes.");
+      return "";
    }
 }

@@ -143,6 +143,7 @@ export const sendMessage = async (name: string | undefined, message: WhatsAppMes
 	
 	else {
 		const reply = await chatWithUser(message.from, JSON.stringify(message));
+		if (reply === '') return;
 		const response = await whatsapp.sendTextMessage(message.from, reply, message.id);
 
 		if (response) {

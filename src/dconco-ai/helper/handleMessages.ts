@@ -9,6 +9,8 @@ export const handleMessages = async (reply: string, message: Message, client: Cl
    let myNumber: string;
    let from: string | undefined;
 
+   if (reply === '') return null;
+
    // Check if this message has already been replied to
    const messages = await client.getChats();
 

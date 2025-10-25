@@ -59,8 +59,7 @@ export default async function handleImageMessage(message: Message, client: Clien
          },
          context,
          chatName,
-         name,
-         message
+         name
       );
 
       const response = await handleMessages(reply || '', message, client);

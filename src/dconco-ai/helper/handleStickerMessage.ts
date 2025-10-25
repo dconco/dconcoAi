@@ -58,8 +58,7 @@ export default async function handleStickerMessage(message: Message, client: Cli
          },
          context,
          chatName,
-         name,
-         message
+         name
       );
 
       const response = await handleMessages(reply || '', message, client);
