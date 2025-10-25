@@ -12,9 +12,9 @@ config();
 function loadMessages(number: string): CachedMessageData[string]["messages"] {
    const data: CachedMessageData = loadCachedMessages();
    
-   if (data[number]?.messages.length > 30) {
-      // Keep only the last 30 messages
-      data[number].messages = data[number].messages.slice(-30);
+   if (data[number]?.messages.length > 10) {
+      // Keep only the last 10 messages
+      data[number].messages = data[number].messages.slice(-10);
    }
    return data[number]?.messages || [];
 }
@@ -22,9 +22,9 @@ function loadMessages(number: string): CachedMessageData[string]["messages"] {
 function loadGroupMessages(groupId: string): CachedGroupMessageData[string]["messages"] {
    const data: CachedGroupMessageData = loadCachedGroupMessages();
 
-   if (data[groupId]?.messages.length > 30) {
-      // Keep only the last 30 messages
-      data[groupId].messages = data[groupId].messages.slice(-30);
+   if (data[groupId]?.messages.length > 10) {
+      // Keep only the last 10 messages
+      data[groupId].messages = data[groupId].messages.slice(-10);
    }
    return data[groupId]?.messages || [];
 }
@@ -51,7 +51,7 @@ export default async function chatWithUser(
       if (message) {
          try {
             const chat = await message.getChat();
-            const historyMessages = await chat.fetchMessages({ limit: 30 });
+            const historyMessages = await chat.fetchMessages({ limit: 10 });
 
             // Process messages into oldMessages format
             const processedMsgs: {text: string; reply?: string}[] = [];
@@ -115,7 +115,7 @@ export default async function chatWithUser(
       if (message) {
          try {
             const chat = await message.getChat();
-            const historyMessages = await chat.fetchMessages({ limit: 30 });
+            const historyMessages = await chat.fetchMessages({ limit: 10 });
             
             // Process messages into oldMessages format
             const processedMsgs: {text: string; reply?: string}[] = [];

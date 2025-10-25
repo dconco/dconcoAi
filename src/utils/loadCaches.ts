@@ -40,11 +40,11 @@ export const loadCachedMessages = (): CachedMessageData => {
       const data = readFileSync(cachedMessagesFilePath, 'utf8');
       const parsedData = JSON.parse(data) as CachedMessageData;
 
-      // Cleans up old messages if they exceed 30 and does not block the return
+      // Cleans up old messages if they exceed 10 and does not block the return
       for (const number in parsedData) {
-         if (parsedData[number]?.messages.length > 30) {
-         parsedData[number].messages = parsedData[number].messages.slice(-30);
-         
+         if (parsedData[number]?.messages.length > 10) {
+         parsedData[number].messages = parsedData[number].messages.slice(-10);
+
          writeFile(cachedMessagesFilePath, JSON.stringify(parsedData, null, 3))
             .catch(err => console.error('Failed to update cached messages file:', err));
          }
@@ -62,10 +62,10 @@ export const loadCachedGroupMessages = (): CachedGroupMessageData => {
       const data = readFileSync(cachedGroupMessagesFilePath, 'utf8');
       const parsedData = JSON.parse(data) as CachedGroupMessageData;
 
-      // Cleans up old messages asynchronously if they exceed 30 and does not block the return
+      // Cleans up old messages asynchronously if they exceed 10 and does not block the return
       for (const groupId in parsedData) {
-         if (parsedData[groupId]?.messages.length > 30) {
-            parsedData[groupId].messages = parsedData[groupId].messages.slice(-30);
+         if (parsedData[groupId]?.messages.length > 10) {
+            parsedData[groupId].messages = parsedData[groupId].messages.slice(-10);
 
             writeFile(cachedGroupMessagesFilePath, JSON.stringify(parsedData, null, 3))
                .catch(err => console.error('Failed to update cached group messages file:', err));

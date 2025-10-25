@@ -35,22 +35,20 @@ export default async function handleTextMessage(message: Message, client: Client
       // If error reading cache, continue to process normally
    }
 
-   await new Promise(resolve => setTimeout(resolve, Math.random() * 2000 + 1000)); // Mark as seen after 1-3 seconds
+   await new Promise(resolve => setTimeout(resolve, Math.random() * 1000 + 1000)); // Mark as seen after 1-2 seconds
    chat.sendSeen();
    await new Promise(resolve => setTimeout(resolve, Math.random() * 1000 + 500)); // Wait 0.5-1.5 seconds
    chat.sendStateTyping();
 
    try {
-      setTimeout(async () => {
-         // Pass the message object as the last parameter for accessing chat history in private chats
-         const reply = await chatWithUser(chatId, textMessage, undefined, context, chatName, name, message);
-         const response = await handleMessages(reply || '', message, client);
+      // Pass the message object as the last parameter for accessing chat history in private chats
+      const reply = await chatWithUser(chatId, textMessage, undefined, context, chatName, name, message);
+      const response = await handleMessages(reply || '', message, client);
 
-         if (response) {
-            if (context === 'group' || context === 'private')
-               cacheGroupMessage({ groupId: chatId, user: name || '', name: chatName, text: textMessage, reply: response, time });
-         }
-      }, Math.random() * 1000 + 4000); // Simulate typing delay of 4-5 seconds
+      if (response) {
+         if (context === 'group' || context === 'private')
+            cacheGroupMessage({ groupId: chatId, user: name || '', name: chatName, text: textMessage, reply: response, time });
+      }
    } catch (error) {
       console.error('Error replying to message:', error);
    } finally {

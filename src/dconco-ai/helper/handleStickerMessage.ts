@@ -45,7 +45,7 @@ export default async function handleStickerMessage(message: Message, client: Cli
 
       const contextMessage = "What's in this sticker?";
 
-      await new Promise(resolve => setTimeout(resolve, Math.random() * 2000 + 1000)); // Mark as seen after 1-3 seconds
+      await new Promise(resolve => setTimeout(resolve, Math.random() * 1000 + 1000)); // Mark as seen after 1-2 seconds
       chat.sendStateTyping();
 
       const reply = await chatWithUser(
@@ -62,14 +62,12 @@ export default async function handleStickerMessage(message: Message, client: Cli
          message
       );
 
-      setTimeout(async () => {
-         const response = await handleMessages(reply || '', message, client);
+      const response = await handleMessages(reply || '', message, client);
 
-         if (response) {
-            if (context === 'group' || context === 'private')
-               cacheGroupMessage({ groupId: chat.id._serialized, user: name || '', name: chatName, text: contextMessage, reply: response, time });
-         }
-      }, Math.random() * 1000 + 4000); // Simulate typing delay of 4-5 seconds
+      if (response) {
+         if (context === 'group' || context === 'private')
+            cacheGroupMessage({ groupId: chat.id._serialized, user: name || '', name: chatName, text: contextMessage, reply: response, time });
+      }
    } catch (error) {
       message.reply("Error processing sticker");
    } finally {

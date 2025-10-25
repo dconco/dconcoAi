@@ -2,6 +2,7 @@ import qrcode from "qrcode-terminal";
 import messageController from "@/dconco-ai/controller/messageController";
 import { Client, LocalAuth } from "whatsapp-web.js";
 import Font from "weird-fonts";
+import MessagesLimitation from "./utils/MessagesLimitation";
 
 export const style = (text: string) => Font.sansSerif(text, {
    fontStyle: 'normal'
@@ -45,13 +46,14 @@ client.on('message_create', async (message) => {
       return; // Skip processing this message
    }
 
+   if (await MessagesLimitation(client)) return; // Skip if message limit exceeded
+
    if (isNightTime) {
-      // Random delays during night: 10-40 seconds
+      // Random delays during night: 2-10 seconds
       const delays: number[] = [
-         Math.random() * 10000 + 10000, // 10-20 seconds
-         Math.random() * 10000 + 20000, // 20-30 seconds  
-         Math.random() * 10000 + 30000,  // 30-40 seconds
-         0
+         Math.random() * 5000 + 2000, // 2-5 seconds
+         Math.random() * 3000 + 5000, // 5-8 seconds
+         Math.random() * 2000 + 8000 // 8-10 seconds
       ];
 
       const randomDelay = delays[Math.floor(Math.random() * delays.length)];
@@ -59,7 +61,6 @@ client.on('message_create', async (message) => {
       console.log(`Night mode: Delaying response by ${Math.round(randomDelay/1000)} seconds`);
 
       setTimeout(async () => {
-         if (randomDelay === 0) return;
          messageController(message, client);
       }, randomDelay);
    } else {

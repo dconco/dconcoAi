@@ -1,9 +1,19 @@
 {
-  "currentModel": "gemini-2.5-flash-lite",
+  "currentModel": "gemini-2.0-flash-exp",
   "models": {
     "gemini-2.5-flash-lite": {
-      "dailyUsage": 88,
+      "dailyUsage": 123,
       "lastReset": "2025-09-25T11:39:15.425Z",
+      "isBlocked": true
+    },
+    "gemini-2.0-flash": {
+      "dailyUsage": 14,
+      "lastReset": "2025-10-25T13:16:33.723Z",
+      "isBlocked": true
+    },
+    "gemini-2.0-flash-exp": {
+      "dailyUsage": 18,
+      "lastReset": "2025-10-25T13:16:48.353Z",
       "isBlocked": false
     }
   }
