@@ -10,13 +10,19 @@ export const handleMessages = async (reply: string, message: Message, client: Cl
    let from: string | undefined;
 
    // Check if this message has already been replied to
-   if (message.hasQuotedMsg) {
-      const quotedMsg = await message.getQuotedMessage();
-      if (quotedMsg.fromMe) {
-         // Don't reply to messages that are replies to bot's messages
-         return null;
-      }
-   }
+   const messages = await client.getChats();
+
+   messages.forEach(async (chat) => {
+      const chatMessages = await chat.fetchMessages({ limit: 5 });
+
+      chatMessages.forEach(async (msg) => {
+         const quotedMsg = await msg.getQuotedMessage();
+         if (quotedMsg && quotedMsg.fromMe) {
+            // Message has already been replied to by the bot
+            from = undefined;
+         }
+      });
+   });
 
    try {
       const chat = await message.getContact() || await message.getChat();

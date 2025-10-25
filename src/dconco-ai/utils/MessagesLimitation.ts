@@ -13,7 +13,7 @@ export default async function MessagesLimitation(client: Client) {
       messages.forEach(msg => {
          const timeDifference = Date.now() - msg.timestamp * 1000
 
-         if (timeDifference < 0) {
+         if (timeDifference < 0 && !msg.fromMe) {
             // Message is older than 1 minute, remove it from the array
             const index = messages.indexOf(msg)
             if (index > -1) {
