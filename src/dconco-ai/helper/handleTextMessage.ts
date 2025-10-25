@@ -37,7 +37,6 @@ export default async function handleTextMessage(message: Message, client: Client
    }
 
    chat.sendSeen();
-   await new Promise(resolve => setTimeout(resolve, Math.random() * 1000 + 500)); // Start typing after 0.5-1.5 seconds
    chat.sendStateTyping();
 
    try {

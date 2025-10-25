@@ -46,7 +46,6 @@ export default async function handleImageMessage(message: Message, client: Clien
       
       const contextMessage = message.body || "What's in this image?";
 
-      await new Promise(resolve => setTimeout(resolve, Math.random() * 1000 + 1000)); // Mark as seen after 1-2 seconds
       chat.sendStateTyping();
 
       const reply = await chatWithUser(
