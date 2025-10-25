@@ -100,32 +100,30 @@ export default async function messageController(message: Message, client: Client
             const baseText =
                helloMessage[Math.floor(Math.random() * helloMessage.length)]
             const prefixMessage = args.length > 0 ? args : baseText
-            // i made it per batch to prevent rate limiting and possibly issues
-            const batchSize = 30
 
-            for (let i = 0; i < total; i += batchSize) {
-               const batchMentions = mentions.slice(i, i + batchSize)
-               
-               let messageText: string
-               
-               if (silentTag) {
-                  // Silent tag: use zero-width characters to make it invisible
-                  // This will send notifications but won't show visible text
-                  messageText = "\u200B".repeat(batchMentions.length)
-               } else {
-                  // Normal visible tag
+            if (silentTag) {
+               // Silent tag: mention everyone at once with invisible text
+               const messageText = "\u200B" // Single zero-width space
+               await message.reply(messageText, undefined, { mentions })
+            } else {
+               // Normal visible tag: batch to prevent rate limiting
+               const batchSize = 30
+
+               for (let i = 0; i < total; i += batchSize) {
+                  const batchMentions = mentions.slice(i, i + batchSize)
                   const mentionText = batchMentions
                      .map((jid) => `@${jid.split("@")[0]}`)
                      .join(" ")
-                  messageText = i === 0 ? `${prefixMessage}\n\n${mentionText}` : mentionText
+
+                  const messageText = i === 0 ? `${prefixMessage}\n\n${mentionText}` : mentionText
+
+                  await message.reply(messageText, undefined, { mentions: batchMentions })
+
+                  const min = 2000
+                  const max = 6000
+                  const randomMs = Math.floor(Math.random() * (max - min + 1)) + min
+                  await new Promise(resolve => setTimeout(resolve, randomMs))
                }
-
-               await message.reply(messageText, undefined, { mentions: batchMentions })
-
-               const min = 2000
-               const max = 6000
-               const randomMs = Math.floor(Math.random() * (max - min + 1)) + min
-               await new Promise(resolve => setTimeout(resolve, randomMs))
             }
             break
 
