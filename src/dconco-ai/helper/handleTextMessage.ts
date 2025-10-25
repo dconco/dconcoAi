@@ -2,6 +2,7 @@ import chatWithUser from "@/bot";
 import { handleMessages } from "@/dconco-ai/helper/handleMessages";
 import { loadCachedGroupMessages } from '@/utils/loadCaches';
 import { cacheGroupMessage } from "@/utils/quotaChecker";
+import { saveGroupMessage, saveMessage } from "@/services/messageService";
 import { Client, Message } from "whatsapp-web.js";
 
 export default async function handleTextMessage(message: Message, client: Client, context: 'group' | 'private' | 'status') {
@@ -45,8 +46,30 @@ export default async function handleTextMessage(message: Message, client: Client
       const response = await handleMessages(reply || '', message, client);
 
       if (response) {
+         // Cache to JSON file
          if (context === 'group' || context === 'private')
             cacheGroupMessage({ groupId: chatId, user: name || '', name: chatName, text: textMessage, reply: response, time });
+         
+         // Save to MongoDB database
+         if (context === 'group') {
+            await saveGroupMessage({
+               groupId: chatId,
+               groupName: chatName,
+               text: textMessage,
+               reply: response,
+               user: contact?.id?._serialized || chatId,
+               userName: name,
+               messageId: message.id._serialized
+            });
+         } else if (context === 'private') {
+            await saveMessage({
+               contact: chatId,
+               name: name,
+               text: textMessage,
+               reply: response,
+               messageId: message.id._serialized
+            });
+         }
       }
    } catch (error) {
       console.error('Error replying to message:', error);

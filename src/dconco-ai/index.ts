@@ -2,7 +2,6 @@ import qrcode from "qrcode-terminal";
 import messageController from "@/dconco-ai/controller/messageController";
 import { Client, LocalAuth } from "whatsapp-web.js";
 import Font from "weird-fonts";
-import MessagesLimitation from "./utils/MessagesLimitation";
 
 export const style = (text: string) => Font.sansSerif(text, {
    fontStyle: 'normal'
@@ -45,10 +44,6 @@ client.on('message_create', async (message) => {
       console.log(`Message is ${timeDifference} seconds old. Ignoring...`);
       return; // Skip processing this message
    }
-
-   // Get chat ID for rate limiting
-   const chatId = message.from;
-   if (await MessagesLimitation(chatId)) return; // Skip if message limit exceeded
 
    if (isNightTime) {
       // Shorter random delays during night: 3-7 seconds
