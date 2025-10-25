@@ -35,7 +35,7 @@ export default async function messageController(message: Message, client: Client
             const randomResponse = responses[Math.floor(Math.random() * responses.length)]
 
             message.reply(style(randomResponse))
-            break
+            break;
 
          case /^tag\b/i.test(msgBody) ? msgBody : '':
             const raw = msgBody.trim()
@@ -65,7 +65,7 @@ export default async function messageController(message: Message, client: Client
                   "Salutations admins! Wishing you all a fantastic day ahead! 🎉"
                ]
             }
-            
+
             if (silentTag) {
                args = args.replace(/(^|\s)--silent(\s|$)/i, " ").trim()
             }
@@ -108,7 +108,7 @@ export default async function messageController(message: Message, client: Client
                await message.reply(messageText, undefined, { mentions })
             } else {
                // Normal visible tag: batch to prevent rate limiting
-               const batchSize = 30
+               const batchSize = 100
 
                for (let i = 0; i < total; i += batchSize) {
                   const batchMentions = mentions.slice(i, i + batchSize)
@@ -126,7 +126,7 @@ export default async function messageController(message: Message, client: Client
                   await new Promise(resolve => setTimeout(resolve, randomMs))
                }
             }
-            break
+            break;
 
          case 'history':
             try {
@@ -156,20 +156,20 @@ export default async function messageController(message: Message, client: Client
                message.reply(style('Error fetching history from database'))
             }
 
-            break
+            break;
 
          default:
             if (message.type === MessageTypes.TEXT) handleTextMessage(message, client, isGroup ? 'group' : 'private')
             if (message.type === MessageTypes.IMAGE) handleImageMessage(message, client, isGroup ? 'group' : 'private')
             if (message.type === MessageTypes.STICKER) handleStickerMessage(message, client, isGroup ? 'group' : 'private')
 
-            break
+            break;
       }
 
       return
    }
 
-   if (isGroup && (isMentioned || isReplyToMe || message.body.startsWith('!') || message.body.startsWith('ai')) && !message.fromMe) {
+   if (isGroup && !message.fromMe && (isMentioned || isReplyToMe || message.body.startsWith('!') || message.body.startsWith('ai'))) {
       if (message.type === MessageTypes.TEXT) handleTextMessage(message, client, 'group')
       if (message.type === MessageTypes.IMAGE) handleImageMessage(message, client, 'group')
       if (message.type === MessageTypes.STICKER) handleStickerMessage(message, client, 'group')
