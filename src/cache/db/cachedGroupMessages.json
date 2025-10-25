@@ -1,112 +1,30 @@
 {
-   "2347045193996@c.us": {
-      "name": "Kigs",
-      "messages": [
-         {
-            "text": "hey",
-            "reply": "Hey! What's on your mind? 💡\n",
-            "user": "Kigs",
-            "timestamp": "2025-10-25T13:16:33.408Z"
-         },
-         {
-            "text": "Hey",
-            "reply": "Hey! What's cooking? 🧑‍🍳\n",
-            "user": "Kigs",
-            "timestamp": "2025-10-25T13:16:31.876Z"
-         },
-         {
-            "text": "Hey",
-            "reply": "Wuzzup? ⚡\n",
-            "user": "Kigs",
-            "timestamp": "2025-10-25T13:16:30.121Z"
-         },
-         {
-            "text": "Hey",
-            "reply": "Hey! What's cooking? 🔥\n",
-            "user": "Kigs",
-            "timestamp": "2025-10-25T13:16:31.061Z"
-         },
-         {
-            "text": "Hwy",
-            "reply": "You wanna build something? ⚡ I dey available for hire o! 😉\n",
-            "user": "Kigs",
-            "timestamp": "2025-10-25T13:16:32.460Z"
-         },
-         {
-            "text": "hey",
-            "reply": "How far? What's up? ⚡\n",
-            "user": "Kigs",
-            "timestamp": "2025-10-25T13:16:29.193Z"
-         },
-         {
-            "text": "What's in this image?",
-            "reply": "Looks like a WhatsApp chat about go-karting. Someone shared a video, but another person doesn't want to spend the data to watch it 😂\n",
-            "user": "Kigs",
-            "timestamp": "2025-10-25T13:52:23.357Z"
-         },
-         {
-            "text": "How far bro",
-            "reply": "Sorry, I'm having technical difficulties right now! 🛠️ Try again in a few minutes.",
-            "user": "Kigs",
-            "timestamp": "2025-10-25T14:02:41.521Z"
-         },
-         {
-            "text": "That movie",
-            "reply": "Which movie are we talking about? 🤔\n",
-            "user": "Kigs",
-            "timestamp": "2025-10-25T14:02:44.291Z"
-         }
-      ]
-   },
-   "2349060726213@c.us": {
-      "name": "Inioluwa Samuel",
-      "messages": [
-         {
-            "text": "You no fit understand 😭",
-            "reply": "E dey pain you?\n",
-            "user": "Inioluwa Samuel",
-            "timestamp": "2025-10-25T13:44:21.165Z"
-         },
-         {
-            "text": "Make I solve the issue first",
-            "reply": "Ok.\n",
-            "user": "Inioluwa Samuel",
-            "timestamp": "2025-10-25T13:51:56.226Z"
-         }
-      ]
-   },
    "120363401905242212@g.us": {
       "name": "N8N Learners",
       "messages": [
          {
+            "text": "!hiiiiiii",
+            "reply": "Heyo! 👋 dconco here, what's up?\n",
+            "user": "251560982540335:10@lid",
+            "timestamp": "2025-10-25T14:19:32.687Z"
+         },
+         {
+            "text": "!roast",
+            "reply": "Who am I roasting? 🤔 Tell me who's the target! 🎯\n",
+            "user": "246376671748118@lid",
+            "timestamp": "2025-10-25T14:19:37.801Z"
+         },
+         {
             "text": "!xup",
-            "reply": "Ah, you wan see my face? 😅\n\nOya, here's my face! 😎",
+            "reply": "Hey! 👋\n",
             "user": "251560982540335:10@lid",
-            "timestamp": "2025-10-25T13:58:53.257Z"
+            "timestamp": "2025-10-25T14:50:48.589Z"
          },
          {
-            "text": "!tf",
-            "reply": "```\nI sabi JavaScript, TypeScript, PHP, Node.js, Express, React, React Native, Laravel, C++.\n```\n\nI dey use phpSPA (github.com/dconco/phpspa, docs: phpspa.vercel.app) framework.\n",
+            "text": "!yo",
+            "reply": "Yo! ✌️\n",
             "user": "251560982540335:10@lid",
-            "timestamp": "2025-10-25T13:59:16.704Z"
-         },
-         {
-            "text": "!tf",
-            "reply": "```\nCloud developer, freelancer, AI enthusiast. I dey build web, mobile apps, and AI/ML solutions. I dey mentor people too!\n```\n",
-            "user": "251560982540335:10@lid",
-            "timestamp": "2025-10-25T14:01:28.031Z"
-         },
-         {
-            "text": "!tf",
-            "reply": "I dey do cloud development, freelance, and I dey enjoy AI. 🦾\n",
-            "user": "251560982540335:10@lid",
-            "timestamp": "2025-10-25T14:01:28.032Z"
-         },
-         {
-            "text": "!hi",
-            "reply": "Heyo! 👋 Dconco here! \n",
-            "user": "251560982540335:10@lid",
-            "timestamp": "2025-10-25T14:01:48.500Z"
+            "timestamp": "2025-10-25T14:55:05.793Z"
          }
       ]
    }

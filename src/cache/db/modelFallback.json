@@ -12,7 +12,7 @@
       "isBlocked": true
     },
     "gemini-2.0-flash-exp": {
-      "dailyUsage": 18,
+      "dailyUsage": 32,
       "lastReset": "2025-10-25T13:16:48.353Z",
       "isBlocked": false
     }

@@ -1,31 +1,24 @@
-import { Client } from "whatsapp-web.js"
+// Rate limiting based on message timestamps stored in memory
+const messageTimestamps: Map<string, number[]> = new Map();
+const MESSAGE_LIMIT = 5; // max messages per minute
+const TIME_WINDOW = 120000; // 2 minutes in milliseconds
 
-export default async function MessagesLimitation(client: Client) {
-   const eachMinuteLimit = 5 // max messages per minute
-
-   const chats = await client.getChats()
-
-   for (const chat of chats) {
-      if (chat.isGroup) continue // Only limit private chats
-
-      const messages = await chat.fetchMessages({ limit: eachMinuteLimit })
-      
-      messages.forEach(msg => {
-         const timeDifference = Date.now() - msg.timestamp * 1000
-
-         if (timeDifference < 0 && !msg.fromMe) {
-            // Message is older than 1 minute, remove it from the array
-            const index = messages.indexOf(msg)
-            if (index > -1) {
-               messages.splice(index, 1)
-            }
-         }
-      })
-
-      if (messages.length > eachMinuteLimit) {
-         console.log(`Message limit exceeded in chat ${chat.id._serialized}. Skipping further processing.`)
-         return true // Indicate that limit is exceeded
-      }
+export default async function MessagesLimitation(chatId: string): Promise<boolean> {
+   const now = Date.now();
+   const timestamps = messageTimestamps.get(chatId) || [];
+   
+   // Remove timestamps older than 2 minutes
+   const recentTimestamps = timestamps.filter(ts => now - ts < TIME_WINDOW);
+   
+   // Check if limit exceeded
+   if (recentTimestamps.length >= MESSAGE_LIMIT) {
+      console.log(`⚠️ Message limit exceeded in chat ${chatId}. User sent ${recentTimestamps.length} messages in the last 2 minutes.`);
+      return true; // Limit exceeded
    }
-   return false // Indicate that limit is not exceeded
+   
+   // Add current timestamp
+   recentTimestamps.push(now);
+   messageTimestamps.set(chatId, recentTimestamps);
+   
+   return false; // Limit not exceeded
 }

@@ -35,14 +35,13 @@ export default async function handleTextMessage(message: Message, client: Client
       // If error reading cache, continue to process normally
    }
 
-   await new Promise(resolve => setTimeout(resolve, Math.random() * 1000 + 1000)); // Mark as seen after 1-2 seconds
    chat.sendSeen();
-   await new Promise(resolve => setTimeout(resolve, Math.random() * 1000 + 500)); // Wait 0.5-1.5 seconds
+   await new Promise(resolve => setTimeout(resolve, Math.random() * 1000 + 500)); // Start typing after 0.5-1.5 seconds
    chat.sendStateTyping();
 
    try {
       // Pass the message object as the last parameter for accessing chat history in private chats
-      const reply = await chatWithUser(chatId, textMessage, undefined, context, chatName, name, message);
+      const reply = await chatWithUser(chatId, textMessage, undefined, context, chatName, name);
       const response = await handleMessages(reply || '', message, client);
 
       if (response) {
